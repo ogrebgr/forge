@@ -16,7 +16,7 @@
 
 package com.bolyartech.forge.http.functionality;
 
-import com.bolyartech.forge.http.KhCloseableHttpClient;
+import com.bolyartech.forge.http.ForgeCloseableHttpClient;
 import com.bolyartech.forge.misc.ForUnitTestsOnly;
 import forge.apache.http.client.CookieStore;
 import forge.apache.http.client.protocol.HttpClientContext;
@@ -33,7 +33,7 @@ public class HttpFunctionalityWCookiesImpl extends HttpFunctionalityImpl impleme
     private CookieStore mCookies;
 
 
-    public HttpFunctionalityWCookiesImpl(KhCloseableHttpClient httpClient, CookieStore cookies) {
+    public HttpFunctionalityWCookiesImpl(ForgeCloseableHttpClient httpClient, CookieStore cookies) {
         super(httpClient);
 
         if (cookies != null) {

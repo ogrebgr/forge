@@ -1,8 +1,10 @@
-package com.bolyartech.forge.rest;
+package com.bolyartech.forge.exchange;
 
+import com.bolyartech.forge.http.functionality.HttpFunctionality;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.*;
@@ -16,16 +18,16 @@ import static org.mockito.Mockito.when;
 /**
  * Created by ogre on 2015-10-12
  */
-public class KhRestFunctionalityImplTest {
-    private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(KhRestFunctionalityImpl.class
+public class ForgeFunctionalityImplTest {
+    private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(ExchangeFunctionalityImpl.class
             .getSimpleName());
 
 
     @Test
     public void test_generateXId() {
-        RestFunctionality rest = mock(RestFunctionality.class);
+        HttpFunctionality rest = mock(HttpFunctionality.class);
 
-        KhRestFunctionalityImpl khRest = new KhRestFunctionalityImpl(rest);
+        ExchangeFunctionalityImpl khRest = new ExchangeFunctionalityImpl(rest);
 
         Long id = khRest.generateXId();
         assertTrue(id == 1);
@@ -34,9 +36,9 @@ public class KhRestFunctionalityImplTest {
 
     @Test
     public void test_start() {
-        RestFunctionality rest = mock(RestFunctionality.class);
+        HttpFunctionality rest = mock(HttpFunctionality.class);
 
-        KhRestFunctionalityImpl khRest = new KhRestFunctionalityImpl(rest);
+        ExchangeFunctionalityImpl khRest = new ExchangeFunctionalityImpl(rest);
 
         assertFalse(khRest.isStarted());
         khRest.start();
@@ -48,9 +50,9 @@ public class KhRestFunctionalityImplTest {
 
     @Test
     public void test_shutdown() {
-        RestFunctionality rest = mock(RestFunctionality.class);
+        HttpFunctionality rest = mock(HttpFunctionality.class);
 
-        KhRestFunctionalityImpl khRest = new KhRestFunctionalityImpl(rest);
+        ExchangeFunctionalityImpl khRest = new ExchangeFunctionalityImpl(rest);
 
         assertFalse(khRest.isStarted());
         khRest.start();
@@ -61,14 +63,14 @@ public class KhRestFunctionalityImplTest {
 
     @Test
     public void test_addListener() {
-        RestFunctionality rest = mock(RestFunctionality.class);
+        HttpFunctionality rest = mock(HttpFunctionality.class);
 
-        KhRestFunctionalityImpl khRest = new KhRestFunctionalityImpl(rest);
+        ExchangeFunctionalityImpl khRest = new ExchangeFunctionalityImpl(rest);
 
-        KhRestFunctionality.Listener listener = mock(KhRestFunctionality.Listener.class);
+        ExchangeFunctionalityImpl.Listener listener = mock(ExchangeFunctionalityImpl.Listener.class);
         khRest.addListener(listener);
 
-        List<KhRestFunctionality.Listener> listeners = khRest.getListeners();
+        List<ExchangeFunctionalityImpl.Listener> listeners = khRest.getListeners();
         assertTrue(listeners.get(0) == listener);
 
         // not added more than once
@@ -78,28 +80,28 @@ public class KhRestFunctionalityImplTest {
 
     @Test
     public void test_removeListener() {
-        RestFunctionality rest = mock(RestFunctionality.class);
+        HttpFunctionality rest = mock(HttpFunctionality.class);
 
-        KhRestFunctionalityImpl khRest = new KhRestFunctionalityImpl(rest);
+        ExchangeFunctionalityImpl khRest = new ExchangeFunctionalityImpl(rest);
 
-        KhRestFunctionality.Listener listener = mock(KhRestFunctionality.Listener.class);
+        ExchangeFunctionalityImpl.Listener listener = mock(ExchangeFunctionalityImpl.Listener.class);
         khRest.addListener(listener);
         khRest.removeListener(listener);
 
-        List<KhRestFunctionality.Listener> listeners = khRest.getListeners();
+        List<ExchangeFunctionalityImpl.Listener> listeners = khRest.getListeners();
         assertTrue(listeners.size() == 0);
     }
 
 
     @Test(expected = RejectedExecutionException.class)
     public void test_executeKhRestExchange1() {
-        RestFunctionality rest = mock(RestFunctionality.class);
+        HttpFunctionality http = mock(HttpFunctionality.class);
         ExecutorService exec = mock(ExecutorService.class);
 
-        KhRestFunctionalityImpl khRest = new KhRestFunctionalityImpl(rest, exec);
+        ExchangeFunctionalityImpl khRest = new ExchangeFunctionalityImpl(http, exec);
 
-        RestExchange<KhRestResult> x = mock(RestExchange.class);
-        khRest.executeKhRestExchange(x, 1l);
+        Exchange<ForgeExchangeResult> x = mock(Exchange.class);
+        khRest.executeExchange(x, 1l);
     }
 
 
@@ -109,31 +111,31 @@ public class KhRestFunctionalityImplTest {
      * @throws RestExchangeFailedException
      */
     @Test
-    public void test_executeKhRestExchange2() throws RestExchangeFailedException {
+    public void test_executeKhRestExchange2() throws RestExchangeFailedException, IOException {
         mLogger.trace("trace");
         mLogger.info("info");
 
-        RestExchange<KhRestResult> x = mock(RestExchange.class);
-        final KhRestResult rez = mock(KhRestResult.class);
-        RestFunctionality rest = mock(RestFunctionality.class);
-        when(rest.execute(x)).thenReturn(rez);
+        Exchange<ForgeExchangeResult> x = mock(Exchange.class);
+        final ForgeExchangeResult rez = mock(ForgeExchangeResult.class);
+        HttpFunctionality http = mock(HttpFunctionality.class);
+        when(x.execute(http)).thenReturn(rez);
         ExecutorService exec = new DirectExecutorService();
 
         final boolean[] isListenerCalled = new boolean[1];
         isListenerCalled[0] = false;
 
-        KhRestFunctionality.Listener listener = new KhRestFunctionality.Listener() {
+        ExchangeFunctionalityImpl.Listener listener = new ExchangeFunctionalityImpl.Listener() {
             @Override
-            public void onKhRestExchangeCompleted(RestExchangeOutcome<KhRestResult> out, long idL) {
+            public void onExchangeCompleted(ExchangeOutcome out, long idL) {
                 assertTrue(!out.isError());
                 assertTrue(out.getResult() == rez);
                 isListenerCalled[0] = true;
             }
         };
-        KhRestFunctionalityImpl khRest = new KhRestFunctionalityImpl(rest, exec);
+        ExchangeFunctionalityImpl khRest = new ExchangeFunctionalityImpl(http, exec);
         khRest.addListener(listener);
         khRest.start();
-        khRest.executeKhRestExchange(x, 1l);
+        khRest.executeExchange(x, 1l);
 
         khRest.shutdown();
 
@@ -147,26 +149,26 @@ public class KhRestFunctionalityImplTest {
      * @throws RestExchangeFailedException
      */
     @Test
-    public void test_executeKhRestExchange3() throws RestExchangeFailedException {
-        RestExchange<KhRestResult> x = mock(RestExchange.class);
-        RestFunctionality rest = mock(RestFunctionality.class);
-        when(rest.execute(x)).thenThrow(new RestExchangeFailedException());
+    public void test_executeKhRestExchange3() throws RestExchangeFailedException, IOException {
+        Exchange<ForgeExchangeResult> x = mock(Exchange.class);
+        HttpFunctionality http = mock(HttpFunctionality.class);
+        when(x.execute(http)).thenThrow(new IOException());
         ExecutorService exec = new DirectExecutorService();
 
         final boolean[] isListenerCalled = new boolean[1];
         isListenerCalled[0] = false;
 
-        KhRestFunctionality.Listener listener = new KhRestFunctionality.Listener() {
+        ExchangeFunctionalityImpl.Listener listener = new ExchangeFunctionalityImpl.Listener() {
             @Override
-            public void onKhRestExchangeCompleted(RestExchangeOutcome<KhRestResult> out, long idL) {
+            public void onExchangeCompleted(ExchangeOutcome out, long idL) {
                 assertTrue(out.isError());
                 isListenerCalled[0] = true;
             }
         };
-        KhRestFunctionalityImpl khRest = new KhRestFunctionalityImpl(rest, exec);
+        ExchangeFunctionalityImpl khRest = new ExchangeFunctionalityImpl(http, exec);
         khRest.addListener(listener);
         khRest.start();
-        khRest.executeKhRestExchange(x, 1l);
+        khRest.executeExchange(x, 1l);
         khRest.shutdown();
 
         assertTrue(isListenerCalled[0]);
@@ -181,28 +183,28 @@ public class KhRestFunctionalityImplTest {
      */
     @Test
     public void test_ttled() throws RestExchangeFailedException, InterruptedException {
-        RestExchange<KhRestResult> x = mock(RestExchange.class);
-        final KhRestResult rez = mock(KhRestResult.class);
-        RestFunctionality rest = mock(RestFunctionality.class);
-//        when(rest.execute(x)).thenReturn(rez);
+        Exchange<ForgeExchangeResult> x = mock(Exchange.class);
+        final ForgeExchangeResult rez = mock(ForgeExchangeResult.class);
+        HttpFunctionality rest = mock(HttpFunctionality.class);
+//        when(exchange.execute(x)).thenReturn(rez);
         ExecutorService exec = new DirectExecutorService();
 
 
-        final RestExchangeOutcome[] isListenerCalled = new RestExchangeOutcome[1];
+        final ExchangeOutcome[] isListenerCalled = new ExchangeOutcome[1];
 
-        KhRestFunctionality.Listener listener = new KhRestFunctionality.Listener() {
+        ExchangeFunctionality.Listener<ForgeExchangeResult> listener = new ExchangeFunctionality.Listener<ForgeExchangeResult>() {
             @Override
-            public void onKhRestExchangeCompleted(RestExchangeOutcome<KhRestResult> out, long idL) {
+            public void onExchangeCompleted(ExchangeOutcome<ForgeExchangeResult> out, long idL) {
                 isListenerCalled[0] = out;
                 assertTrue(out.isError());
             }
         };
 
-        KhRestFunctionalityImpl.Builder b = KhRestFunctionalityImpl.Builder.create(rest);
-        KhRestFunctionalityImpl khRest = b.exchangeTtl(1).ttlCheckInterval(50).executorService(new DirectExecutorService()).build();
+        ExchangeFunctionalityImpl.Builder b = ExchangeFunctionalityImpl.Builder.create(rest);
+        ExchangeFunctionalityImpl khRest = b.exchangeTtl(1).ttlCheckInterval(50).executorService(new DirectExecutorService()).build();
         khRest.addListener(listener);
         khRest.start();
-        khRest.executeKhRestExchange(x, 1l);
+        khRest.executeExchange(x, 1l);
 
         Thread.sleep(200);
 
@@ -220,29 +222,29 @@ public class KhRestFunctionalityImplTest {
      * @throws InterruptedException
      */
     @Test
-    public void test_not_ttled() throws RestExchangeFailedException, InterruptedException {
-        RestExchange<KhRestResult> x = mock(RestExchange.class);
-        final KhRestResult rez = mock(KhRestResult.class);
-        RestFunctionality rest = mock(RestFunctionality.class);
-        when(rest.execute(x)).thenReturn(rez);
+    public void test_not_ttled() throws RestExchangeFailedException, InterruptedException, IOException {
+        Exchange<ForgeExchangeResult> x = mock(Exchange.class);
+        final ForgeExchangeResult rez = mock(ForgeExchangeResult.class);
+        HttpFunctionality http = mock(HttpFunctionality.class);
+        when(x.execute(http)).thenReturn(rez);
         ExecutorService exec = new DirectExecutorService();
 
 
-        final RestExchangeOutcome[] isListenerCalled = new RestExchangeOutcome[1];
+        final ExchangeOutcome[] isListenerCalled = new ExchangeOutcome[1];
 
-        KhRestFunctionality.Listener listener = new KhRestFunctionality.Listener() {
+        ExchangeFunctionalityImpl.Listener listener = new ExchangeFunctionalityImpl.Listener() {
             @Override
-            public void onKhRestExchangeCompleted(RestExchangeOutcome<KhRestResult> out, long idL) {
+            public void onExchangeCompleted(ExchangeOutcome out, long idL) {
                 isListenerCalled[0] = out;
                 assertTrue(!out.isError());
             }
         };
 
-        KhRestFunctionalityImpl.Builder b = KhRestFunctionalityImpl.Builder.create(rest);
-        KhRestFunctionalityImpl khRest = b.exchangeTtl(3000).ttlCheckInterval(50).executorService(new DirectExecutorService()).build();
+        ExchangeFunctionalityImpl.Builder b = ExchangeFunctionalityImpl.Builder.create(http);
+        ExchangeFunctionalityImpl khRest = b.exchangeTtl(3000).ttlCheckInterval(50).executorService(new DirectExecutorService()).build();
         khRest.addListener(listener);
         khRest.start();
-        khRest.executeKhRestExchange(x, 1l);
+        khRest.executeExchange(x, 1l);
 
         Thread.sleep(200);
 
@@ -251,33 +253,6 @@ public class KhRestFunctionalityImplTest {
 
         khRest.shutdown();
     }
-
-
-//    @Test
-//    public void test_consumeExchange() throws RestExchangeFailedException, InterruptedException {
-//        RestExchange<KhRestResult> x = mock(RestExchange.class);
-//        final KhRestResult rez = mock(KhRestResult.class);
-//        RestFunctionality rest = mock(RestFunctionality.class);
-//        when(rest.execute(x)).thenReturn(rez);
-//        ExecutorService exec = new DirectExecutorService();
-//
-//        KhRestFunctionalityImpl.Builder b = KhRestFunctionalityImpl.Builder.create(rest);
-//        KhRestFunctionalityImpl khRest = b.exchangeTtl(1).executorService(new DirectExecutorService()).build();
-//
-//        khRest.start();
-//        khRest.executeKhRestExchange(x, 1l);
-//
-//        // first assure that exchange is not ttled prematurely
-//        assertTrue(khRest.getCompletedExchanges().size() == 1);
-//
-//        khRest.consumeExchange(1l);
-//
-//        // assure that is removed
-//        assertTrue(khRest.getCompletedExchanges().size() == 0);
-//
-//
-//        khRest.shutdown();
-//    }
 
 
     private class DirectExecutorService implements ExecutorService {

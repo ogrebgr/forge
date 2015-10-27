@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Ognyan Bankov
+ * Copyright (C) 2012-2015 Ognyan Bankov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-package com.bolyartech.forge.rest;
+package com.bolyartech.forge.exchange;
 
 /**
- * Defines interface for Rest functionality
+ * {@link RestExchangeBuilder} with result of type {@link ForgeExchangeResult}
  */
-public interface RestFunctionality {
-    /**
-     * Executes rest exchange
-     *
-     * @param x   Rest exchange
-     * @param <T> Type of the returned result
-     * @return Object of type <code>T</code>
-     * @throws RestExchangeFailedException if exchange failed
-     */
-    <T> T execute(RestExchange<T> x) throws RestExchangeFailedException;
+@SuppressWarnings("WeakerAccess")
+public class ForgeExchangeBuilder extends RestExchangeBuilder<ForgeExchangeResult> {
 }

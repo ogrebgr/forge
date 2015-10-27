@@ -20,7 +20,6 @@ import forge.apache.http.HttpEntity;
 import forge.apache.http.StatusLine;
 import forge.apache.http.client.HttpResponseException;
 import forge.apache.http.client.methods.CloseableHttpResponse;
-import forge.apache.http.impl.client.BasicResponseHandler;
 import forge.apache.http.util.EntityUtils;
 
 import java.io.IOException;
@@ -29,7 +28,7 @@ import java.io.IOException;
 /**
  * Basic response handler that "extracts" response body from HttpResponse and returns it as a String
  */
-public class KhandroidBasicResponseHandler extends BasicResponseHandler {
+public class BasicResponseHandlerImpl extends forge.apache.http.impl.client.BasicResponseHandler {
     /**
      * Handles HttpResponse and if it is successful extracts its body and returns it as a String
      *

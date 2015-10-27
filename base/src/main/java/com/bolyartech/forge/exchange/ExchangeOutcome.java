@@ -1,26 +1,26 @@
-package com.bolyartech.forge.rest;
+package com.bolyartech.forge.exchange;
 
 
 /**
- * Represents outcome of a rest exchange
+ * Represents outcome of a exchange exchange
  *
  * @param <T> Type of the result of the exchange
  *            thread safety: full (this object is immutable)
  */
-public class RestExchangeOutcome<T> {
-    private final RestExchange<T> mExchange;
+public class ExchangeOutcome<T> {
+    private final Exchange<T> mExchange;
     private final T mResult;
     private final boolean mError;
 
 
     /**
-     * Creates new RestExchangeOutcome
+     * Creates new ExchangeOutcome
      *
-     * @param exchange {@link RestExchange} that was executed
+     * @param exchange {@link Exchange} that was executed
      * @param result   Result of the exchange of type <code>T</code> if exchange execution was successful
      * @param error    indicates if there was an error during exchange execution. If <code>true</code> may be <code>null</code>
      */
-    public RestExchangeOutcome(RestExchange<T> exchange, T result, boolean error) {
+    public ExchangeOutcome(Exchange<T> exchange, T result, boolean error) {
         super();
         mExchange = exchange;
         mResult = result;
@@ -39,7 +39,7 @@ public class RestExchangeOutcome<T> {
     /**
      * @return executed exchange
      */
-    public RestExchange<T> getExchange() {
+    public Exchange<T> getExchange() {
         return mExchange;
     }
 

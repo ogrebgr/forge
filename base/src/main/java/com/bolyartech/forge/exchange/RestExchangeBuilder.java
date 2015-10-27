@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.bolyartech.forge.rest;
+package com.bolyartech.forge.exchange;
 
 import com.bolyartech.forge.http.request.GetRequestBuilderImpl;
 import com.bolyartech.forge.http.request.PostRequestBuilderImpl;
-import com.bolyartech.forge.misc.JsonFunctionality;
 import com.bolyartech.forge.misc.StringUtils;
 import forge.apache.http.NameValuePair;
 import forge.apache.http.client.methods.HttpUriRequest;
@@ -31,7 +30,7 @@ import java.util.Map;
 
 
 /**
- * Builder for rest exchange
+ * Builder for exchange exchange
  *
  * @param <T> Type of the exchange result
  */
@@ -64,7 +63,7 @@ public class RestExchangeBuilder<T> {
     /**
      * JSON functionality that will be used to convert JSON string to result object of type <code>T</code>
      */
-    private JsonFunctionality mJson;
+    private ResultProducer mResultProducer;
     /**
      * Tag object
      */
@@ -89,12 +88,12 @@ public class RestExchangeBuilder<T> {
      * @param baseUrl     Base URL like <code>http://somehost.com'</code>
      * @param endpoint    Concrete endpoint like <code>somepage.php'</code>
      * @param resultClass Class of the result of the exchange
-     * @param json        JSON functionality that will be used to convert JSON string to result object of type <code>T</code>
+     * @param resultProducer        JSON functionality that will be used to convert JSON string to result object of type <code>T</code>
      */
     public RestExchangeBuilder(String baseUrl,
                                String endpoint,
                                Class<T> resultClass,
-                               JsonFunctionality json
+                               ResultProducer resultProducer
     ) {
         super();
 
@@ -110,14 +109,14 @@ public class RestExchangeBuilder<T> {
             throw new NullPointerException("Parameter 'resultClass' is null");
         }
 
-        if (json == null) {
+        if (resultProducer == null) {
             throw new NullPointerException("Parameter 'json' is null");
         }
 
         mBaseUrl = baseUrl;
         mResultClass = resultClass;
         mEndpoint = endpoint;
-        mJson = json;
+        mResultProducer = resultProducer;
     }
 
 
@@ -160,11 +159,11 @@ public class RestExchangeBuilder<T> {
     /**
      * Sets JSON functionality
      *
-     * @param json JSON functionality
+     * @param resultProducer JSON functionality
      * @return the builder itself
      */
-    public RestExchangeBuilder<T> json(JsonFunctionality json) {
-        mJson = json;
+    public RestExchangeBuilder<T> json(ResultProducer resultProducer) {
+        mResultProducer = resultProducer;
         return this;
     }
 
@@ -182,12 +181,12 @@ public class RestExchangeBuilder<T> {
 
 
     /**
-     * Builds the RestExchange
+     * Builds the Exchange
      *
      * @return The build exchange
      */
-    public RestExchange<T> build() {
-        HttpUriRequest request;
+    public Exchange<T> build() {
+        HttpUriRequest mRequest;
 
         checkRequired();
 
@@ -201,7 +200,7 @@ public class RestExchangeBuilder<T> {
                 b.addParameter(p.getName(), p.getValue());
             }
 
-            request = b.build();
+            mRequest = b.build();
         } else {
             PostRequestBuilderImpl b = new PostRequestBuilderImpl(mBaseUrl + mEndpoint);
             for (NameValuePair p : mPostParams) {
@@ -211,10 +210,10 @@ public class RestExchangeBuilder<T> {
             for (String key : mFilesToUpload.keySet()) {
                 b.addFileToUpload(key, mFilesToUpload.get(key));
             }
-            request = b.build();
+            mRequest = b.build();
         }
 
-        return new RestExchangeImpl<>(request, mJson, mResultClass, mTag);
+        return new ExchangeImpl<>(mRequest, mResultProducer, mResultClass, mTag);
     }
 
 

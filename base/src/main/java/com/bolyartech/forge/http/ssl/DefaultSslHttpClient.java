@@ -1,6 +1,6 @@
 package com.bolyartech.forge.http.ssl;
 
-import com.bolyartech.forge.http.KhCloseableHttpClient;
+import com.bolyartech.forge.http.ForgeCloseableHttpClient;
 import forge.apache.http.HttpHost;
 import forge.apache.http.HttpRequest;
 import forge.apache.http.client.ResponseHandler;
@@ -32,7 +32,7 @@ import java.security.cert.CertificateException;
 /**
  * Created by ogre on 2015-10-10
  */
-public class DefaultSslHttpClient implements KhCloseableHttpClient {
+public class DefaultSslHttpClient implements ForgeCloseableHttpClient {
     private final CloseableHttpClient mHttpClient;
 
     @SuppressWarnings("FieldCanBeLocal")

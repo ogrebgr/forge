@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.bolyartech.forge.rest;
+package com.bolyartech.forge.exchange;
 
 
 /**
- * Result of a successful KhRestExchange
+ * Result of a successful {@link Exchange}
  * <p/>
  * Thread safety: full (immutable object)
  */
-public class KhRestResult {
+public class ForgeExchangeResult {
     /**
      * Result code. Usually positive codes indicate success, negative - some "soft" failure
      */
@@ -34,12 +34,12 @@ public class KhRestResult {
 
 
     /**
-     * Creates new KhRestResult
+     * Creates new ForgeExchangeResult
      *
      * @param code    Code of the result
      * @param payload Payload of result
      */
-    public KhRestResult(int code, String payload) {
+    public ForgeExchangeResult(int code, String payload) {
         super();
         this.code = code;
         this.payload = payload;

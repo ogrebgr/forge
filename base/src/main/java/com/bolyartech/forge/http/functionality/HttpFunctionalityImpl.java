@@ -16,8 +16,8 @@
 
 package com.bolyartech.forge.http.functionality;
 
-import com.bolyartech.forge.http.KhCloseableHttpClient;
-import com.bolyartech.forge.http.misc.KhandroidBasicResponseHandler;
+import com.bolyartech.forge.http.ForgeCloseableHttpClient;
+import com.bolyartech.forge.http.misc.BasicResponseHandlerImpl;
 import forge.apache.http.HttpResponse;
 import forge.apache.http.client.ResponseHandler;
 import forge.apache.http.client.methods.HttpUriRequest;
@@ -30,12 +30,12 @@ import java.io.IOException;
  * Implementation of {@see HttpFunctionality}
  */
 public class HttpFunctionalityImpl implements HttpFunctionality {
-    private final KhCloseableHttpClient mHttpClient;
+    private final ForgeCloseableHttpClient mHttpClient;
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
     private boolean mIsShutdowned = false;
 
 
-    public HttpFunctionalityImpl(KhCloseableHttpClient httpClient) {
+    public HttpFunctionalityImpl(ForgeCloseableHttpClient httpClient) {
         if (httpClient != null) {
             mHttpClient = httpClient;
         } else {
@@ -45,7 +45,7 @@ public class HttpFunctionalityImpl implements HttpFunctionality {
 
 
     public String execute(HttpUriRequest httpRequest) throws IOException {
-        ResponseHandler<String> responseHandler = new KhandroidBasicResponseHandler();
+        ResponseHandler<String> responseHandler = new BasicResponseHandlerImpl();
 
         return mHttpClient.execute(httpRequest, responseHandler);
     }

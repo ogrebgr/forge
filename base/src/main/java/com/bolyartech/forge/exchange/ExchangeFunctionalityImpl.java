@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package com.bolyartech.forge.rest;
+package com.bolyartech.forge.exchange;
 
+import com.bolyartech.forge.http.functionality.HttpFunctionality;
 import com.bolyartech.forge.misc.ForUnitTestsOnly;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -26,14 +28,14 @@ import java.util.concurrent.atomic.AtomicLong;
 
 
 @SuppressWarnings("WeakerAccess")
-public class KhRestFunctionalityImpl implements KhRestFunctionality {
+public class ExchangeFunctionalityImpl<T> implements ExchangeFunctionality<T> {
     private static final int TTL_CHECK_INTERVAL = 1000;
     private static final int DEFAULT_EXCHANGE_TTL = 5000;
     private static final int DEFAULT_EXECUTOR_SERVICE_THREADS = 2;
 
-    private final RestFunctionality mRestFunc;
+    private final HttpFunctionality mHttpFunc;
 
-    private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(KhRestFunctionalityImpl.class
+    private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(ExchangeFunctionalityImpl.class
             .getSimpleName());
 
     private final AtomicLong mSequenceGenerator = new AtomicLong(0);
@@ -46,7 +48,7 @@ public class KhRestFunctionalityImpl implements KhRestFunctionality {
         @Override
         public Thread newThread(Runnable r) {
             Thread ret = new Thread(r);
-            ret.setName("KhRestFunctionalityImpl Scheduler");
+            ret.setName("ExchangeFunctionalityImpl Scheduler");
             return ret;
         }
     });
@@ -62,10 +64,10 @@ public class KhRestFunctionalityImpl implements KhRestFunctionality {
      * Creates new instance with default executor service (2 threads), default TTL check
      * interval (1000 millis), default exchange TTL (5000 millis (On slow network connections like GPRS that might not be enough)).
      *
-     * @param restFunc RestFunctionality implementation
+     * @param httpFunc RestFunctionality implementation
      */
-    public KhRestFunctionalityImpl(RestFunctionality restFunc) {
-        this(restFunc,
+    public ExchangeFunctionalityImpl(HttpFunctionality httpFunc) {
+        this(httpFunc,
                 createDefaultExecutorService(),
                 TTL_CHECK_INTERVAL,
                 DEFAULT_EXCHANGE_TTL
@@ -77,11 +79,11 @@ public class KhRestFunctionalityImpl implements KhRestFunctionality {
      * Creates new intance with specified executor service and with default exchange TTL (5000
      * millis (On slow network connections like GPRS that might not be enough)).
      *
-     * @param restFunc                RestFunctionality implementation
+     * @param httpFunc                RestFunctionality implementation
      * @param exchangeExecutorService ExecutorService provided by you
      */
-    public KhRestFunctionalityImpl(RestFunctionality restFunc, ExecutorService exchangeExecutorService) {
-        this(restFunc,
+    public ExchangeFunctionalityImpl(HttpFunctionality httpFunc, ExecutorService exchangeExecutorService) {
+        this(httpFunc,
                 exchangeExecutorService,
                 TTL_CHECK_INTERVAL,
                 DEFAULT_EXCHANGE_TTL
@@ -90,18 +92,18 @@ public class KhRestFunctionalityImpl implements KhRestFunctionality {
 
 
     /**
-     * @param restFunc                RestFunctionality implementation
+     * @param httpFunc                RestFunctionality implementation
      * @param exchangeExecutorService ExecutorService provided by you
      * @param ttlCheckInterval        Interval between checks for TTLed exchanges
      * @param exchangeTtl             default TTL for the exchanges
      */
-    public KhRestFunctionalityImpl(RestFunctionality restFunc,
-                                   ExecutorService exchangeExecutorService,
-                                   int ttlCheckInterval,
-                                   int exchangeTtl
+    public ExchangeFunctionalityImpl(HttpFunctionality httpFunc,
+                                     ExecutorService exchangeExecutorService,
+                                     int ttlCheckInterval,
+                                     int exchangeTtl
     ) {
 
-        if (restFunc == null) {
+        if (httpFunc == null) {
             throw new NullPointerException("Parameter 'restFunc' is nul");
         }
 
@@ -117,7 +119,7 @@ public class KhRestFunctionalityImpl implements KhRestFunctionality {
             throw new IllegalArgumentException("exchangeTtl is <= 0: " + ttlCheckInterval);
         }
 
-        mRestFunc = restFunc;
+        mHttpFunc = httpFunc;
         mExchangeExecutorService = exchangeExecutorService;
         mTtlCheckInterval = ttlCheckInterval;
         mExchangeTtl = exchangeTtl;
@@ -133,26 +135,26 @@ public class KhRestFunctionalityImpl implements KhRestFunctionality {
      * Executes the exchange with the this instance's default exchange TTL
      *
      * @param exchange Exchange to be executed
-     * @param xId      use {@link KhRestFunctionality#generateXId()} first to get an ID and provide it here.
+     * @param xId      use {@link ExchangeFunctionality#generateXId()} first to get an ID and provide it here.
      *                 if you don't care about the id, provide null.
      * @throws RejectedExecutionException
      */
     @Override
-    public void executeKhRestExchange(final RestExchange<KhRestResult> exchange, final Long xId) {
-        executeKhRestExchange(exchange, xId, mExchangeTtl);
+    public void executeExchange(final Exchange<T> exchange, final Long xId) {
+        executeExchange(exchange, xId, mExchangeTtl);
     }
 
 
     /**
      * @param exchange Exchange to be executed
-     * @param xId      use {@link KhRestFunctionality#generateXId()} first to get an ID and provide it here.
+     * @param xId      use {@link ExchangeFunctionality#generateXId()} first to get an ID and provide it here.
      *                 if you don't care about the id, provide null.
      * @param ttl      Time to live. If exceeded exchange will be automatically cancelled and will return with error
-     * @throws RejectedExecutionException if KhRestFunctionality is not started ({@link #start()} not called) or shutdown.
+     * @throws RejectedExecutionException if ExchangeFunctionality is not started ({@link #start()} not called) or shutdown.
      * @see #start()
      * @see #shutdown()
      */
-    public void executeKhRestExchange(final RestExchange<KhRestResult> exchange, final Long xId, long ttl) {
+    public void executeExchange(final Exchange<T> exchange, final Long xId, long ttl) {
         if (mIsStarted) {
             if (!mIsShutdown) {
                 if (!exchange.isCancelled() && !exchange.isExecuted()) {
@@ -167,11 +169,11 @@ public class KhRestFunctionalityImpl implements KhRestFunctionality {
                         @Override
                         public void run() {
                             try {
-                                KhRestResult result = mRestFunc.execute(exchange);
+                                T result = exchange.execute(mHttpFunc);
                                 if (result != null) {
                                     onExchangeResult(exchange, result, actualXId);
                                 }
-                            } catch (RestExchangeFailedException e) {
+                            } catch (IOException e) {
                                 onExchangeError(exchange, actualXId);
                             }
                         }
@@ -204,7 +206,7 @@ public class KhRestFunctionalityImpl implements KhRestFunctionality {
 
     @Override
     public void start() {
-        mLogger.trace("KhRestFunctionalityImpl {} started", this);
+        mLogger.trace("ExchangeFunctionalityImpl {} started", this);
         mTtlChecker = mScheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
@@ -265,39 +267,33 @@ public class KhRestFunctionalityImpl implements KhRestFunctionality {
         super.finalize();
 
         if (!mIsShutdown) {
-            mLogger.warn("Seems you forgot to shutdown KhRestFunctionalityImpl " + this);
+            mLogger.warn("Seems you forgot to shutdown ExchangeFunctionalityImpl " + this);
             shutdown();
         }
     }
 
 
-    private void onExchangeResult(RestExchange<KhRestResult> x,
-                                  KhRestResult result,
+    protected void onExchangeResult(Exchange<T> x,
+                                    T result,
                                   Long idL
     ) {
-        if (result.getCode() > 0) {
-            mLogger.debug("Exchange {} returned with code {}", x.getClass().getSimpleName(), result.getCode());
-        } else {
-            mLogger.warn("Exchange {} returned with code {}", x.getClass().getSimpleName(), result.getCode());
-        }
-
-        RestExchangeOutcome<KhRestResult> outcome = new RestExchangeOutcome<>(x, result, false);
+        ExchangeOutcome<T> outcome = new ExchangeOutcome<>(x, result, false);
         onExchangeCompleted(outcome, idL);
     }
 
 
-    private void onExchangeError(RestExchange<KhRestResult> x, Long idL) {
-        RestExchangeOutcome<KhRestResult> outcome = new RestExchangeOutcome<>(x, null, true);
+    private void onExchangeError(Exchange<T> x, Long idL) {
+        ExchangeOutcome<T> outcome = new ExchangeOutcome<>(x, null, true);
         onExchangeCompleted(outcome, idL);
     }
 
 
-    private synchronized void onExchangeCompleted(RestExchangeOutcome<KhRestResult> outcome,
+    private synchronized void onExchangeCompleted(ExchangeOutcome<T> outcome,
                                                   Long idL
     ) {
         mExchangesInFlight.remove(idL);
         for (Listener l : mListeners) {
-            l.onKhRestExchangeCompleted(outcome, idL);
+            l.onExchangeCompleted(outcome, idL);
         }
     }
 
@@ -318,16 +314,16 @@ public class KhRestFunctionalityImpl implements KhRestFunctionality {
     }
 
 
-    private static class InFlightTtlHelper {
+    private static class InFlightTtlHelper<T> {
         final long mXId;
         final long mStartedAt;
-        final RestExchange<KhRestResult> mExchange;
+        final Exchange<T> mExchange;
         final long mTtl;
 
 
         public InFlightTtlHelper(long XId,
                                  long startedAt,
-                                 RestExchange<KhRestResult> exchange,
+                                 Exchange<T> exchange,
                                  long ttl
         ) {
             mXId = XId;
@@ -339,41 +335,41 @@ public class KhRestFunctionalityImpl implements KhRestFunctionality {
 
 
     /**
-     * Builder for KhRestFunctionalityImpl
+     * Builder for ExchangeFunctionalityImpl
      */
     public static class Builder {
-        private final RestFunctionality mRestFunc;
+        private final HttpFunctionality mHttpFunc;
         private int mTtlCheckInterval = TTL_CHECK_INTERVAL;
         private int mExchangeTtl = DEFAULT_EXCHANGE_TTL;
         private ExecutorService mExchangeExecutorService;
 
 
-        private Builder(RestFunctionality restFunc) {
-            mRestFunc = restFunc;
+        private Builder(HttpFunctionality httpFunc) {
+            mHttpFunc = httpFunc;
         }
 
 
         /**
          * Creates a new builder
          *
-         * @param restFunc RestFunctionality implementation
+         * @param httpFunc RestFunctionality implementation
          * @return The new builder
          */
-        public static Builder create(RestFunctionality restFunc) {
-            return new Builder(restFunc);
+        public static Builder create(HttpFunctionality httpFunc) {
+            return new Builder(httpFunc);
         }
 
 
         /**
-         * Builds the {@link KhRestFunctionalityImpl}
+         * Builds the {@link ExchangeFunctionalityImpl}
          *
-         * @return The new KhRestFunctionalityImpl
+         * @return The new ExchangeFunctionalityImpl
          */
-        public KhRestFunctionalityImpl build() {
+        public ExchangeFunctionalityImpl build() {
             if (mExchangeExecutorService == null) {
                 mExchangeExecutorService = createDefaultExecutorService();
             }
-            return new KhRestFunctionalityImpl(mRestFunc,
+            return new ExchangeFunctionalityImpl(mHttpFunc,
                     mExchangeExecutorService,
                     mTtlCheckInterval,
                     mExchangeTtl);
@@ -410,7 +406,7 @@ public class KhRestFunctionalityImpl implements KhRestFunctionality {
 
         /**
          * Sets the default TTL for exchanges. If you need custom TTL for given exchange
-         * you can use {@link KhRestFunctionality#executeKhRestExchange(RestExchange, Long, long)}
+         * you can use {@link ExchangeFunctionality#(Exchange, Long, long)}
          *
          * @param exchangeTtl set default TTL for the exchanges
          * @return the builder itself

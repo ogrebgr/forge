@@ -1,8 +1,7 @@
-package com.bolyartech.forge.rest;
+package com.bolyartech.forge.exchange;
 
 
 import com.bolyartech.forge.http.functionality.HttpFunctionality;
-import com.bolyartech.forge.misc.JsonFunctionality;
 
 import java.io.IOException;
 
@@ -18,16 +17,16 @@ import java.io.IOException;
  *
  * @param <T> Type of the returned object
  */
-public interface RestExchange<T> {
+public interface Exchange<T> {
     /**
      * Executes the exchange using the provided HttpFunctionality
      *
      * @param mHttpFunc HttpFunctionality to be used to execute the exchanges
      * @return Object of type <code>T</code>
      * @throws IOException
-     * @throws JsonFunctionality.JsonParseException
+     * @throws com.bolyartech.forge.exchange.ResultProducer.ResultProducerException
      */
-    T execute(HttpFunctionality mHttpFunc) throws IOException, JsonFunctionality.JsonParseException;
+    T execute(HttpFunctionality mHttpFunc) throws IOException, ResultProducer.ResultProducerException;
 
     /**
      * @return tag object

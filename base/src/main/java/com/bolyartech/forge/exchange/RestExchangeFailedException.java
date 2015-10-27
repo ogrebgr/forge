@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.bolyartech.forge.rest;
+package com.bolyartech.forge.exchange;
 
 /**
- * Exception used to signal that RestExchange has failed
+ * Exception used to signal that Exchange has failed
  */
 @SuppressWarnings("serial")
 public class RestExchangeFailedException extends Exception {

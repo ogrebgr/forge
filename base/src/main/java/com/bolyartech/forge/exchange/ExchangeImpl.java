@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package com.bolyartech.forge.rest;
+package com.bolyartech.forge.exchange;
 
 
 import com.bolyartech.forge.http.functionality.HttpFunctionality;
-import com.bolyartech.forge.http.misc.KhandroidBasicResponseHandler;
-import com.bolyartech.forge.misc.JsonFunctionality;
+import com.bolyartech.forge.http.misc.BasicResponseHandlerImpl;
 import forge.apache.http.client.ResponseHandler;
 import forge.apache.http.client.methods.HttpUriRequest;
 import org.slf4j.LoggerFactory;
@@ -28,30 +27,30 @@ import java.io.IOException;
 
 
 /**
- * Implementation of RestExchange
+ * Implementation of Exchange
  *
  * @param <T> Type of the produced object/result
  */
-public class RestExchangeImpl<T> implements RestExchange<T> {
+public class ExchangeImpl<T> implements Exchange<T> {
     private final HttpUriRequest mRequest;
-    private final JsonFunctionality mJson;
+    private final ResultProducer mResultProducer;
     private final Class<T> mResultClass;
     private final Object mTag;
-    private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(RestExchangeImpl.class
+    private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(ExchangeImpl.class
             .getSimpleName());
     private volatile boolean mIsExecuted = false;
     private volatile boolean mIsCancelled = false;
 
 
     /**
-     * Creates new RestExchangeImpl
+     * Creates new ExchangeImpl
      *
      * @param request     Request to be executed
      * @param json        JsonFunctionality to be used to transform the returned JSON into object of type <code>T</code>
      * @param resultClass Class of the result object
      * @param tag         Tag object
      */
-    public RestExchangeImpl(HttpUriRequest request, JsonFunctionality json, Class<T> resultClass, Object tag) {
+    public ExchangeImpl(HttpUriRequest request, ResultProducer json, Class<T> resultClass, Object tag) {
         super();
         if (request == null) {
             throw new NullPointerException("Parameter 'request' is nul");
@@ -66,20 +65,20 @@ public class RestExchangeImpl<T> implements RestExchange<T> {
         }
 
         mRequest = request;
-        mJson = json;
+        mResultProducer = json;
         mResultClass = resultClass;
         mTag = tag;
     }
 
 
     /**
-     * Creates new RestExchangeImpl
+     * Creates new ExchangeImpl
      *
      * @param request     Request to be executed
      * @param json        JsonFunctionality to be used to transform the returned JSON into object of type <code>T</code>
      * @param resultClass Class of the result object
      */
-    public RestExchangeImpl(HttpUriRequest request, JsonFunctionality json, Class<T> resultClass) {
+    public ExchangeImpl(HttpUriRequest request, ResultProducer json, Class<T> resultClass) {
         this(request, json, resultClass, null);
     }
 
@@ -90,26 +89,25 @@ public class RestExchangeImpl<T> implements RestExchange<T> {
      * @param mHttpFunc HttpFunctionlaity implementation
      * @return Returns <code>T</code> object or <code>null</code> if exchange was cancelled.
      * @throws IOException                          if network error occurs
-     * @throws JsonFunctionality.JsonParseException if the String result of the http request is not valid JSON string
+     * @throws ResultProducer.ResultProducerException if the String result of the http request is not valid JSON string
      */
     public synchronized T execute(HttpFunctionality mHttpFunc) throws
-            IOException, JsonFunctionality.JsonParseException {
+            IOException, ResultProducer.ResultProducerException {
         if (!mIsCancelled) {
             if (!mIsExecuted) {
-                ResponseHandler<String> responseHandler = new KhandroidBasicResponseHandler();
+                ResponseHandler<String> responseHandler = new BasicResponseHandlerImpl();
                 mLogger.debug("Executing: " + mRequest.getURI().toString());
                 String rawResponse = mHttpFunc.execute(mRequest, responseHandler);
                 mLogger.trace(rawResponse);
                 T ret;
                 try {
-                    mLogger.debug("is cancelled {}", this);
                     if (!mIsCancelled) {
                         ret = createResult(rawResponse);
                     } else {
                         return null;
                     }
-                } catch (JsonFunctionality.JsonParseException e) {
-                    mLogger.error("JsonParseException: " + rawResponse);
+                } catch (ResultProducer.ResultProducerException e) {
+                    mLogger.error("ResultProducerException: " + rawResponse);
                     throw e;
                 }
                 mLogger.trace(ret.toString());
@@ -152,12 +150,12 @@ public class RestExchangeImpl<T> implements RestExchange<T> {
     /**
      * @param source String that contains JSON code
      * @return Object of type <code>T</code>
-     * @throws JsonFunctionality.JsonParseException if <code>source</code> is not valid JSON string
+     * @throws ResultProducer.ResultProducerException if <code>source</code> is not valid JSON string
      */
-    protected T createResult(String source) throws JsonFunctionality.JsonParseException {
+    protected T createResult(String source) throws ResultProducer.ResultProducerException {
         try {
-            return mJson.fromJson(source, mResultClass);
-        } catch (JsonFunctionality.JsonParseException e) {
+            return mResultProducer.produce(source, mResultClass);
+        } catch (ResultProducer.ResultProducerException e) {
             mLogger.error("Json parse error: {}", e.getCause());
             mLogger.error(source.substring(0, source.length() < 1000 ? source.length() : 1000));
             throw e;

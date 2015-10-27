@@ -39,9 +39,9 @@ public class ExchangeFunctionalityImpl<T> implements ExchangeFunctionality<T> {
             .getSimpleName());
 
     private final AtomicLong mSequenceGenerator = new AtomicLong(0);
-    private final List<Listener> mListeners = new CopyOnWriteArrayList<>();
+    private final List<Listener<T>> mListeners = new CopyOnWriteArrayList<>();
 
-    private final Map<Long, InFlightTtlHelper> mExchangesInFlight = new ConcurrentHashMap<>();
+    private final Map<Long, InFlightTtlHelper<T>> mExchangesInFlight = new ConcurrentHashMap<>();
 
     private final ScheduledExecutorService mScheduler = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
         @SuppressWarnings("NullableProblems")
@@ -164,7 +164,7 @@ public class ExchangeFunctionalityImpl<T> implements ExchangeFunctionality<T> {
                     } else {
                         actualXId = generateXId();
                     }
-                    mExchangesInFlight.put(actualXId, new InFlightTtlHelper(actualXId, getTime(), exchange, ttl));
+                    mExchangesInFlight.put(actualXId, new InFlightTtlHelper<T>(actualXId, getTime(), exchange, ttl));
                     mExchangeExecutorService.execute(new Runnable() {
                         @Override
                         public void run() {
@@ -218,7 +218,7 @@ public class ExchangeFunctionalityImpl<T> implements ExchangeFunctionality<T> {
 
 
     @Override
-    public void addListener(Listener listener) {
+    public void addListener(Listener<T> listener) {
         if (!mListeners.contains(listener)) {
             mListeners.add(listener);
         }
@@ -257,7 +257,7 @@ public class ExchangeFunctionalityImpl<T> implements ExchangeFunctionality<T> {
 
 
     @ForUnitTestsOnly
-    List<Listener> getListeners() {
+    List<Listener<T>> getListeners() {
         return mListeners;
     }
 
@@ -292,7 +292,7 @@ public class ExchangeFunctionalityImpl<T> implements ExchangeFunctionality<T> {
                                                   Long idL
     ) {
         mExchangesInFlight.remove(idL);
-        for (Listener l : mListeners) {
+        for (Listener<T> l : mListeners) {
             l.onExchangeCompleted(outcome, idL);
         }
     }
@@ -304,7 +304,7 @@ public class ExchangeFunctionalityImpl<T> implements ExchangeFunctionality<T> {
 
 
     private void checkAndRemoveTtled() {
-        for (InFlightTtlHelper hlp : mExchangesInFlight.values()) {
+        for (InFlightTtlHelper<T> hlp : mExchangesInFlight.values()) {
             if (hlp.mStartedAt + hlp.mTtl < getTime()) {
                 mLogger.debug("Exchange {} TTLed", hlp.mXId);
                 hlp.mExchange.cancel();

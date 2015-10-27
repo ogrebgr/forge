@@ -1,0 +1,20 @@
+apply plugin: 'java'
+
+//noinspection GroovyUnusedAssignment
+sourceCompatibility = 1.7
+
+repositories {
+    mavenCentral()
+}
+
+artifacts.add("default", file('libs/forge-httpclient-4.3.2.jar'))
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'org.slf4j:slf4j-api:1.7.7'
+    compile 'com.darwinsys:hirondelle-date4j:1.5.1'
+    compile 'com.google.guava:guava:18.0'
+    testCompile 'junit:junit:4.12'
+    testCompile "org.mockito:mockito-core:1.+"
+    testCompile 'ch.qos.logback:logback-classic:0.9.26'
+}

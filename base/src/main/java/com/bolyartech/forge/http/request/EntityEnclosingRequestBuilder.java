@@ -21,7 +21,7 @@ import java.io.File;
 /**
  * Created by ogre on 2015-10-11
  */
-public interface PostRequestBuilder extends RequestBuilder {
+public interface EntityEnclosingRequestBuilder extends RequestBuilder {
     /**
      * Adds POST parameter. Please note that {@link #addFileToUpload(String, File) is also adding POST parameter}
      *

@@ -23,8 +23,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 
-public class GetRequestBuilderImpl extends RequestBuilderImpl {
-    public GetRequestBuilderImpl(String url) {
+public class GetRequestBuilder extends RequestBuilderImpl {
+    public GetRequestBuilder(String url) {
         super(url);
     }
 

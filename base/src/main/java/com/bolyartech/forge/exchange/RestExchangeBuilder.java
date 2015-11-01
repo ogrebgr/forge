@@ -16,7 +16,7 @@
 
 package com.bolyartech.forge.exchange;
 
-import com.bolyartech.forge.http.request.GetRequestBuilderImpl;
+import com.bolyartech.forge.http.request.GetRequestBuilder;
 import com.bolyartech.forge.http.request.PostRequestBuilderImpl;
 import com.bolyartech.forge.misc.StringUtils;
 import forge.apache.http.NameValuePair;
@@ -195,7 +195,7 @@ public class RestExchangeBuilder<T> {
                 throw new IllegalStateException("You requested GET request but added some POST parameters.");
             }
 
-            GetRequestBuilderImpl b = new GetRequestBuilderImpl(mBaseUrl + mEndpoint);
+            GetRequestBuilder b = new GetRequestBuilder(mBaseUrl + mEndpoint);
             for (NameValuePair p : mGetParams) {
                 b.addParameter(p.getName(), p.getValue());
             }

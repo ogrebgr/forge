@@ -126,9 +126,9 @@ public class ForgeFunctionalityImplTest {
 
         ExchangeFunctionalityImpl.Listener listener = new ExchangeFunctionalityImpl.Listener() {
             @Override
-            public void onExchangeCompleted(ExchangeOutcome out, long idL) {
-                assertTrue(!out.isError());
-                assertTrue(out.getResult() == rez);
+            public void onExchangeCompleted(ExchangeOutcome outcome, long exchangeId) {
+                assertTrue(!outcome.isError());
+                assertTrue(outcome.getResult() == rez);
                 isListenerCalled[0] = true;
             }
         };
@@ -160,8 +160,8 @@ public class ForgeFunctionalityImplTest {
 
         ExchangeFunctionalityImpl.Listener listener = new ExchangeFunctionalityImpl.Listener() {
             @Override
-            public void onExchangeCompleted(ExchangeOutcome out, long idL) {
-                assertTrue(out.isError());
+            public void onExchangeCompleted(ExchangeOutcome outcome, long exchangeId) {
+                assertTrue(outcome.isError());
                 isListenerCalled[0] = true;
             }
         };
@@ -194,9 +194,9 @@ public class ForgeFunctionalityImplTest {
 
         ExchangeFunctionality.Listener<ForgeExchangeResult> listener = new ExchangeFunctionality.Listener<ForgeExchangeResult>() {
             @Override
-            public void onExchangeCompleted(ExchangeOutcome<ForgeExchangeResult> out, long idL) {
-                isListenerCalled[0] = out;
-                assertTrue(out.isError());
+            public void onExchangeCompleted(ExchangeOutcome<ForgeExchangeResult> outcome, long exchangeId) {
+                isListenerCalled[0] = outcome;
+                assertTrue(outcome.isError());
             }
         };
 
@@ -234,9 +234,9 @@ public class ForgeFunctionalityImplTest {
 
         ExchangeFunctionalityImpl.Listener listener = new ExchangeFunctionalityImpl.Listener() {
             @Override
-            public void onExchangeCompleted(ExchangeOutcome out, long idL) {
-                isListenerCalled[0] = out;
-                assertTrue(!out.isError());
+            public void onExchangeCompleted(ExchangeOutcome outcome, long exchangeId) {
+                isListenerCalled[0] = outcome;
+                assertTrue(!outcome.isError());
             }
         };
 

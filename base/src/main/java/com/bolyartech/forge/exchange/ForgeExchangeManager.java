@@ -16,7 +16,7 @@
 package com.bolyartech.forge.exchange;
 
 /**
- * Created by ogre on 27.10.15.
+ * Created by ogre on 2015-11-01 15:55
  */
 public interface ForgeExchangeManager extends ExchangeManager<ForgeExchangeResult> {
 }

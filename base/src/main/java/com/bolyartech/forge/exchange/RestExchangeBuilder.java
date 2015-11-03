@@ -16,8 +16,10 @@
 
 package com.bolyartech.forge.exchange;
 
+import com.bolyartech.forge.http.request.EntityEnclosingRequestBuilderImpl;
 import com.bolyartech.forge.http.request.GetRequestBuilder;
-import com.bolyartech.forge.http.request.PostRequestBuilderImpl;
+import com.bolyartech.forge.http.request.PostRequestBuilder;
+import com.bolyartech.forge.http.request.PutRequestBuilder;
 import com.bolyartech.forge.misc.StringUtils;
 import forge.apache.http.NameValuePair;
 import forge.apache.http.client.methods.HttpUriRequest;
@@ -26,6 +28,7 @@ import forge.apache.http.message.BasicNameValuePair;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -39,11 +42,11 @@ public class RestExchangeBuilder<T> {
     /**
      * GET parameters
      */
-    private final ArrayList<NameValuePair> mGetParams = new ArrayList<>();
+    private final List<NameValuePair> mGetParams = new ArrayList<>();
     /**
      * POST parameters
      */
-    private final ArrayList<NameValuePair> mPostParams = new ArrayList<>();
+    private final List<NameValuePair> mPostParams = new ArrayList<>();
     /**
      * Files to upload
      */
@@ -110,7 +113,7 @@ public class RestExchangeBuilder<T> {
         }
 
         if (resultProducer == null) {
-            throw new NullPointerException("Parameter 'json' is null");
+            throw new NullPointerException("Parameter 'resultProducer' is null");
         }
 
         mBaseUrl = baseUrl;
@@ -162,7 +165,7 @@ public class RestExchangeBuilder<T> {
      * @param resultProducer JSON functionality
      * @return the builder itself
      */
-    public RestExchangeBuilder<T> json(ResultProducer resultProducer) {
+    public RestExchangeBuilder<T> resultProducer(ResultProducer resultProducer) {
         mResultProducer = resultProducer;
         return this;
     }
@@ -190,30 +193,7 @@ public class RestExchangeBuilder<T> {
 
         checkRequired();
 
-        if (mRequestType == RequestType.GET) {
-            if (mPostParams.size() > 0) {
-                throw new IllegalStateException("You requested GET request but added some POST parameters.");
-            }
-
-            GetRequestBuilder b = new GetRequestBuilder(mBaseUrl + mEndpoint);
-            for (NameValuePair p : mGetParams) {
-                b.addParameter(p.getName(), p.getValue());
-            }
-
-            mRequest = b.build();
-        } else {
-            PostRequestBuilderImpl b = new PostRequestBuilderImpl(mBaseUrl + mEndpoint);
-            for (NameValuePair p : mPostParams) {
-                b.addPostParameter(p.getName(), p.getValue());
-            }
-
-            for (String key : mFilesToUpload.keySet()) {
-                b.addFileToUpload(key, mFilesToUpload.get(key));
-            }
-            mRequest = b.build();
-        }
-
-        return new ExchangeImpl<>(mRequest, mResultProducer, mResultClass, mTag);
+        return new ExchangeImpl<>(mRequestType.createRequest(this), mResultProducer, mResultClass, mTag);
     }
 
 
@@ -306,7 +286,7 @@ public class RestExchangeBuilder<T> {
      * @param file      file to upload
      */
     public void addFileToUpload(String paramName, File file) {
-        if (mRequestType == RequestType.POST) {
+        if (mRequestType == RequestType.POST || mRequestType == RequestType.PUT) {
             if (!mFilesToUpload.containsKey(paramName)) {
                 if (isPostParameterMissing(paramName)) {
                     if (file.exists()) {
@@ -345,10 +325,83 @@ public class RestExchangeBuilder<T> {
     }
 
 
+
+
     /**
      * Request type
      */
     public enum RequestType {
-        GET, POST
+        GET {
+            @Override
+            HttpUriRequest createRequest(RestExchangeBuilder builder) {
+                return createGetRequest(builder);
+            }
+        },
+        POST {
+            @Override
+            HttpUriRequest createRequest(RestExchangeBuilder builder) {
+                return createPostRequest(builder);
+            }
+        },
+        PUT {
+            @Override
+            HttpUriRequest createRequest(RestExchangeBuilder builder) {
+                return createPutRequest(builder);
+            }
+        };
+
+
+        abstract HttpUriRequest createRequest(RestExchangeBuilder builder);
+
+
+        private void test(NameValuePair p) {
+            p.getName();
+        }
+
+
+        private static HttpUriRequest createGetRequest(RestExchangeBuilder builder) {
+            if (builder.mPostParams.size() > 0) {
+                throw new IllegalStateException("You requested GET request but added some POST parameters.");
+            }
+
+            GetRequestBuilder b = new GetRequestBuilder(builder.mBaseUrl + builder.mEndpoint);
+
+            @SuppressWarnings("unchecked") List<NameValuePair> getParams = builder.mGetParams;
+            for (NameValuePair p : getParams) {
+                b.addParameter(p.getName(), p.getValue());
+            }
+
+            return b.build();
+        }
+
+
+        private static HttpUriRequest createPostRequest(RestExchangeBuilder builder) {
+            PostRequestBuilder b = new PostRequestBuilder(builder.mBaseUrl + builder.mEndpoint);
+
+            return createEntityEnclosingRequest(b, builder);
+        }
+
+
+        private static HttpUriRequest createPutRequest(RestExchangeBuilder builder) {
+            PutRequestBuilder b = new PutRequestBuilder(builder.mBaseUrl + builder.mEndpoint);
+
+            return createEntityEnclosingRequest(b, builder);
+        }
+
+
+        private static HttpUriRequest createEntityEnclosingRequest(EntityEnclosingRequestBuilderImpl b, RestExchangeBuilder builder) {
+            @SuppressWarnings("unchecked") List<NameValuePair> postParams = builder.mPostParams;
+
+            for (NameValuePair p : postParams) {
+                b.addPostParameter(p.getName(), p.getValue());
+            }
+
+            @SuppressWarnings("unchecked") Map<String, File> filesToUpload = builder.mFilesToUpload;
+            for (String key : filesToUpload.keySet()) {
+                b.addFileToUpload(key, filesToUpload.get(key));
+            }
+
+            return b.build();
+        }
     }
 }

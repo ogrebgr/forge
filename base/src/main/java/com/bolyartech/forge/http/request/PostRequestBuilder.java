@@ -9,13 +9,13 @@ import forge.apache.http.client.methods.HttpPost;
 /**
  * Created by ogre on 2015-11-01
  */
-public class PostRequestBuilderImpl extends EntityEnclosingRequestBuilderImpl<HttpPost> {
-    public PostRequestBuilderImpl(String url) {
+public class PostRequestBuilder extends EntityEnclosingRequestBuilderImpl<HttpPost> {
+    public PostRequestBuilder(String url) {
         super(url);
     }
 
 
-    public PostRequestBuilderImpl(String url, Charset charset) {
+    public PostRequestBuilder(String url, Charset charset) {
         super(url, charset);
     }
 

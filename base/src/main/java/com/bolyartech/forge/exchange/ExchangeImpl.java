@@ -33,7 +33,7 @@ import java.io.IOException;
  */
 public class ExchangeImpl<T> implements Exchange<T> {
     private final HttpUriRequest mRequest;
-    private final ResultProducer mResultProducer;
+    private final ResultProducer<T> mResultProducer;
     private final Class<T> mResultClass;
     private final Object mTag;
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(ExchangeImpl.class
@@ -57,7 +57,7 @@ public class ExchangeImpl<T> implements Exchange<T> {
         }
 
         if (json == null) {
-            throw new NullPointerException("Parameter 'json' is nul");
+            throw new NullPointerException("Parameter 'resultProducer' is nul");
         }
 
         if (resultClass == null) {

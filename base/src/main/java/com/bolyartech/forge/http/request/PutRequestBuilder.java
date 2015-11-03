@@ -9,13 +9,13 @@ import forge.apache.http.client.methods.HttpPut;
 /**
  * Created by ogre on 2015-11-01
  */
-public class PutRequestBuilderImpl extends EntityEnclosingRequestBuilderImpl<HttpPut> {
-    public PutRequestBuilderImpl(String url) {
+public class PutRequestBuilder extends EntityEnclosingRequestBuilderImpl<HttpPut> {
+    public PutRequestBuilder(String url) {
         super(url);
     }
 
 
-    public PutRequestBuilderImpl(String url, Charset charset) {
+    public PutRequestBuilder(String url, Charset charset) {
         super(url, charset);
     }
 

@@ -87,9 +87,9 @@ public interface ExchangeFunctionality<T> {
         /**
          * Called then exchange is completed (either successful or not)
          *
-         * @param out Outcome of the exchange
-         * @param idL ID of the exchange
+         * @param outcome Outcome of the exchange
+         * @param exchangeId ID of the exchange
          */
-        void onExchangeCompleted(ExchangeOutcome<T> out, long idL);
+        void onExchangeCompleted(ExchangeOutcome<T> outcome, long exchangeId);
     }
 }

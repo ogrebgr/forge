@@ -38,7 +38,9 @@ public class GetRequestBuilder extends RequestBuilderImpl {
             try {
                 URIBuilder ub = new URIBuilder();
                 ub.setScheme(protocol).setHost(getDomain()).setPort(getPort()).setPath(getPath());
-                ub.setParameters(getGetParams());
+                if (getGetParams().size() > 0) {
+                    ub.setParameters(getGetParams());
+                }
                 uri = ub.build();
             } catch (URISyntaxException e) {
                 throw new IllegalStateException("Error creating URI.", e);

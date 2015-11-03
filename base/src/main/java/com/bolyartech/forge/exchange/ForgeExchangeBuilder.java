@@ -21,4 +21,15 @@ package com.bolyartech.forge.exchange;
  */
 @SuppressWarnings("WeakerAccess")
 public class ForgeExchangeBuilder extends RestExchangeBuilder<ForgeExchangeResult> {
+    public ForgeExchangeBuilder() {
+    }
+
+
+    public ForgeExchangeBuilder(String baseUrl,
+                                String endpoint,
+                                Class<ForgeExchangeResult> resultClass,
+                                ResultProducer resultProducer) {
+
+        super(baseUrl, endpoint, resultClass, resultProducer);
+    }
 }

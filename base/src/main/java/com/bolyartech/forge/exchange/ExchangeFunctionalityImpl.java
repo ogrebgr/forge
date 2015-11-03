@@ -275,25 +275,25 @@ public class ExchangeFunctionalityImpl<T> implements ExchangeFunctionality<T> {
 
     protected void onExchangeResult(Exchange<T> x,
                                     T result,
-                                  Long idL
+                                  Long exchangeId
     ) {
         ExchangeOutcome<T> outcome = new ExchangeOutcome<>(x, result, false);
-        onExchangeCompleted(outcome, idL);
+        onExchangeCompleted(outcome, exchangeId);
     }
 
 
-    private void onExchangeError(Exchange<T> x, Long idL) {
+    private void onExchangeError(Exchange<T> x, Long exchangeId) {
         ExchangeOutcome<T> outcome = new ExchangeOutcome<>(x, null, true);
-        onExchangeCompleted(outcome, idL);
+        onExchangeCompleted(outcome, exchangeId);
     }
 
 
     private synchronized void onExchangeCompleted(ExchangeOutcome<T> outcome,
-                                                  Long idL
+                                                  Long exchangeId
     ) {
-        mExchangesInFlight.remove(idL);
+        mExchangesInFlight.remove(exchangeId);
         for (Listener<T> l : mListeners) {
-            l.onExchangeCompleted(outcome, idL);
+            l.onExchangeCompleted(outcome, exchangeId);
         }
     }
 

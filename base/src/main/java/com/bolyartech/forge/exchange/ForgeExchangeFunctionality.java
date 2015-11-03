@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.ExecutorService;
 
 /**
- * Created by ogre on 27.10.15.
+ * Created by ogre on 2015-11-01
  */
 public class ForgeExchangeFunctionality extends ExchangeFunctionalityImpl<ForgeExchangeResult> {
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(ExchangeFunctionalityImpl.class
@@ -44,13 +44,13 @@ public class ForgeExchangeFunctionality extends ExchangeFunctionalityImpl<ForgeE
 
 
     @Override
-    protected void onExchangeResult(Exchange<ForgeExchangeResult> x, ForgeExchangeResult result, Long idL) {
+    protected void onExchangeResult(Exchange<ForgeExchangeResult> x, ForgeExchangeResult result, Long exchangeId) {
         if (result.getCode() > 0) {
             mLogger.debug("Exchange {} returned with code {}", x.getClass().getSimpleName(), result.getCode());
         } else {
             mLogger.warn("Exchange {} returned with code {}", x.getClass().getSimpleName(), result.getCode());
         }
 
-        super.onExchangeResult(x, result, idL);
+        super.onExchangeResult(x, result, exchangeId);
     }
 }

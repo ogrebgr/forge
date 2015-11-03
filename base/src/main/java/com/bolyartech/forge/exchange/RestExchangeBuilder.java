@@ -66,7 +66,7 @@ public class RestExchangeBuilder<T> {
     /**
      * JSON functionality that will be used to convert JSON string to result object of type <code>T</code>
      */
-    private ResultProducer mResultProducer;
+    private ResultProducer<T> mResultProducer;
     /**
      * Tag object
      */
@@ -96,7 +96,7 @@ public class RestExchangeBuilder<T> {
     public RestExchangeBuilder(String baseUrl,
                                String endpoint,
                                Class<T> resultClass,
-                               ResultProducer resultProducer
+                               ResultProducer<T> resultProducer
     ) {
         super();
 
@@ -165,7 +165,7 @@ public class RestExchangeBuilder<T> {
      * @param resultProducer JSON functionality
      * @return the builder itself
      */
-    public RestExchangeBuilder<T> resultProducer(ResultProducer resultProducer) {
+    public RestExchangeBuilder<T> resultProducer(ResultProducer<T> resultProducer) {
         mResultProducer = resultProducer;
         return this;
     }
@@ -189,8 +189,6 @@ public class RestExchangeBuilder<T> {
      * @return The build exchange
      */
     public Exchange<T> build() {
-        HttpUriRequest mRequest;
-
         checkRequired();
 
         return new ExchangeImpl<>(mRequestType.createRequest(this), mResultProducer, mResultClass, mTag);

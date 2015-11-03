@@ -18,6 +18,7 @@ import forge.apache.http.protocol.HttpContext;
 /**
  * Created by ogre on 2015-11-01 16:15
  */
+@SuppressWarnings("deprecation")
 public class SimpleHttpClient implements ForgeCloseableHttpClient {
     private final CloseableHttpClient mHttpClient;
 

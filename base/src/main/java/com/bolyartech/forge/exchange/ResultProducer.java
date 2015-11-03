@@ -16,7 +16,7 @@
 package com.bolyartech.forge.exchange;
 
 /**
- * Created by ogre on 27.10.15.
+ * Created by ogre on 2015-11-03 13:03
  */
 public interface ResultProducer<T> {
     /**

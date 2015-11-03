@@ -28,7 +28,7 @@ public class ForgeExchangeBuilder extends RestExchangeBuilder<ForgeExchangeResul
     public ForgeExchangeBuilder(String baseUrl,
                                 String endpoint,
                                 Class<ForgeExchangeResult> resultClass,
-                                ResultProducer resultProducer) {
+                                ResultProducer<ForgeExchangeResult> resultProducer) {
 
         super(baseUrl, endpoint, resultClass, resultProducer);
     }

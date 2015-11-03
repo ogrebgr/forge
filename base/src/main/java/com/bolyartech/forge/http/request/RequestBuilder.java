@@ -29,7 +29,7 @@ public interface RequestBuilder {
     /**
      * Builds the request
      *
-     * @return Builded request
+     * @return Built request
      */
     HttpUriRequest build();
 

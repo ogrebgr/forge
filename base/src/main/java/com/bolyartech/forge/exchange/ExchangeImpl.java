@@ -50,7 +50,7 @@ public class ExchangeImpl<T> implements Exchange<T> {
      * @param resultClass Class of the result object
      * @param tag         Tag object
      */
-    public ExchangeImpl(HttpUriRequest request, ResultProducer json, Class<T> resultClass, Object tag) {
+    public ExchangeImpl(HttpUriRequest request, ResultProducer<T> json, Class<T> resultClass, Object tag) {
         super();
         if (request == null) {
             throw new NullPointerException("Parameter 'request' is nul");
@@ -78,7 +78,7 @@ public class ExchangeImpl<T> implements Exchange<T> {
      * @param json        JsonFunctionality to be used to transform the returned JSON into object of type <code>T</code>
      * @param resultClass Class of the result object
      */
-    public ExchangeImpl(HttpUriRequest request, ResultProducer json, Class<T> resultClass) {
+    public ExchangeImpl(HttpUriRequest request, ResultProducer<T> json, Class<T> resultClass) {
         this(request, json, resultClass, null);
     }
 
@@ -86,7 +86,7 @@ public class ExchangeImpl<T> implements Exchange<T> {
     /**
      * Executes the exchange.
      *
-     * @param mHttpFunc HttpFunctionlaity implementation
+     * @param mHttpFunc HttpFunctionality implementation
      * @return Returns <code>T</code> object or <code>null</code> if exchange was cancelled.
      * @throws IOException                          if network error occurs
      * @throws ResultProducer.ResultProducerException if the String result of the http request is not valid JSON string

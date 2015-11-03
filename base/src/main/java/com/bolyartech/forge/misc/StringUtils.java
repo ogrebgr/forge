@@ -26,7 +26,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public class StringUtils {
     /**
-     * Noninstantiable utility class
+     * Non-instantiable utility class
      */
     private StringUtils() {
         throw new AssertionError();

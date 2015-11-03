@@ -24,7 +24,7 @@ import hirondelle.date4j.DateTime;
  */
 public class DateTimeHelper {
     /**
-     * Noninstantiable utility class
+     * Non-instantiable utility class
      */
     private DateTimeHelper() {
         throw new AssertionError();

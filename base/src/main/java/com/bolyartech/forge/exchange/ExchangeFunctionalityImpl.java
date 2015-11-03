@@ -164,7 +164,7 @@ public class ExchangeFunctionalityImpl<T> implements ExchangeFunctionality<T> {
                     } else {
                         actualXId = generateXId();
                     }
-                    mExchangesInFlight.put(actualXId, new InFlightTtlHelper<T>(actualXId, getTime(), exchange, ttl));
+                    mExchangesInFlight.put(actualXId, new InFlightTtlHelper<>(actualXId, getTime(), exchange, ttl));
                     mExchangeExecutorService.execute(new Runnable() {
                         @Override
                         public void run() {

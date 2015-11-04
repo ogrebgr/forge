@@ -173,7 +173,7 @@ public class ExchangeFunctionalityImpl<T> implements ExchangeFunctionality<T> {
                                 if (result != null) {
                                     onExchangeResult(exchange, result, actualXId);
                                 }
-                            } catch (IOException e) {
+                            } catch (ResultProducer.ResultProducerException | IOException e) {
                                 onExchangeError(exchange, actualXId);
                             }
                         }

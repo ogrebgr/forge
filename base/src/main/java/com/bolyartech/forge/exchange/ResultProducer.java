@@ -31,7 +31,7 @@ public interface ResultProducer<T> {
 
 
     @SuppressWarnings("serial")
-    class ResultProducerException extends RuntimeException {
+    class ResultProducerException extends Exception {
 
         public ResultProducerException() {
             super();

@@ -39,7 +39,7 @@ public interface RequestBuilder {
      * @param key   Name of the parameter
      * @param value Value of the parameter
      */
-    void addParameter(String key, String value);
+    void parameter(String key, String value);
 
     /**
      * Checks if parameter is already added
@@ -48,4 +48,7 @@ public interface RequestBuilder {
      * @return <code>true</code> if present, <code>false</code> otherwise
      */
     boolean isParameterPresent(String key);
+
+
+    void progressListener(ProgressListener progressListener);
 }

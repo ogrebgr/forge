@@ -1,5 +1,6 @@
 package com.bolyartech.forge.http.request;
 
+import com.bolyartech.forge.http.misc.ProgressHttpEntityWrapper;
 import com.bolyartech.forge.misc.ForUnitTestsOnly;
 import com.google.common.base.Charsets;
 
@@ -88,7 +89,11 @@ abstract public class EntityEnclosingRequestBuilderImpl<T extends HttpEntityEncl
                     entityBuilder.addPart(p.getName(), new StringBody(p.getValue(), ct));
                 }
 
-                ret.setEntity(entityBuilder.build());
+                if (getProgressListener() != null) {
+                    ret.setEntity(new ProgressHttpEntityWrapper(entityBuilder.build(), getProgressListener()));
+                } else {
+                    ret.setEntity(entityBuilder.build());
+                }
             }
 
         } else {
@@ -99,7 +104,7 @@ abstract public class EntityEnclosingRequestBuilderImpl<T extends HttpEntityEncl
     }
 
 
-    public void addPostParameter(String paramName, String value) {
+    public void postParameter(String paramName, String value) {
         if (isPostParameterMissing(paramName) && !mFilesToUpload.containsKey(paramName)) {
             NameValuePair tmp = new BasicNameValuePair(paramName, value);
             mPostParams.add(tmp);
@@ -135,7 +140,7 @@ abstract public class EntityEnclosingRequestBuilderImpl<T extends HttpEntityEncl
     }
 
 
-    public void addFileToUpload(String paramName, File file) {
+    public void fileToUpload(String paramName, File file) {
         if (!mFilesToUpload.containsKey(paramName) && isPostParameterMissing(paramName)) {
             if (isPostParameterMissing(paramName)) {
                 if (file.exists()) {

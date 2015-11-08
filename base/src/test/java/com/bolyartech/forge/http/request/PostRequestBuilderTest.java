@@ -28,7 +28,7 @@ public class PostRequestBuilderTest {
     @Test
     public void test_addPostParameter() {
         PostRequestBuilder prb = new PostRequestBuilder("http://somehost.com/somepage.php");
-        prb.addPostParameter(KEY1, VALUE1);
+        prb.postParameter(KEY1, VALUE1);
 
         ArrayList<NameValuePair> ret = prb.getPostParams();
         NameValuePair first = ret.get(0);
@@ -42,7 +42,7 @@ public class PostRequestBuilderTest {
     @Test
     public void test_isPostParameterPresent() {
         PostRequestBuilder prb = new PostRequestBuilder("http://somehost.com:123/somepage.php?key1=value1");
-        prb.addPostParameter(KEY1, VALUE1);
+        prb.postParameter(KEY1, VALUE1);
         assertTrue(prb.isPostParameterPresent(KEY1));
     }
 
@@ -55,10 +55,10 @@ public class PostRequestBuilderTest {
         PostRequestBuilder prb = new PostRequestBuilder("http://somehost.com:123/somepage.php?key1=value1");
 
         File f1 = tempFolder.newFile();
-        prb.addFileToUpload(KEY1, f1);
+        prb.fileToUpload(KEY1, f1);
 
 
-        prb.addPostParameter(KEY1, VALUE1);
+        prb.postParameter(KEY1, VALUE1);
         assertTrue(prb.isPostParameterPresent(KEY1));
     }
 
@@ -77,10 +77,10 @@ public class PostRequestBuilderTest {
     public void test_addFileToUpload1() {
         PostRequestBuilder prb = new PostRequestBuilder("http://somehost.com:123/somepage.php?key1=value1");
 
-        prb.addPostParameter(KEY1, VALUE1);
+        prb.postParameter(KEY1, VALUE1);
 
         File f1 = new File("aa");
-        prb.addFileToUpload(KEY1, f1);
+        prb.fileToUpload(KEY1, f1);
     }
 
 
@@ -92,7 +92,7 @@ public class PostRequestBuilderTest {
         PostRequestBuilder prb = new PostRequestBuilder("http://somehost.com:123/somepage.php?key1=value1");
 
         File f1 = new File("aa");
-        prb.addFileToUpload(KEY1, f1);
+        prb.fileToUpload(KEY1, f1);
     }
 
 
@@ -101,7 +101,7 @@ public class PostRequestBuilderTest {
         PostRequestBuilder prb = new PostRequestBuilder("http://somehost.com:123/somepage.php?key1=value1");
 
         File f1 = tempFolder.newFile();
-        prb.addFileToUpload(KEY1, f1);
+        prb.fileToUpload(KEY1, f1);
 
         File f2 = prb.getFilesToUpload().get(KEY1);
         assertTrue(f1 == f2);

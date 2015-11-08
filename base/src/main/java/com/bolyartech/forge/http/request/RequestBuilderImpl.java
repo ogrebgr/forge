@@ -15,14 +15,14 @@
  */
 package com.bolyartech.forge.http.request;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+
 import forge.apache.http.NameValuePair;
 import forge.apache.http.client.methods.HttpUriRequest;
 import forge.apache.http.client.utils.URLEncodedUtils;
 import forge.apache.http.message.BasicNameValuePair;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
 
 
 /**
@@ -36,6 +36,8 @@ abstract public class RequestBuilderImpl implements RequestBuilder {
     private String mDomain;
     private String mPath;
     private int mPort;
+
+    private ProgressListener mProgressListener;
 
 
     /**
@@ -72,7 +74,7 @@ abstract public class RequestBuilderImpl implements RequestBuilder {
                 throw new IllegalArgumentException("Invalid URL: " + url, e);
             }
 
-            setProtocol(tmpUri.getScheme());
+            protocol(tmpUri.getScheme());
             mDomain = tmpUri.getHost();
             mPath = tmpUri.getPath();
             mPort = tmpUri.getPort();
@@ -101,7 +103,7 @@ abstract public class RequestBuilderImpl implements RequestBuilder {
      * @param paramName Name of the parameter
      * @param value     Value of the parameter
      */
-    public void addParameter(String paramName, String value) {
+    public void parameter(String paramName, String value) {
         if (!isParameterPresent(paramName)) {
             NameValuePair tmp = new BasicNameValuePair(paramName, value);
             mGetParams.add(tmp);
@@ -136,7 +138,7 @@ abstract public class RequestBuilderImpl implements RequestBuilder {
     }
 
 
-    private void setProtocol(String protocol) {
+    private void protocol(String protocol) {
         String protoLower = protocol.toLowerCase();
         if (protoLower.equals("http") || protoLower.equals("https")) {
             this.mProtocol = protocol;
@@ -183,5 +185,16 @@ abstract public class RequestBuilderImpl implements RequestBuilder {
      */
     protected String getCharset() {
         return mCharset;
+    }
+
+
+    @Override
+    public void progressListener(ProgressListener progressListener) {
+        mProgressListener = progressListener;
+    }
+
+
+    protected ProgressListener getProgressListener() {
+        return mProgressListener;
     }
 }

@@ -16,6 +16,9 @@
 
 package com.bolyartech.forge.http.misc;
 
+import com.google.common.io.CountingInputStream;
+import com.google.common.io.CountingOutputStream;
+
 import forge.apache.http.HttpEntity;
 import forge.apache.http.HttpResponse;
 import forge.apache.http.StatusLine;
@@ -30,7 +33,7 @@ import static com.google.common.io.ByteStreams.copy;
 
 
 /**
- * Helper class for HTTP file downloads
+ * Helper class for HTTP file downloads. Not suitable for large files (when you will need to show progress indicator)
  */
 public class FileDownloader {
     private static final org.slf4j.Logger mLogger = LoggerFactory
@@ -57,7 +60,6 @@ public class FileDownloader {
         mLogger.trace("Status code:" + statusCode);
         if (statusCode == 200) {
             HttpEntity entity = response.getEntity();
-
             ByteArrayOutputStream output = new ByteArrayOutputStream();
 
             entity.writeTo(output);

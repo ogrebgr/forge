@@ -366,7 +366,7 @@ public class RestExchangeBuilder<T> {
 
             @SuppressWarnings("unchecked") List<NameValuePair> getParams = builder.mGetParams;
             for (NameValuePair p : getParams) {
-                b.addParameter(p.getName(), p.getValue());
+                b.parameter(p.getName(), p.getValue());
             }
 
             return b.build();
@@ -391,12 +391,12 @@ public class RestExchangeBuilder<T> {
             @SuppressWarnings("unchecked") List<NameValuePair> postParams = builder.mPostParams;
 
             for (NameValuePair p : postParams) {
-                b.addPostParameter(p.getName(), p.getValue());
+                b.postParameter(p.getName(), p.getValue());
             }
 
             @SuppressWarnings("unchecked") Map<String, File> filesToUpload = builder.mFilesToUpload;
             for (String key : filesToUpload.keySet()) {
-                b.addFileToUpload(key, filesToUpload.get(key));
+                b.fileToUpload(key, filesToUpload.get(key));
             }
 
             return b.build();

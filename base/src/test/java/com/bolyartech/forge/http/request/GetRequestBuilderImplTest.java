@@ -38,7 +38,7 @@ public class GetRequestBuilderImplTest {
     @Test
     public void test_addParameter() {
         GetRequestBuilder grb = new GetRequestBuilder("http://somehost.com/somepage.php");
-        grb.addParameter(KEY1, VALUE1);
+        grb.parameter(KEY1, VALUE1);
 
         ArrayList<NameValuePair> ret = grb.getGetParams();
         NameValuePair first = ret.get(0);
@@ -56,14 +56,14 @@ public class GetRequestBuilderImplTest {
     @Test(expected = IllegalArgumentException.class)
     public void test_isParameterPresent() {
         GetRequestBuilder grb = new GetRequestBuilder("http://somehost.com:123/somepage.php?key1=value1");
-        grb.addParameter(KEY1, VALUE1);
+        grb.parameter(KEY1, VALUE1);
     }
 
 
     @Test
     public void test_isParameterPresent2() {
         GetRequestBuilder grb = new GetRequestBuilder("http://somehost.com:123/somepage.php");
-        grb.addParameter(KEY1, VALUE1);
+        grb.parameter(KEY1, VALUE1);
         assertTrue(grb.isParameterPresent(KEY1));
     }
 }

@@ -23,12 +23,12 @@ import java.io.File;
  */
 public interface EntityEnclosingRequestBuilder extends RequestBuilder {
     /**
-     * Adds POST parameter. Please note that {@link #addFileToUpload(String, File) is also adding POST parameter}
+     * Adds POST parameter. Please note that {@link #fileToUpload(String, File) is also adding POST parameter}
      *
      * @param key   Name of the parameter
      * @param value Value of the parameter
      */
-    void addPostParameter(String key, String value);
+    void postParameter(String key, String value);
 
 
     /**
@@ -45,5 +45,5 @@ public interface EntityEnclosingRequestBuilder extends RequestBuilder {
      * @param paramName name of the parameter
      * @param file      File to be uploaded
      */
-    void addFileToUpload(String paramName, File file);
+    void fileToUpload(String paramName, File file);
 }

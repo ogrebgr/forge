@@ -16,20 +16,23 @@
 
 package com.bolyartech.forge.http.misc;
 
-import com.google.common.io.CountingInputStream;
-import com.google.common.io.CountingOutputStream;
+import com.bolyartech.forge.http.functionality.HttpFunctionality;
+import com.bolyartech.forge.http.request.ProgressListener;
+
+import org.slf4j.LoggerFactory;
+
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URI;
 
 import forge.apache.http.HttpEntity;
 import forge.apache.http.HttpResponse;
 import forge.apache.http.StatusLine;
 import forge.apache.http.client.HttpClient;
 import forge.apache.http.client.methods.HttpGet;
-import org.slf4j.LoggerFactory;
-
-import java.io.*;
-import java.net.URI;
-
-import static com.google.common.io.ByteStreams.copy;
 
 
 /**
@@ -41,62 +44,65 @@ public class FileDownloader {
 
 
     /**
-     * Downloads file to a byte array
+     * Downloads remote file via HTTP to local file. This method is blocking until the whole file is downloaded so it is good idea to call it off your main thread
      *
-     * @param httpClient HttpClient implementation
-     * @param source     URI of the file to be downloaded
-     * @return downloaded file as byte array
+     * @param httpFunc       HttpFunctionality implementation
+     * @param request           HttpGet to be executed to download
+     * @param destination      Destination fil
+     * @param progressListener Instance of {@link ProgressListener} to be used as listener
      * @throws IOException if network error occurs
      */
-    public static byte[] download(HttpClient httpClient, URI source) throws
-            IOException {
-        byte[] ret;
+    public static HttpGet download(HttpFunctionality httpFunc,
+                                   HttpGet request,
+                                    File destination,
+                                ProgressListener progressListener
+    ) throws IOException {
 
-        mLogger.trace("Downloading " + source.toString());
-        HttpGet req = new HttpGet(source);
-        HttpResponse response = httpClient.execute(req);
+
+        HttpResponse response = httpFunc.executeForHttpResponse(request);
         StatusLine statusLine = response.getStatusLine();
         int statusCode = statusLine.getStatusCode();
         mLogger.trace("Status code:" + statusCode);
         if (statusCode == 200) {
-            HttpEntity entity = response.getEntity();
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            try {
+                HttpEntity entity = response.getEntity();
 
-            entity.writeTo(output);
-            output.close();
 
-            ret = output.toByteArray();
+                if (progressListener == null) {
+                    BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(destination));
+                    entity.writeTo(output);
+                    output.close();
+                } else {
+                    BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(destination));
+                    ProgressFilterOutputStream output = new ProgressFilterOutputStream(os, progressListener, entity.getContentLength());
+                    entity.writeTo(output);
+                    output.close();
+                }
+            } finally {
+                request.releaseConnection();
+            }
         } else {
             throw new IOException("Download failed, HTTP response code " + statusCode + " - "
                     + statusLine.getReasonPhrase());
         }
-        req.releaseConnection();
 
-        return ret;
+        return request;
     }
 
 
     /**
-     * Downloads remote file via HTTP to local file. Internally this method
-     * uses {@link #download(HttpClient, URI)} so be aware when downloading
-     * large files that they will be first put in memory in a byte[] (which may
-     * lead to problems on Android for files larger that 5MB).
+     * Downloads remote file via HTTP to local file. This method is blocking until the whole file is downloaded so it is good idea to call it off your main thread
      *
-     * @param httpClient  HttpClient implementation
-     * @param source      URI of the file to be downloaded
-     * @param destination Destination file
+     * @param httpFunc       HttpFunctionality implementation
+     * @param request           HttpGet to be executed to download
+     * @param destination      Destination fil
      * @throws IOException if network error occurs
      */
-    public static void download(HttpClient httpClient,
-                                URI source,
-                                File destination
-    ) throws IOException {
-        byte[] content = download(httpClient, source);
-        ByteArrayInputStream input = new ByteArrayInputStream(content);
-        BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(destination));
+    public static HttpGet download(HttpFunctionality httpFunc,
+                                   HttpGet request,
+                                File destination) throws IOException {
 
-        copy(input, output);
-        input.close();
-        output.close();
+        return download(httpFunc, request, destination, null);
     }
+
 }

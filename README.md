@@ -1,2 +1,2 @@
 # forge
-Android framework for business apps
+Framework for business apps

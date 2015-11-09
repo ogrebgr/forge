@@ -1,2 +1,2 @@
 # forge
-Framework for Android REST applications
+Android framework for business apps

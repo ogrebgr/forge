@@ -174,6 +174,7 @@ public class ExchangeFunctionalityImpl<T> implements ExchangeFunctionality<T> {
                                     onExchangeResult(exchange, result, actualXId);
                                 }
                             } catch (ResultProducer.ResultProducerException | IOException e) {
+                                mLogger.warn("Exchange {} failed with {}", xId, e.toString());
                                 onExchangeError(exchange, actualXId);
                             }
                         }

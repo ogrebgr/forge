@@ -10,9 +10,9 @@ import forge.apache.http.config.Registry;
 import forge.apache.http.config.RegistryBuilder;
 import forge.apache.http.conn.ClientConnectionManager;
 import forge.apache.http.conn.socket.ConnectionSocketFactory;
+import forge.apache.http.conn.socket.PlainConnectionSocketFactory;
 import forge.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import forge.apache.http.conn.ssl.SSLContextBuilder;
-import forge.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import forge.apache.http.impl.client.CloseableHttpClient;
 import forge.apache.http.impl.client.HttpClients;
 import forge.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -64,7 +64,7 @@ public class DefaultSslHttpClient implements ForgeCloseableHttpClient {
 
 
         try {
-            sslContextBuilder.loadTrustMaterial(ks, new TrustSelfSignedStrategy());
+            sslContextBuilder.loadTrustMaterial(ks);
         } catch (NoSuchAlgorithmException | KeyStoreException e) {
             mLogger.error("Cannot load trust material", e);
         }

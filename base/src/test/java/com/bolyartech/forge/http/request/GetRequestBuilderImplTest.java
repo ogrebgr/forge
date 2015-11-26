@@ -3,6 +3,7 @@ package com.bolyartech.forge.http.request;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import forge.apache.http.NameValuePair;
 
@@ -25,7 +26,7 @@ public class GetRequestBuilderImplTest {
         assertTrue("path is different", grb.getPath().equals("/somepage.php"));
         assertTrue("port is different", grb.getPort() == 123);
 
-        ArrayList<NameValuePair> ret = grb.getGetParams();
+        List<NameValuePair> ret = grb.getGetParams();
         NameValuePair first = ret.get(0);
 
         assertTrue("'first' is null", first != null);
@@ -40,7 +41,7 @@ public class GetRequestBuilderImplTest {
         GetRequestBuilder grb = new GetRequestBuilder("http://somehost.com/somepage.php");
         grb.parameter(KEY1, VALUE1);
 
-        ArrayList<NameValuePair> ret = grb.getGetParams();
+        List<NameValuePair> ret = grb.getGetParams();
         NameValuePair first = ret.get(0);
 
         assertTrue("'first' is null", first != null);

@@ -49,6 +49,23 @@ public interface RequestBuilder {
      */
     boolean isParameterPresent(String key);
 
+    /**
+     * Adds header
+     * @param name header name
+     * @param value header value
+     */
+    void header(String name, String value);
 
+    /**
+     * Checks if header is already added
+     * @param name Header name
+     * @return true if header is added, false otherwise
+     */
+    boolean isHeaderPresent(String name);
+
+    /**
+     * Sets progress listener (useful for large uploads)
+     * @param progressListener
+     */
     void progressListener(ProgressListener progressListener);
 }

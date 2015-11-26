@@ -15,6 +15,7 @@
  */
 package com.bolyartech.forge.http.request;
 
+import forge.apache.http.Header;
 import forge.apache.http.client.methods.HttpGet;
 import forge.apache.http.client.methods.HttpUriRequest;
 import forge.apache.http.client.utils.URIBuilder;
@@ -41,13 +42,23 @@ public class GetRequestBuilder extends RequestBuilderImpl {
                 if (getGetParams().size() > 0) {
                     ub.setParameters(getGetParams());
                 }
+
                 uri = ub.build();
             } catch (URISyntaxException e) {
                 throw new IllegalStateException("Error creating URI.", e);
             }
 
             HttpGet ret = new HttpGet(uri);
-            ret.addHeader("Accept-Charset", getCharset() + ",*");
+
+            if (!isHeaderPresent("Accept-Charset")) {
+                ret.addHeader("Accept-Charset", getCharset() + ",*");
+            }
+
+            if (getHeaders().size() > 0) {
+                for(Header h : getHeaders()) {
+                    ret.addHeader(h);
+                }
+            }
 
             return ret;
         } else {

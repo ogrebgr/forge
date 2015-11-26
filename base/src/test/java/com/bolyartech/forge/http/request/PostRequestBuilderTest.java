@@ -7,6 +7,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import forge.apache.http.NameValuePair;
 
@@ -116,7 +117,7 @@ public class PostRequestBuilderTest {
         assertTrue("path is different", prb.getPath().equals("/somepage.php"));
         assertTrue("port is different", prb.getPort() == 123);
 
-        ArrayList<NameValuePair> ret = prb.getGetParams();
+        List<NameValuePair> ret = prb.getGetParams();
         NameValuePair first = ret.get(0);
 
         assertTrue("'first' is null", first != null);

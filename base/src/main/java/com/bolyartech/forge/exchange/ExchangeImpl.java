@@ -136,8 +136,11 @@ public class ExchangeImpl<T> implements Exchange<T> {
 
     @Override
     public void cancel() {
-        mIsCancelled = true;
-        mLogger.debug("cancel {}", this);
+        if (!mIsExecuted) {
+            mIsCancelled = true;
+            mRequest.abort();
+            mLogger.debug("cancel {}", this);
+        }
     }
 
 

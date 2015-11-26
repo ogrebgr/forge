@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import forge.apache.http.Header;
 import forge.apache.http.NameValuePair;
 import forge.apache.http.client.entity.UrlEncodedFormEntity;
 import forge.apache.http.client.methods.HttpEntityEnclosingRequestBase;
@@ -72,7 +73,15 @@ abstract public class EntityEnclosingRequestBuilderImpl<T extends HttpEntityEncl
             }
 
             ret = createRequest(uri);
-            ret.addHeader("Accept-Charset", mCharset + ",*");
+            if (!isHeaderPresent("Accept-Charset")) {
+                ret.addHeader("Accept-Charset", getCharset() + ",*");
+            }
+
+            if (getHeaders().size() > 0) {
+                for(Header h : getHeaders()) {
+                    ret.addHeader(h);
+                }
+            }
 
             if (mFilesToUpload.size() == 0) {
                 UrlEncodedFormEntity entity = new UrlEncodedFormEntity(mPostParams, mCharset);

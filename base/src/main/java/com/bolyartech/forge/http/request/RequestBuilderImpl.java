@@ -18,10 +18,13 @@ package com.bolyartech.forge.http.request;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 
+import forge.apache.http.Header;
 import forge.apache.http.NameValuePair;
 import forge.apache.http.client.methods.HttpUriRequest;
 import forge.apache.http.client.utils.URLEncodedUtils;
+import forge.apache.http.message.BasicHeader;
 import forge.apache.http.message.BasicNameValuePair;
 
 
@@ -31,7 +34,8 @@ import forge.apache.http.message.BasicNameValuePair;
 abstract public class RequestBuilderImpl implements RequestBuilder {
     private static final String DEFAULT_CHARSET = "UTF-8";
     private final String mCharset;
-    private final ArrayList<NameValuePair> mGetParams = new ArrayList<>();
+    private final List<NameValuePair> mGetParams = new ArrayList<>();
+    private final List<Header> mHeaders = new ArrayList<>();
     private String mProtocol;
     private String mDomain;
     private String mPath;
@@ -85,7 +89,6 @@ abstract public class RequestBuilderImpl implements RequestBuilder {
         } else {
             throw new NullPointerException("Parameter 'url' is null.");
         }
-
     }
 
 
@@ -105,8 +108,7 @@ abstract public class RequestBuilderImpl implements RequestBuilder {
      */
     public void parameter(String paramName, String value) {
         if (!isParameterPresent(paramName)) {
-            NameValuePair tmp = new BasicNameValuePair(paramName, value);
-            mGetParams.add(tmp);
+            mGetParams.add(new BasicNameValuePair(paramName, value));
         } else {
             throw new IllegalArgumentException("There is already parameter named " + paramName);
         }
@@ -119,6 +121,31 @@ abstract public class RequestBuilderImpl implements RequestBuilder {
 
         for (NameValuePair pair : mGetParams) {
             if (pair.getName().equals(paramName)) {
+                ret = true;
+                break;
+            }
+        }
+
+        return ret;
+    }
+
+
+    @Override
+    public void header(String name, String value) {
+        if (!isHeaderPresent(name)) {
+            mHeaders.add(new BasicHeader(name, value));
+        } else {
+            throw new IllegalArgumentException("There is already parameter named " + name);
+        }
+    }
+
+
+    @Override
+    public boolean isHeaderPresent(String name) {
+        boolean ret = false;
+
+        for (Header pair : mHeaders) {
+            if (pair.getName().equals(name)) {
                 ret = true;
                 break;
             }
@@ -175,7 +202,7 @@ abstract public class RequestBuilderImpl implements RequestBuilder {
     /**
      * @return Get params (defensive copy)
      */
-    protected ArrayList<NameValuePair> getGetParams() {
+    protected List<NameValuePair> getGetParams() {
         return new ArrayList<>(mGetParams);
     }
 
@@ -196,5 +223,10 @@ abstract public class RequestBuilderImpl implements RequestBuilder {
 
     protected ProgressListener getProgressListener() {
         return mProgressListener;
+    }
+
+
+    protected List<Header> getHeaders() {
+        return mHeaders;
     }
 }

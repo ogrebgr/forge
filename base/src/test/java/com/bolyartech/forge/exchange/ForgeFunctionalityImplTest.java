@@ -111,7 +111,7 @@ public class ForgeFunctionalityImplTest {
      * @throws RestExchangeFailedException
      */
     @Test
-    public void test_executeKhRestExchange2() throws RestExchangeFailedException, IOException {
+    public void test_executeKhRestExchange2() throws RestExchangeFailedException, IOException, ResultProducer.ResultProducerException {
         mLogger.trace("trace");
         mLogger.info("info");
 
@@ -149,7 +149,7 @@ public class ForgeFunctionalityImplTest {
      * @throws RestExchangeFailedException
      */
     @Test
-    public void test_executeKhRestExchange3() throws RestExchangeFailedException, IOException {
+    public void test_executeKhRestExchange3() throws RestExchangeFailedException, IOException, ResultProducer.ResultProducerException {
         Exchange<ForgeExchangeResult> x = mock(Exchange.class);
         HttpFunctionality http = mock(HttpFunctionality.class);
         when(x.execute(http)).thenThrow(new IOException());
@@ -222,7 +222,7 @@ public class ForgeFunctionalityImplTest {
      * @throws InterruptedException
      */
     @Test
-    public void test_not_ttled() throws RestExchangeFailedException, InterruptedException, IOException {
+    public void test_not_ttled() throws RestExchangeFailedException, InterruptedException, IOException, ResultProducer.ResultProducerException {
         Exchange<ForgeExchangeResult> x = mock(Exchange.class);
         final ForgeExchangeResult rez = mock(ForgeExchangeResult.class);
         HttpFunctionality http = mock(HttpFunctionality.class);

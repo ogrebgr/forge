@@ -32,8 +32,8 @@ public class ExchangeImplTest {
     @Test(expected = NullPointerException.class)
     public void test_constructor3() {
         HttpUriRequest req = mock(HttpUriRequest.class);
-        ResultProducer json = mock(ResultProducer.class);
-        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<>(req, json, null);
+        ResultProducer rp = mock(ResultProducer.class);
+        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<>(req, rp, null);
     }
 
 
@@ -43,22 +43,22 @@ public class ExchangeImplTest {
     @Test
     public void test_constructor4() {
         HttpUriRequest req = mock(HttpUriRequest.class);
-        ResultProducer json = mock(ResultProducer.class);
+        ResultProducer rp = mock(ResultProducer.class);
 
-        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<>(req, json, ForgeExchangeResult.class);
+        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<>(req, rp, ForgeExchangeResult.class);
 
         assertTrue(true);
     }
 
 
     @Test
-    public void test_createResult() {
+    public void test_createResult() throws ResultProducer.ResultProducerException {
         HttpUriRequest req = mock(HttpUriRequest.class);
-        ResultProducer json = mock(ResultProducer.class);
+        ResultProducer rp = mock(ResultProducer.class);
         ForgeExchangeResult rez = new ForgeExchangeResult(1, "");
-        when(json.produce(anyString(), any(Class.class))).thenReturn(rez);
+        when(rp.produce(anyString(), any(Class.class))).thenReturn(rez);
 
-        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<ForgeExchangeResult>(req, json, ForgeExchangeResult.class);
+        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<ForgeExchangeResult>(req, rp, ForgeExchangeResult.class);
 
         ForgeExchangeResult rez2 = impl.createResult("");
 
@@ -67,13 +67,13 @@ public class ExchangeImplTest {
 
 
     @Test
-    public void test_execute_cancelled() throws IOException {
+    public void test_execute_cancelled() throws IOException, ResultProducer.ResultProducerException {
         HttpUriRequest req = mock(HttpUriRequest.class);
-        ResultProducer json = mock(ResultProducer.class);
+        ResultProducer rp = mock(ResultProducer.class);
         ForgeExchangeResult rez = new ForgeExchangeResult(1, "");
-        when(json.produce(anyString(), any(Class.class))).thenReturn(rez);
+        when(rp.produce(anyString(), any(Class.class))).thenReturn(rez);
 
-        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<ForgeExchangeResult>(req, json, ForgeExchangeResult.class);
+        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<ForgeExchangeResult>(req, rp, ForgeExchangeResult.class);
         impl.cancel();
 
         HttpFunctionality http = mock(HttpFunctionality.class);
@@ -84,14 +84,14 @@ public class ExchangeImplTest {
 
 
     @Test(expected = IllegalStateException.class)
-    public void test_execute_executed() throws IOException {
+    public void test_execute_executed() throws IOException, ResultProducer.ResultProducerException {
         HttpUriRequest req = mock(HttpUriRequest.class);
         when(req.getURI()).thenReturn(URI.create("http://somehost.com/"));
-        ResultProducer json = mock(ResultProducer.class);
+        ResultProducer rp = mock(ResultProducer.class);
         ForgeExchangeResult rez = new ForgeExchangeResult(1, "");
-        when(json.produce(anyString(), any(Class.class))).thenReturn(rez);
+        when(rp.produce(anyString(), any(Class.class))).thenReturn(rez);
 
-        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<ForgeExchangeResult>(req, json, ForgeExchangeResult.class);
+        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<ForgeExchangeResult>(req, rp, ForgeExchangeResult.class);
 
         HttpFunctionality http = mock(HttpFunctionality.class);
         when(http.execute(req)).thenReturn("some string");
@@ -101,14 +101,14 @@ public class ExchangeImplTest {
 
 
     @Test
-    public void test_execute() throws IOException {
+    public void test_execute() throws IOException, ResultProducer.ResultProducerException {
         HttpUriRequest req = mock(HttpUriRequest.class);
         when(req.getURI()).thenReturn(URI.create("http://somehost.com/"));
-        ResultProducer json = mock(ResultProducer.class);
+        ResultProducer rp = mock(ResultProducer.class);
         ForgeExchangeResult rez = new ForgeExchangeResult(1, "");
-        when(json.produce(anyString(), any(Class.class))).thenReturn(rez);
+        when(rp.produce(anyString(), any(Class.class))).thenReturn(rez);
 
-        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<ForgeExchangeResult>(req, json, ForgeExchangeResult.class);
+        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<ForgeExchangeResult>(req, rp, ForgeExchangeResult.class);
 
         HttpFunctionality http = mock(HttpFunctionality.class);
         when(http.execute(req)).thenReturn("some string");

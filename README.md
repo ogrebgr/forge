@@ -1,2 +1,2 @@
-# forge
+# Forge
 Framework for business apps

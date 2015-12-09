@@ -27,7 +27,7 @@ import forge.apache.http.message.BasicNameValuePair;
 /**
  * Created by ogre on 2015-11-01
  */
-abstract public class EntityEnclosingRequestBuilderImpl<T extends HttpEntityEnclosingRequestBase> extends GetRequestBuilder implements EntityEnclosingRequestBuilder {
+abstract public class EntityEnclosingRequestBuilderImpl<T extends HttpEntityEnclosingRequestBase> extends BaseRequestBuilder implements EntityEnclosingRequestBuilder {
     private static final Charset DEFAULT_CHARSET = Charsets.UTF_8;
 
     private final ArrayList<NameValuePair> mPostParams = new ArrayList<>();

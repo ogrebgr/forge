@@ -16,20 +16,25 @@
 
 package com.bolyartech.forge.exchange;
 
+import com.bolyartech.forge.http.request.BaseRequestBuilder;
+import com.bolyartech.forge.http.request.DeleteRequestBuilder;
 import com.bolyartech.forge.http.request.EntityEnclosingRequestBuilderImpl;
 import com.bolyartech.forge.http.request.GetRequestBuilder;
+import com.bolyartech.forge.http.request.HeadRequestBuilder;
+import com.bolyartech.forge.http.request.PatchRequestBuilder;
 import com.bolyartech.forge.http.request.PostRequestBuilder;
 import com.bolyartech.forge.http.request.PutRequestBuilder;
 import com.bolyartech.forge.misc.StringUtils;
-import forge.apache.http.NameValuePair;
-import forge.apache.http.client.methods.HttpUriRequest;
-import forge.apache.http.message.BasicNameValuePair;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import forge.apache.http.NameValuePair;
+import forge.apache.http.client.methods.HttpUriRequest;
+import forge.apache.http.message.BasicNameValuePair;
 
 
 /**
@@ -88,10 +93,10 @@ public class RestExchangeBuilder<T> {
     /**
      * Creates new RestExchangeBuilder
      *
-     * @param baseUrl     Base URL like <code>http://somehost.com'</code>
-     * @param endpoint    Concrete endpoint like <code>somepage.php'</code>
-     * @param resultClass Class of the result of the exchange
-     * @param resultProducer        JSON functionality that will be used to convert JSON string to result object of type <code>T</code>
+     * @param baseUrl        Base URL like <code>http://somehost.com'</code>
+     * @param endpoint       Concrete endpoint like <code>somepage.php'</code>
+     * @param resultClass    Class of the result of the exchange
+     * @param resultProducer JSON functionality that will be used to convert JSON string to result object of type <code>T</code>
      */
     public RestExchangeBuilder(String baseUrl,
                                String endpoint,
@@ -323,33 +328,78 @@ public class RestExchangeBuilder<T> {
     }
 
 
-
-
     /**
      * Request type
      */
     public enum RequestType {
         GET {
             @Override
-            HttpUriRequest createRequest(RestExchangeBuilder builder) {
+            protected HttpUriRequest createRequest(RestExchangeBuilder builder) {
                 return createGetRequest(builder);
             }
         },
         POST {
             @Override
-            HttpUriRequest createRequest(RestExchangeBuilder builder) {
+            protected HttpUriRequest createRequest(RestExchangeBuilder builder) {
                 return createPostRequest(builder);
             }
         },
         PUT {
             @Override
-            HttpUriRequest createRequest(RestExchangeBuilder builder) {
+            protected HttpUriRequest createRequest(RestExchangeBuilder builder) {
                 return createPutRequest(builder);
+            }
+        },
+        DELETE {
+            @Override
+            protected HttpUriRequest createRequest(RestExchangeBuilder builder) {
+                return createDeleteRequest(builder);
+            }
+        },
+        HEAD {
+            @Override
+            protected HttpUriRequest createRequest(RestExchangeBuilder builder) {
+                return createHeadRequest(builder);
+            }
+        },
+        PATCH {
+            @Override
+            protected HttpUriRequest createRequest(RestExchangeBuilder builder) {
+                return createPatchRequest(builder);
             }
         };
 
 
-        abstract HttpUriRequest createRequest(RestExchangeBuilder builder);
+        private static HttpUriRequest createHeadRequest(RestExchangeBuilder builder) {
+            HeadRequestBuilder b = new HeadRequestBuilder(builder.mBaseUrl + builder.mEndpoint);
+            return createBaseRequest(b, builder);
+        }
+
+
+        private static HttpUriRequest createBaseRequest(BaseRequestBuilder b, RestExchangeBuilder builder) {
+            if (builder.mPostParams.size() > 0) {
+                throw new IllegalStateException("You requested GET request but added some POST parameters.");
+            }
+
+
+            @SuppressWarnings("unchecked") List<NameValuePair> getParams = builder.mGetParams;
+            for (NameValuePair p : getParams) {
+                b.parameter(p.getName(), p.getValue());
+            }
+
+            return b.build();
+        }
+
+
+        private static HttpUriRequest createDeleteRequest(RestExchangeBuilder builder) {
+            DeleteRequestBuilder b = new DeleteRequestBuilder(builder.mBaseUrl + builder.mEndpoint);
+            return createBaseRequest(b, builder);
+        }
+
+
+        protected HttpUriRequest createRequest(RestExchangeBuilder builder) {
+            throw new AssertionError("Not implemented");
+        }
 
 
         private void test(NameValuePair p) {
@@ -358,18 +408,9 @@ public class RestExchangeBuilder<T> {
 
 
         private static HttpUriRequest createGetRequest(RestExchangeBuilder builder) {
-            if (builder.mPostParams.size() > 0) {
-                throw new IllegalStateException("You requested GET request but added some POST parameters.");
-            }
-
             GetRequestBuilder b = new GetRequestBuilder(builder.mBaseUrl + builder.mEndpoint);
 
-            @SuppressWarnings("unchecked") List<NameValuePair> getParams = builder.mGetParams;
-            for (NameValuePair p : getParams) {
-                b.parameter(p.getName(), p.getValue());
-            }
-
-            return b.build();
+            return createBaseRequest(b, builder);
         }
 
 
@@ -382,6 +423,13 @@ public class RestExchangeBuilder<T> {
 
         private static HttpUriRequest createPutRequest(RestExchangeBuilder builder) {
             PutRequestBuilder b = new PutRequestBuilder(builder.mBaseUrl + builder.mEndpoint);
+
+            return createEntityEnclosingRequest(b, builder);
+        }
+
+
+        private static HttpUriRequest createPatchRequest(RestExchangeBuilder builder) {
+            PatchRequestBuilder b = new PatchRequestBuilder(builder.mBaseUrl + builder.mEndpoint);
 
             return createEntityEnclosingRequest(b, builder);
         }

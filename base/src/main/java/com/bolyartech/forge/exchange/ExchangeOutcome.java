@@ -18,7 +18,7 @@ package com.bolyartech.forge.exchange;
 
 
 /**
- * Represents outcome of a exchange exchange
+ * Represents outcome of a exchange
  *
  * @param <T> Type of the result of the exchange
  *            thread safety: full (this object is immutable)

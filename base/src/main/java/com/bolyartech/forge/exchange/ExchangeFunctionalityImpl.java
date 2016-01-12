@@ -35,8 +35,7 @@ public class ExchangeFunctionalityImpl<T> implements ExchangeFunctionality<T> {
 
     private final HttpFunctionality mHttpFunc;
 
-    private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(ExchangeFunctionalityImpl.class
-            .getSimpleName());
+    private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private final AtomicLong mSequenceGenerator = new AtomicLong(0);
     private final List<Listener<T>> mListeners = new CopyOnWriteArrayList<>();

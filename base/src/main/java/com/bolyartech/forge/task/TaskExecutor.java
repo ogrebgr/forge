@@ -1,5 +1,7 @@
 package com.bolyartech.forge.task;
 
+import com.google.common.util.concurrent.ListenableFuture;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
@@ -9,20 +11,20 @@ import javafx.concurrent.Task;
 /**
  * Created by ogre on 2016-01-12 10:37
  */
-public interface TaskExecutor<T> {
+public interface TaskExecutor {
     void start();
     void shutdown();
     boolean isStarted();
     boolean isShutdown();
 
-    void executeTask(Callable<T> task);
-    void executeTask(Callable<T> task, long taskId);
-    void executeTask(Callable<T> task, long taskId, long ttl);
+    ListenableFuture<?> executeTask(Callable<?> task);
+    ListenableFuture<?> executeTask(Callable<?> task, long taskId);
+    ListenableFuture<?> executeTask(Callable<?> task, long taskId, long ttl);
 
     void cancelTask(long taskId);
 
-    void addListener(Listener<T> listener);
-    void removeListener(Listener<T> listener);
+    void addListener(Listener<?> listener);
+    void removeListener(Listener<?> listener);
 
     Long generateTaskId();
 
@@ -32,7 +34,7 @@ public interface TaskExecutor<T> {
          *
          * @param taskId ID of the exchange
          */
-        void onTaskSuccess(T result, long taskId);
+        void onTaskSuccess(long taskId);
         void onTaskFailure(long taskId);
     }
 }

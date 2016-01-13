@@ -1,6 +1,5 @@
 package com.bolyartech.forge.task;
 
-import com.bolyartech.forge.exchange.Exchange;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -27,7 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Created by ogre on 2016-01-12 12:38
  */
-public class TaskExecutorImpl<T> implements TaskExecutor<T> {
+public class TaskExecutorImpl implements TaskExecutor {
     private static final int TTL_CHECK_INTERVAL = 1000;
     private static final int DEFAULT_TASK_TTL = 5000;
     private static final int DEFAULT_EXECUTOR_SERVICE_THREADS = 2;
@@ -35,8 +34,8 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
 
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
     private final AtomicLong mSequenceGenerator = new AtomicLong(0);
-    private final List<Listener<T>> mListeners = new CopyOnWriteArrayList<>();
-    private final Map<Long, InFlightTtlHelper<T>> mTasksInFlight = new ConcurrentHashMap<>();
+    private final List<Listener<?>> mListeners = new CopyOnWriteArrayList<>();
+    private final Map<Long, InFlightTtlHelper<?>> mTasksInFlight = new ConcurrentHashMap<>();
     private volatile boolean mIsStarted = false;
     private volatile boolean mIsShutdown = false;
 
@@ -44,7 +43,6 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     private final int mTtlCheckInterval;
     private final int mTaskTtl;
     private ScheduledFuture<?> mTtlChecker;
-
 
 
     private final ScheduledExecutorService mScheduler = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
@@ -65,11 +63,9 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     }
 
 
-
     public TaskExecutorImpl(ExecutorService taskExecutorService) {
         this(taskExecutorService, TTL_CHECK_INTERVAL, DEFAULT_TASK_TTL);
     }
-
 
 
     public TaskExecutorImpl(ExecutorService taskExecutorService, int ttlCheckInterval, int taskTtl) {
@@ -106,7 +102,25 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
 
     @Override
     public void shutdown() {
+        if (mTtlChecker != null) {
+            mTtlChecker.cancel(true);
+        }
 
+        mScheduler.shutdown();
+
+        mTaskExecutorService.shutdown();
+        mIsShutdown = true;
+    }
+
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+
+        if (!mIsShutdown) {
+            mLogger.warn("Seems you forgot to shutdown TaskExecutorImpl " + this);
+            shutdown();
+        }
     }
 
 
@@ -123,26 +137,26 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
 
 
     @Override
-    public void executeTask(Callable<T> task) {
-
+    public ListenableFuture<?> executeTask(Callable<?> task) {
+        return executeTask(task, generateTaskId(), mTaskTtl);
     }
 
 
     @Override
-    public void executeTask(Callable<T> task, long taskId) {
-
+    public ListenableFuture<?> executeTask(Callable<?> task, long taskId) {
+        return executeTask(task, taskId, mTaskTtl);
     }
 
 
     @Override
-    public void executeTask(Callable<T> task, final long taskId, long ttl) {
+    public ListenableFuture<?> executeTask(Callable<?> task, final long taskId, long ttl) {
         if (mIsStarted) {
             if (!mIsShutdown) {
-                ListenableFuture<T> lf = mTaskExecutorService.submit(task);
-                mTasksInFlight.put(taskId, new InFlightTtlHelper(taskId, getTime(), mTaskTtl, lf));
-                Futures.addCallback(lf, new FutureCallback<T>() {
+                ListenableFuture<?> lf = mTaskExecutorService.submit(task);
+                mTasksInFlight.put(taskId, new InFlightTtlHelper<>(taskId, getTime(), mTaskTtl, lf));
+                Futures.addCallback(lf, new FutureCallback<Object>() {
                     @Override
-                    public void onSuccess(T result) {
+                    public void onSuccess(Object result) {
                         notifySuccess(result, taskId);
                     }
 
@@ -152,6 +166,7 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
                         notifyFailure(taskId);
                     }
                 });
+                return lf;
             } else {
                 throw new RejectedExecutionException("Already shutdown");
             }
@@ -161,15 +176,15 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     }
 
 
-    private void notifySuccess(T result, long taskId) {
-        for(Listener<T> l : mListeners) {
-            l.onTaskSuccess(result, taskId);
+    private void notifySuccess(Object result, long taskId) {
+        for (Listener<?> l : mListeners) {
+            l.onTaskSuccess(taskId);
         }
     }
 
 
     private void notifyFailure(long taskId) {
-        for(Listener l : mListeners) {
+        for (Listener l : mListeners) {
             l.onTaskFailure(taskId);
         }
     }
@@ -182,7 +197,7 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
 
 
     @Override
-    public void addListener(Listener<T> listener) {
+    public void addListener(Listener<?> listener) {
         if (!mListeners.contains(listener)) {
             mListeners.add(listener);
         }
@@ -190,7 +205,7 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
 
 
     @Override
-    public void removeListener(Listener<T> listener) {
+    public void removeListener(Listener<?> listener) {
         mListeners.remove(listener);
     }
 
@@ -208,8 +223,9 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
         return Executors.newFixedThreadPool(DEFAULT_EXECUTOR_SERVICE_THREADS);
     }
 
+
     private void checkAndRemoveTtled() {
-        for (InFlightTtlHelper<T> hlp : mTasksInFlight.values()) {
+        for (InFlightTtlHelper<?> hlp : mTasksInFlight.values()) {
             if (hlp.mStartedAt + hlp.mTtl < getTime()) {
                 mLogger.debug("Exchange {} TTLed", hlp.mTaskId);
                 hlp.mFuture.cancel(true);

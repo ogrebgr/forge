@@ -12,13 +12,13 @@ public interface ExchangeManager<T> {
 
     public void removeListener(Listener<T> listener);
 
-    public void executeExchange(Exchange x);
+    public void executeExchange(Exchange<T> x);
 
-    public void executeExchange(Exchange x, Long xId);
+    public void executeExchange(Exchange<T> x, Long xId);
 
-    public void executeExchange(Exchange x, Long xId, long ttl);
+    public void executeExchange(Exchange<T> x, Long xId, long ttl);
 
-    public Long generateXId();
+    public Long generateTaskId();
 
     interface Listener<T> {
         void onExchangeOutcome(long exchangeId, boolean isSuccess, T result);

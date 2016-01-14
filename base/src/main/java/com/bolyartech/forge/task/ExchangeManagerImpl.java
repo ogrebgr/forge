@@ -88,6 +88,7 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
                 throw new RuntimeException(e);
             }
         }
+        mTasks.remove(taskId);
     }
 
 
@@ -96,6 +97,7 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
         for(Listener<T> l : mListeners) {
             l.onExchangeOutcome(taskId, true, null);
         }
+        mTasks.remove(taskId);
     }
 
 

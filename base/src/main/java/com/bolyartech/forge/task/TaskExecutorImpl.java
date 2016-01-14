@@ -154,10 +154,12 @@ public class TaskExecutorImpl implements TaskExecutor {
             if (!mIsShutdown) {
                 ListenableFuture<?> lf = mTaskExecutorService.submit(task);
                 mTasksInFlight.put(taskId, new InFlightTtlHelper<>(taskId, getTime(), mTaskTtl, lf));
+
+                //noinspection NullableProblems
                 Futures.addCallback(lf, new FutureCallback<Object>() {
                     @Override
                     public void onSuccess(Object result) {
-                        notifySuccess(result, taskId);
+                        notifySuccess(taskId);
                     }
 
 
@@ -176,7 +178,7 @@ public class TaskExecutorImpl implements TaskExecutor {
     }
 
 
-    private void notifySuccess(Object result, long taskId) {
+    private void notifySuccess(long taskId) {
         for (Listener<?> l : mListeners) {
             l.onTaskSuccess(taskId);
         }

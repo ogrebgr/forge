@@ -22,6 +22,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.inject.Inject;
+
 
 /**
  * Created by ogre on 2016-01-12 12:38
@@ -56,6 +58,7 @@ public class TaskExecutorImpl implements TaskExecutor {
     });
 
 
+    @Inject
     public TaskExecutorImpl() {
         this(createDefaultExecutorService(),
                 TTL_CHECK_INTERVAL,
@@ -162,7 +165,6 @@ public class TaskExecutorImpl implements TaskExecutor {
                         notifySuccess(taskId);
                     }
 
-
                     @Override
                     public void onFailure(Throwable t) {
                         notifyFailure(taskId);
@@ -182,6 +184,7 @@ public class TaskExecutorImpl implements TaskExecutor {
         for (Listener<?> l : mListeners) {
             l.onTaskSuccess(taskId);
         }
+        mTasksInFlight.remove(taskId);
     }
 
 
@@ -189,6 +192,7 @@ public class TaskExecutorImpl implements TaskExecutor {
         for (Listener l : mListeners) {
             l.onTaskFailure(taskId);
         }
+        mTasksInFlight.remove(taskId);
     }
 
 
@@ -229,7 +233,7 @@ public class TaskExecutorImpl implements TaskExecutor {
     private void checkAndRemoveTtled() {
         for (InFlightTtlHelper<?> hlp : mTasksInFlight.values()) {
             if (hlp.mStartedAt + hlp.mTtl < getTime()) {
-                mLogger.debug("Exchange {} TTLed", hlp.mTaskId);
+                mLogger.debug("Task {} TTLed", hlp.mTaskId);
                 hlp.mFuture.cancel(true);
                 notifyFailure(hlp.mTaskId);
             }

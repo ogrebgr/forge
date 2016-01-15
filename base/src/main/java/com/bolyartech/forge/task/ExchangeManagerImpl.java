@@ -25,6 +25,7 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
 
     public ExchangeManagerImpl(TaskExecutor taskExecutor, HttpFunctionality httpFunc) {
         mTaskExecutor = taskExecutor;
+        mTaskExecutor.addListener(this);
         mHttpFunc = httpFunc;
     }
 

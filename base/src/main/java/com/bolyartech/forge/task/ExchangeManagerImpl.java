@@ -96,7 +96,7 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
     @Override
     public synchronized void onTaskFailure(long taskId) {
         for(Listener<T> l : mListeners) {
-            l.onExchangeOutcome(taskId, true, null);
+            l.onExchangeOutcome(taskId, false, null);
         }
         mTasks.remove(taskId);
     }

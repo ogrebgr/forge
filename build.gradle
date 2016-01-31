@@ -1,7 +1,9 @@
-group 'com.bolyartech'
+group 'com.bolyartech.forge'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'maven-publish'
+
 
 //noinspection GroovyUnusedAssignment
 sourceCompatibility = 1.7

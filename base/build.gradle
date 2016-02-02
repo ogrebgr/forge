@@ -8,6 +8,11 @@ repositories {
     mavenCentral()
 }
 
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier "sources"
+}
+
 publishing {
     repositories {
         mavenLocal()
@@ -17,7 +22,7 @@ publishing {
             groupId 'com.bolyartech.forge'
             artifactId 'forge'
             version '1.0-SNAPSHOT'
-
+            artifact sourceJar
             from components.java
         }
     }

@@ -10,7 +10,6 @@ import forge.apache.http.config.Registry;
 import forge.apache.http.config.RegistryBuilder;
 import forge.apache.http.conn.ClientConnectionManager;
 import forge.apache.http.conn.socket.ConnectionSocketFactory;
-import forge.apache.http.conn.socket.PlainConnectionSocketFactory;
 import forge.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import forge.apache.http.conn.ssl.SSLContextBuilder;
 import forge.apache.http.impl.client.CloseableHttpClient;

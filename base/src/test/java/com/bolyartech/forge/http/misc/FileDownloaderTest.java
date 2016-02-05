@@ -13,12 +13,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 import forge.apache.http.Header;
 import forge.apache.http.HttpResponse;
 import forge.apache.http.StatusLine;
-import forge.apache.http.client.HttpClient;
 import forge.apache.http.client.methods.HttpGet;
 import forge.apache.http.client.methods.HttpUriRequest;
 import forge.apache.http.entity.BasicHttpEntity;

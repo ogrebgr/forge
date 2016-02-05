@@ -2,7 +2,6 @@ package com.bolyartech.forge.http.request;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import forge.apache.http.NameValuePair;

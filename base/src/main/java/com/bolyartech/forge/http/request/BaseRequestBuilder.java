@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2015 Ognyan Bankov
+ * Copyright (C) 2012-2016 Ognyan Bankov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 package com.bolyartech.forge.http.request;
 
 import forge.apache.http.Header;
-import forge.apache.http.client.methods.HttpGet;
 import forge.apache.http.client.methods.HttpRequestBase;
 import forge.apache.http.client.methods.HttpUriRequest;
 import forge.apache.http.client.utils.URIBuilder;

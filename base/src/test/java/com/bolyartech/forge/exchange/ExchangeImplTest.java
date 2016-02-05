@@ -58,7 +58,7 @@ public class ExchangeImplTest {
         ForgeExchangeResult rez = new ForgeExchangeResult(1, "");
         when(rp.produce(anyString(), any(Class.class))).thenReturn(rez);
 
-        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<ForgeExchangeResult>(req, rp, ForgeExchangeResult.class);
+        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<>(req, rp, ForgeExchangeResult.class);
 
         ForgeExchangeResult rez2 = impl.createResult("");
 
@@ -73,7 +73,7 @@ public class ExchangeImplTest {
         ForgeExchangeResult rez = new ForgeExchangeResult(1, "");
         when(rp.produce(anyString(), any(Class.class))).thenReturn(rez);
 
-        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<ForgeExchangeResult>(req, rp, ForgeExchangeResult.class);
+        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<>(req, rp, ForgeExchangeResult.class);
         impl.cancel();
 
         HttpFunctionality http = mock(HttpFunctionality.class);
@@ -91,7 +91,7 @@ public class ExchangeImplTest {
         ForgeExchangeResult rez = new ForgeExchangeResult(1, "");
         when(rp.produce(anyString(), any(Class.class))).thenReturn(rez);
 
-        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<ForgeExchangeResult>(req, rp, ForgeExchangeResult.class);
+        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<>(req, rp, ForgeExchangeResult.class);
 
         HttpFunctionality http = mock(HttpFunctionality.class);
         when(http.execute(req)).thenReturn("some string");
@@ -108,7 +108,7 @@ public class ExchangeImplTest {
         ForgeExchangeResult rez = new ForgeExchangeResult(1, "");
         when(rp.produce(anyString(), any(Class.class))).thenReturn(rez);
 
-        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<ForgeExchangeResult>(req, rp, ForgeExchangeResult.class);
+        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<>(req, rp, ForgeExchangeResult.class);
 
         HttpFunctionality http = mock(HttpFunctionality.class);
         when(http.execute(req)).thenReturn("some string");

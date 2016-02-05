@@ -2,7 +2,6 @@ package com.bolyartech.forge.http.misc;
 
 import com.bolyartech.forge.http.request.ProgressListener;
 
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 

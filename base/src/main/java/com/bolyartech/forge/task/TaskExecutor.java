@@ -3,9 +3,6 @@ package com.bolyartech.forge.task;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.FutureTask;
-
-import javafx.concurrent.Task;
 
 
 /**

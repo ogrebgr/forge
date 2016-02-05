@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2015 Ognyan Bankov
+ * Copyright (C) 2012-2016 Ognyan Bankov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +22,13 @@ import com.bolyartech.forge.http.request.ProgressListener;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
 
 import forge.apache.http.HttpEntity;
 import forge.apache.http.HttpResponse;
 import forge.apache.http.StatusLine;
-import forge.apache.http.client.HttpClient;
 import forge.apache.http.client.methods.HttpGet;
 
 

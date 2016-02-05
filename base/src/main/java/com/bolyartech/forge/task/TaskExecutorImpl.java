@@ -156,7 +156,7 @@ public class TaskExecutorImpl implements TaskExecutor {
         if (mIsStarted) {
             if (!mIsShutdown) {
                 ListenableFuture<?> lf = mTaskExecutorService.submit(task);
-                mTasksInFlight.put(taskId, new InFlightTtlHelper<>(taskId, getTime(), mTaskTtl, lf));
+                mTasksInFlight.put(taskId, new InFlightTtlHelper<>(taskId, getTime(), ttl, lf));
 
                 //noinspection NullableProblems
                 Futures.addCallback(lf, new FutureCallback<Object>() {

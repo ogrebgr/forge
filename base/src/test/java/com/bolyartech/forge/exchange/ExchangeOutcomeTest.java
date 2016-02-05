@@ -18,6 +18,7 @@ public class ExchangeOutcomeTest {
 
         assertTrue(out.getExchange() == x);
         assertTrue(out.getResult() == rez);
+        //noinspection PointlessBooleanExpression
         assertTrue(out.isError() == false);
     }
 }

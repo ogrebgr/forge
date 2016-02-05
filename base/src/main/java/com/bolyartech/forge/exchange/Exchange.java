@@ -36,12 +36,11 @@ public interface Exchange<T> {
     /**
      * Executes the exchange using the provided HttpFunctionality
      *
-     * @param mHttpFunc HttpFunctionality to be used to execute the exchanges
      * @return Object of type <code>T</code>
      * @throws IOException
      * @throws com.bolyartech.forge.exchange.ResultProducer.ResultProducerException
      */
-    T execute(HttpFunctionality mHttpFunc) throws IOException, ResultProducer.ResultProducerException;
+    T execute() throws IOException, ResultProducer.ResultProducerException;
 
     /**
      * @return tag object

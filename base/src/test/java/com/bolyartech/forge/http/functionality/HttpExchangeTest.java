@@ -1,6 +1,9 @@
-package com.bolyartech.forge.exchange;
+package com.bolyartech.forge.http.functionality;
 
 
+import com.bolyartech.forge.exchange.ForgeExchangeResult;
+import com.bolyartech.forge.exchange.ResultProducer;
+import com.bolyartech.forge.http.functionality.HttpExchange;
 import com.bolyartech.forge.http.functionality.HttpFunctionality;
 import forge.apache.http.client.methods.HttpUriRequest;
 import org.junit.Test;
@@ -15,17 +18,17 @@ import static org.mockito.Mockito.*;
 /**
  * Created by ogre on 2015-10-14
  */
-public class ExchangeImplTest {
+public class HttpExchangeTest {
     @Test(expected = NullPointerException.class)
     public void test_constructor1() {
-        ExchangeImpl impl = new ExchangeImpl(null, null, null);
+        HttpExchange impl = new HttpExchange(null, null, null, null);
     }
 
 
     @Test(expected = NullPointerException.class)
     public void test_constructor2() {
         HttpUriRequest req = mock(HttpUriRequest.class);
-        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<>(req, null, null);
+        HttpExchange<ForgeExchangeResult> impl = new HttpExchange(null, req, null, null);
     }
 
 
@@ -33,7 +36,7 @@ public class ExchangeImplTest {
     public void test_constructor3() {
         HttpUriRequest req = mock(HttpUriRequest.class);
         ResultProducer rp = mock(ResultProducer.class);
-        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<>(req, rp, null);
+        HttpExchange<ForgeExchangeResult> impl = new HttpExchange(null, req, rp, null);
     }
 
 
@@ -45,7 +48,7 @@ public class ExchangeImplTest {
         HttpUriRequest req = mock(HttpUriRequest.class);
         ResultProducer rp = mock(ResultProducer.class);
 
-        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<>(req, rp, ForgeExchangeResult.class);
+        HttpExchange<ForgeExchangeResult> impl = new HttpExchange(null, req, rp, ForgeExchangeResult.class);
 
         assertTrue(true);
     }
@@ -58,7 +61,7 @@ public class ExchangeImplTest {
         ForgeExchangeResult rez = new ForgeExchangeResult(1, "");
         when(rp.produce(anyString(), any(Class.class))).thenReturn(rez);
 
-        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<ForgeExchangeResult>(req, rp, ForgeExchangeResult.class);
+        HttpExchange<ForgeExchangeResult> impl = new HttpExchange<ForgeExchangeResult>(null, req, rp, ForgeExchangeResult.class);
 
         ForgeExchangeResult rez2 = impl.createResult("");
 
@@ -73,11 +76,11 @@ public class ExchangeImplTest {
         ForgeExchangeResult rez = new ForgeExchangeResult(1, "");
         when(rp.produce(anyString(), any(Class.class))).thenReturn(rez);
 
-        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<ForgeExchangeResult>(req, rp, ForgeExchangeResult.class);
+        HttpExchange<ForgeExchangeResult> impl = new HttpExchange<ForgeExchangeResult>(null, req, rp, ForgeExchangeResult.class);
         impl.cancel();
 
         HttpFunctionality http = mock(HttpFunctionality.class);
-        ForgeExchangeResult rez2 = impl.execute(http);
+        ForgeExchangeResult rez2 = impl.execute();
 
         assertTrue(rez2 == null);
     }
@@ -91,12 +94,12 @@ public class ExchangeImplTest {
         ForgeExchangeResult rez = new ForgeExchangeResult(1, "");
         when(rp.produce(anyString(), any(Class.class))).thenReturn(rez);
 
-        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<ForgeExchangeResult>(req, rp, ForgeExchangeResult.class);
+        HttpExchange<ForgeExchangeResult> impl = new HttpExchange<ForgeExchangeResult>(null, req, rp, ForgeExchangeResult.class);
 
         HttpFunctionality http = mock(HttpFunctionality.class);
         when(http.execute(req)).thenReturn("some string");
-        impl.execute(http);
-        impl.execute(http);
+        impl.execute();
+        impl.execute();
     }
 
 
@@ -108,11 +111,11 @@ public class ExchangeImplTest {
         ForgeExchangeResult rez = new ForgeExchangeResult(1, "");
         when(rp.produce(anyString(), any(Class.class))).thenReturn(rez);
 
-        ExchangeImpl<ForgeExchangeResult> impl = new ExchangeImpl<ForgeExchangeResult>(req, rp, ForgeExchangeResult.class);
+        HttpExchange<ForgeExchangeResult> impl = new HttpExchange<ForgeExchangeResult>(null, req, rp, ForgeExchangeResult.class);
 
         HttpFunctionality http = mock(HttpFunctionality.class);
         when(http.execute(req)).thenReturn("some string");
-        ForgeExchangeResult rez2 = impl.execute(http);
+        ForgeExchangeResult rez2 = impl.execute();
 
         assertTrue(rez == rez2);
     }

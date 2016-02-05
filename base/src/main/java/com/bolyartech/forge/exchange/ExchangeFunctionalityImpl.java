@@ -168,7 +168,7 @@ public class ExchangeFunctionalityImpl<T> implements ExchangeFunctionality<T> {
                         @Override
                         public void run() {
                             try {
-                                T result = exchange.execute(mHttpFunc);
+                                T result = exchange.execute();
                                 if (result != null) {
                                     onExchangeResult(exchange, result, actualXId);
                                 }

@@ -16,6 +16,8 @@
 
 package com.bolyartech.forge.exchange;
 
+import com.bolyartech.forge.http.functionality.HttpFunctionality;
+
 /**
  * {@link RestExchangeBuilder} with result of type {@link ForgeExchangeResult}
  */
@@ -25,11 +27,13 @@ public class ForgeExchangeBuilder extends RestExchangeBuilder<ForgeExchangeResul
     }
 
 
-    public ForgeExchangeBuilder(String baseUrl,
+    public ForgeExchangeBuilder(
+                                HttpFunctionality httpFunctionality,
+                                String baseUrl,
                                 String endpoint,
                                 Class<ForgeExchangeResult> resultClass,
                                 ResultProducer<ForgeExchangeResult> resultProducer) {
 
-        super(baseUrl, endpoint, resultClass, resultProducer);
+        super(httpFunctionality, baseUrl, endpoint, resultClass, resultProducer);
     }
 }

@@ -16,6 +16,8 @@
 
 package com.bolyartech.forge.exchange;
 
+import com.bolyartech.forge.http.functionality.HttpExchange;
+import com.bolyartech.forge.http.functionality.HttpFunctionality;
 import com.bolyartech.forge.http.request.BaseRequestBuilder;
 import com.bolyartech.forge.http.request.DeleteRequestBuilder;
 import com.bolyartech.forge.http.request.EntityEnclosingRequestBuilderImpl;
@@ -81,6 +83,12 @@ public class RestExchangeBuilder<T> {
      */
     private RequestType mRequestType = RequestType.POST;
 
+    /**
+     * HttpFunctionality
+     */
+    private HttpFunctionality mHttpFunctionality;
+
+
 
     /**
      * Creates new RestExchangeBuilder
@@ -98,12 +106,19 @@ public class RestExchangeBuilder<T> {
      * @param resultClass    Class of the result of the exchange
      * @param resultProducer JSON functionality that will be used to convert JSON string to result object of type <code>T</code>
      */
-    public RestExchangeBuilder(String baseUrl,
+    public RestExchangeBuilder(
+                                HttpFunctionality httpFunctionality,
+                               String baseUrl,
                                String endpoint,
                                Class<T> resultClass,
                                ResultProducer<T> resultProducer
     ) {
         super();
+
+        if (httpFunctionality == null) {
+            throw new NullPointerException("Parameter 'httpFunctionality' is null");
+        }
+
 
         if (baseUrl == null) {
             throw new NullPointerException("Parameter 'baseUrl' is null");
@@ -121,6 +136,7 @@ public class RestExchangeBuilder<T> {
             throw new NullPointerException("Parameter 'resultProducer' is null");
         }
 
+        mHttpFunctionality = httpFunctionality;
         mBaseUrl = baseUrl;
         mResultClass = resultClass;
         mEndpoint = endpoint;
@@ -196,7 +212,7 @@ public class RestExchangeBuilder<T> {
     public Exchange<T> build() {
         checkRequired();
 
-        return new ExchangeImpl<>(mRequestType.createRequest(this), mResultProducer, mResultClass, mTag);
+        return new HttpExchange<T>(mHttpFunctionality, mRequestType.createRequest(this), mResultProducer, mResultClass, mTag);
     }
 
 

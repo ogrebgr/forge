@@ -12,13 +12,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Created by ogre on 2016-01-12 13:21
  */
 public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.Listener<T> {
-    private final TaskExecutor mTaskExecutor;
+    private final TaskExecutor<T> mTaskExecutor;
     private final HttpFunctionality mHttpFunc;
 
     private final List<Listener<T>> mListeners = new CopyOnWriteArrayList<>();
 
 
-    public ExchangeManagerImpl(TaskExecutor taskExecutor, HttpFunctionality httpFunc) {
+    public ExchangeManagerImpl(TaskExecutor<T> taskExecutor, HttpFunctionality httpFunc) {
         mTaskExecutor = taskExecutor;
         mHttpFunc = httpFunc;
     }
@@ -39,19 +39,19 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
 
 
     @Override
-    public void executeExchange(Exchange x) {
+    public void executeExchange(Exchange<T> x) {
         mTaskExecutor.executeTask(createCallable(x));
     }
 
 
     @Override
-    public void executeExchange(Exchange x, Long xId) {
+    public void executeExchange(Exchange<T> x, Long xId) {
         mTaskExecutor.executeTask(createCallable(x), xId);
     }
 
 
     @Override
-    public void executeExchange(Exchange x, Long xId, long ttl) {
+    public void executeExchange(Exchange<T> x, Long xId, long ttl) {
         mTaskExecutor.executeTask(createCallable(x), xId, ttl);
     }
 
@@ -82,7 +82,7 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
         return new Callable<T>() {
             @Override
             public T call() throws Exception {
-                return x.execute(mHttpFunc);
+                return x.execute();
             }
         };
     }

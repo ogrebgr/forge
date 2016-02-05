@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.bolyartech.forge.exchange;
+package com.bolyartech.forge.http.functionality;
 
 
-import com.bolyartech.forge.http.functionality.HttpFunctionality;
+import com.bolyartech.forge.exchange.Exchange;
+import com.bolyartech.forge.exchange.ResultProducer;
 import com.bolyartech.forge.http.misc.BasicResponseHandlerImpl;
 import forge.apache.http.client.ResponseHandler;
 import forge.apache.http.client.methods.HttpUriRequest;
@@ -31,32 +32,33 @@ import java.io.IOException;
  *
  * @param <T> Type of the produced object/result
  */
-public class ExchangeImpl<T> implements Exchange<T> {
+public class HttpExchange<T> implements Exchange<T> {
+    private final HttpFunctionality mHttpFunctionality;
     private final HttpUriRequest mRequest;
     private final ResultProducer<T> mResultProducer;
     private final Class<T> mResultClass;
     private final Object mTag;
-    private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(ExchangeImpl.class
+    private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(HttpExchange.class
             .getSimpleName());
     private volatile boolean mIsExecuted = false;
     private volatile boolean mIsCancelled = false;
 
 
     /**
-     * Creates new ExchangeImpl
+     * Creates new HttpExchange
      *
      * @param request     Request to be executed
-     * @param json        JsonFunctionality to be used to transform the returned JSON into object of type <code>T</code>
+     * @param resultProducer        JsonFunctionality to be used to transform the returned JSON into object of type <code>T</code>
      * @param resultClass Class of the result object
      * @param tag         Tag object
      */
-    public ExchangeImpl(HttpUriRequest request, ResultProducer<T> json, Class<T> resultClass, Object tag) {
+    public HttpExchange(HttpFunctionality httpFunctionality, HttpUriRequest request, ResultProducer<T> resultProducer, Class<T> resultClass, Object tag) {
         super();
         if (request == null) {
             throw new NullPointerException("Parameter 'request' is nul");
         }
 
-        if (json == null) {
+        if (resultProducer == null) {
             throw new NullPointerException("Parameter 'resultProducer' is nul");
         }
 
@@ -65,39 +67,39 @@ public class ExchangeImpl<T> implements Exchange<T> {
         }
 
         mRequest = request;
-        mResultProducer = json;
+        mResultProducer = resultProducer;
         mResultClass = resultClass;
         mTag = tag;
+        mHttpFunctionality = httpFunctionality;
     }
 
 
     /**
-     * Creates new ExchangeImpl
+     * Creates new HttpExchange
      *
      * @param request     Request to be executed
-     * @param json        JsonFunctionality to be used to transform the returned JSON into object of type <code>T</code>
+     * @param resultProducer        JsonFunctionality to be used to transform the returned JSON into object of type <code>T</code>
      * @param resultClass Class of the result object
      */
-    public ExchangeImpl(HttpUriRequest request, ResultProducer<T> json, Class<T> resultClass) {
-        this(request, json, resultClass, null);
+    public HttpExchange(HttpFunctionality httpFunctionality, HttpUriRequest request, ResultProducer<T> resultProducer, Class<T> resultClass) {
+        this(httpFunctionality, request, resultProducer, resultClass, null);
     }
 
 
     /**
      * Executes the exchange.
      *
-     * @param mHttpFunc HttpFunctionality implementation
      * @return Returns <code>T</code> object or <code>null</code> if exchange was cancelled.
      * @throws IOException                          if network error occurs
      * @throws ResultProducer.ResultProducerException if the String result of the http request is not valid JSON string
      */
-    public synchronized T execute(HttpFunctionality mHttpFunc) throws
+    public synchronized T execute() throws
             IOException, ResultProducer.ResultProducerException {
         if (!mIsCancelled) {
             if (!mIsExecuted) {
                 ResponseHandler<String> responseHandler = new BasicResponseHandlerImpl();
                 mLogger.debug("Executing: " + mRequest.getURI().toString());
-                String rawResponse = mHttpFunc.execute(mRequest, responseHandler);
+                String rawResponse = mHttpFunctionality.execute(mRequest, responseHandler);
                 mLogger.trace(rawResponse);
                 T ret;
                 try {

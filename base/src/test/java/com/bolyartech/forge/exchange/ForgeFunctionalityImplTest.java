@@ -118,7 +118,7 @@ public class ForgeFunctionalityImplTest {
         Exchange<ForgeExchangeResult> x = mock(Exchange.class);
         final ForgeExchangeResult rez = mock(ForgeExchangeResult.class);
         HttpFunctionality http = mock(HttpFunctionality.class);
-        when(x.execute(http)).thenReturn(rez);
+        when(x.execute()).thenReturn(rez);
         ExecutorService exec = new DirectExecutorService();
 
         final boolean[] isListenerCalled = new boolean[1];
@@ -152,7 +152,7 @@ public class ForgeFunctionalityImplTest {
     public void test_executeKhRestExchange3() throws RestExchangeFailedException, IOException, ResultProducer.ResultProducerException {
         Exchange<ForgeExchangeResult> x = mock(Exchange.class);
         HttpFunctionality http = mock(HttpFunctionality.class);
-        when(x.execute(http)).thenThrow(new IOException());
+        when(x.execute()).thenThrow(new IOException());
         ExecutorService exec = new DirectExecutorService();
 
         final boolean[] isListenerCalled = new boolean[1];
@@ -226,7 +226,7 @@ public class ForgeFunctionalityImplTest {
         Exchange<ForgeExchangeResult> x = mock(Exchange.class);
         final ForgeExchangeResult rez = mock(ForgeExchangeResult.class);
         HttpFunctionality http = mock(HttpFunctionality.class);
-        when(x.execute(http)).thenReturn(rez);
+        when(x.execute()).thenReturn(rez);
         ExecutorService exec = new DirectExecutorService();
 
 

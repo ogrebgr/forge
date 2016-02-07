@@ -41,7 +41,7 @@ public interface Exchange<T> {
      * @throws IOException
      * @throws com.bolyartech.forge.exchange.ResultProducer.ResultProducerException
      */
-    T execute(HttpFunctionality mHttpFunc) throws IOException, ResultProducer.ResultProducerException;
+    T execute() throws IOException, ResultProducer.ResultProducerException;
 
     /**
      * @return tag object

@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package com.bolyartech.forge.exchange;
+package com.bolyartech.forge.http;
 
+import com.bolyartech.forge.exchange.Exchange;
+import com.bolyartech.forge.exchange.ResultProducer;
+import com.bolyartech.forge.http.functionality.HttpFunctionality;
 import com.bolyartech.forge.http.request.BaseRequestBuilder;
 import com.bolyartech.forge.http.request.DeleteRequestBuilder;
 import com.bolyartech.forge.http.request.EntityEnclosingRequestBuilderImpl;
@@ -42,8 +45,8 @@ import forge.apache.http.message.BasicNameValuePair;
  *
  * @param <T> Type of the exchange result
  */
-@SuppressWarnings("WeakerAccess")
-public class RestExchangeBuilder<T> {
+@SuppressWarnings({"WeakerAccess", "unused"})
+public class HttpExchangeBuilder<T> {
     /**
      * GET parameters
      */
@@ -56,6 +59,12 @@ public class RestExchangeBuilder<T> {
      * Files to upload
      */
     private final Map<String, File> mFilesToUpload = new HashMap<>();
+
+    /**
+     * HttpFunctionality implementation
+     */
+    private HttpFunctionality mHttpFunctionality;
+
     /**
      * Base URL like <code>http://somehost.com'</code>
      */
@@ -82,28 +91,34 @@ public class RestExchangeBuilder<T> {
     private RequestType mRequestType = RequestType.POST;
 
 
-    /**
-     * Creates new RestExchangeBuilder
-     */
-    public RestExchangeBuilder() {
-        super();
-    }
+//    /**
+//     * Creates new HttpExchangeBuilder
+//     */
+//    public HttpExchangeBuilder() {
+//        super();
+//    }
 
 
     /**
-     * Creates new RestExchangeBuilder
+     * Creates new HttpExchangeBuilder
      *
      * @param baseUrl        Base URL like <code>http://somehost.com'</code>
      * @param endpoint       Concrete endpoint like <code>somepage.php'</code>
      * @param resultClass    Class of the result of the exchange
      * @param resultProducer JSON functionality that will be used to convert JSON string to result object of type <code>T</code>
      */
-    public RestExchangeBuilder(String baseUrl,
+    public HttpExchangeBuilder(
+                                HttpFunctionality httpFunctionality,
+                               String baseUrl,
                                String endpoint,
                                Class<T> resultClass,
                                ResultProducer<T> resultProducer
     ) {
         super();
+
+        if (httpFunctionality == null) {
+            throw new NullPointerException("Parameter 'httpFunctionality' is null");
+        }
 
         if (baseUrl == null) {
             throw new NullPointerException("Parameter 'baseUrl' is null");
@@ -121,6 +136,8 @@ public class RestExchangeBuilder<T> {
             throw new NullPointerException("Parameter 'resultProducer' is null");
         }
 
+
+        mHttpFunctionality = httpFunctionality;
         mBaseUrl = baseUrl;
         mResultClass = resultClass;
         mEndpoint = endpoint;
@@ -134,7 +151,7 @@ public class RestExchangeBuilder<T> {
      * @param baseUrl base URL
      * @return the builder itself
      */
-    public RestExchangeBuilder<T> baseUrl(String baseUrl) {
+    public HttpExchangeBuilder<T> baseUrl(String baseUrl) {
         mBaseUrl = baseUrl;
         return this;
     }
@@ -146,7 +163,7 @@ public class RestExchangeBuilder<T> {
      * @param endpoint endpoint/web page (relative to base URL)
      * @return the builder itself
      */
-    public RestExchangeBuilder<T> endpoint(String endpoint) {
+    public HttpExchangeBuilder<T> endpoint(String endpoint) {
         mEndpoint = endpoint;
         return this;
     }
@@ -158,7 +175,7 @@ public class RestExchangeBuilder<T> {
      * @param resultClass Result class for type <code>T</code>
      * @return the builder itself
      */
-    public RestExchangeBuilder<T> resultClass(Class<T> resultClass) {
+    public HttpExchangeBuilder<T> resultClass(Class<T> resultClass) {
         mResultClass = resultClass;
         return this;
     }
@@ -170,7 +187,7 @@ public class RestExchangeBuilder<T> {
      * @param resultProducer JSON functionality
      * @return the builder itself
      */
-    public RestExchangeBuilder<T> resultProducer(ResultProducer<T> resultProducer) {
+    public HttpExchangeBuilder<T> resultProducer(ResultProducer<T> resultProducer) {
         mResultProducer = resultProducer;
         return this;
     }
@@ -182,7 +199,7 @@ public class RestExchangeBuilder<T> {
      * @param type request type
      * @return the builder itself
      */
-    public RestExchangeBuilder<T> requestType(RequestType type) {
+    public HttpExchangeBuilder<T> requestType(RequestType type) {
         mRequestType = type;
         return this;
     }
@@ -196,7 +213,7 @@ public class RestExchangeBuilder<T> {
     public Exchange<T> build() {
         checkRequired();
 
-        return new ExchangeImpl<>(mRequestType.createRequest(this), mResultProducer, mResultClass, mTag);
+        return new HttpExchange<>(mHttpFunctionality, mRequestType.createRequest(this), mResultProducer, mResultClass, mTag);
     }
 
 
@@ -334,49 +351,49 @@ public class RestExchangeBuilder<T> {
     public enum RequestType {
         GET {
             @Override
-            protected HttpUriRequest createRequest(RestExchangeBuilder builder) {
+            protected HttpUriRequest createRequest(HttpExchangeBuilder builder) {
                 return createGetRequest(builder);
             }
         },
         POST {
             @Override
-            protected HttpUriRequest createRequest(RestExchangeBuilder builder) {
+            protected HttpUriRequest createRequest(HttpExchangeBuilder builder) {
                 return createPostRequest(builder);
             }
         },
         PUT {
             @Override
-            protected HttpUriRequest createRequest(RestExchangeBuilder builder) {
+            protected HttpUriRequest createRequest(HttpExchangeBuilder builder) {
                 return createPutRequest(builder);
             }
         },
         DELETE {
             @Override
-            protected HttpUriRequest createRequest(RestExchangeBuilder builder) {
+            protected HttpUriRequest createRequest(HttpExchangeBuilder builder) {
                 return createDeleteRequest(builder);
             }
         },
         HEAD {
             @Override
-            protected HttpUriRequest createRequest(RestExchangeBuilder builder) {
+            protected HttpUriRequest createRequest(HttpExchangeBuilder builder) {
                 return createHeadRequest(builder);
             }
         },
         PATCH {
             @Override
-            protected HttpUriRequest createRequest(RestExchangeBuilder builder) {
+            protected HttpUriRequest createRequest(HttpExchangeBuilder builder) {
                 return createPatchRequest(builder);
             }
         };
 
 
-        private static HttpUriRequest createHeadRequest(RestExchangeBuilder builder) {
+        private static HttpUriRequest createHeadRequest(HttpExchangeBuilder builder) {
             HeadRequestBuilder b = new HeadRequestBuilder(builder.mBaseUrl + builder.mEndpoint);
             return createBaseRequest(b, builder);
         }
 
 
-        private static HttpUriRequest createBaseRequest(BaseRequestBuilder b, RestExchangeBuilder builder) {
+        private static HttpUriRequest createBaseRequest(BaseRequestBuilder b, HttpExchangeBuilder builder) {
             if (builder.mPostParams.size() > 0) {
                 throw new IllegalStateException("You requested GET request but added some POST parameters.");
             }
@@ -391,51 +408,46 @@ public class RestExchangeBuilder<T> {
         }
 
 
-        private static HttpUriRequest createDeleteRequest(RestExchangeBuilder builder) {
+        private static HttpUriRequest createDeleteRequest(HttpExchangeBuilder builder) {
             DeleteRequestBuilder b = new DeleteRequestBuilder(builder.mBaseUrl + builder.mEndpoint);
             return createBaseRequest(b, builder);
         }
 
 
-        protected HttpUriRequest createRequest(RestExchangeBuilder builder) {
+        protected HttpUriRequest createRequest(HttpExchangeBuilder builder) {
             throw new AssertionError("Not implemented");
         }
 
 
-        private void test(NameValuePair p) {
-            p.getName();
-        }
-
-
-        private static HttpUriRequest createGetRequest(RestExchangeBuilder builder) {
+        private static HttpUriRequest createGetRequest(HttpExchangeBuilder builder) {
             GetRequestBuilder b = new GetRequestBuilder(builder.mBaseUrl + builder.mEndpoint);
 
             return createBaseRequest(b, builder);
         }
 
 
-        private static HttpUriRequest createPostRequest(RestExchangeBuilder builder) {
+        private static HttpUriRequest createPostRequest(HttpExchangeBuilder builder) {
             PostRequestBuilder b = new PostRequestBuilder(builder.mBaseUrl + builder.mEndpoint);
 
             return createEntityEnclosingRequest(b, builder);
         }
 
 
-        private static HttpUriRequest createPutRequest(RestExchangeBuilder builder) {
+        private static HttpUriRequest createPutRequest(HttpExchangeBuilder builder) {
             PutRequestBuilder b = new PutRequestBuilder(builder.mBaseUrl + builder.mEndpoint);
 
             return createEntityEnclosingRequest(b, builder);
         }
 
 
-        private static HttpUriRequest createPatchRequest(RestExchangeBuilder builder) {
+        private static HttpUriRequest createPatchRequest(HttpExchangeBuilder builder) {
             PatchRequestBuilder b = new PatchRequestBuilder(builder.mBaseUrl + builder.mEndpoint);
 
             return createEntityEnclosingRequest(b, builder);
         }
 
 
-        private static HttpUriRequest createEntityEnclosingRequest(EntityEnclosingRequestBuilderImpl b, RestExchangeBuilder builder) {
+        private static HttpUriRequest createEntityEnclosingRequest(EntityEnclosingRequestBuilderImpl b, HttpExchangeBuilder builder) {
             @SuppressWarnings("unchecked") List<NameValuePair> postParams = builder.mPostParams;
 
             for (NameValuePair p : postParams) {

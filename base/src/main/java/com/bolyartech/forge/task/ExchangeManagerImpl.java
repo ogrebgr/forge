@@ -106,7 +106,7 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
         return new Callable<T>() {
             @Override
             public T call() throws Exception {
-                return x.execute(mHttpFunc);
+                return x.execute();
             }
         };
     }

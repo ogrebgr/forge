@@ -14,42 +14,42 @@
  * limitations under the License.
  */
 
-package com.bolyartech.forge.exchange;
+package com.bolyartech.forge.http;
 
 /**
  * Exception used to signal that Exchange has failed
  */
 @SuppressWarnings("serial")
-public class RestExchangeFailedException extends Exception {
+public class HttpExchangeFailedException extends Exception {
 
     /**
-     * Creates new RestExchangeFailedException
+     * Creates new HttpExchangeFailedException
      */
-    public RestExchangeFailedException() {
+    public HttpExchangeFailedException() {
         super();
     }
 
 
     /**
-     * Creates new RestExchangeFailedException
+     * Creates new HttpExchangeFailedException
      */
-    public RestExchangeFailedException(String detailMessage, Throwable throwable) {
+    public HttpExchangeFailedException(String detailMessage, Throwable throwable) {
         super(detailMessage, throwable);
     }
 
 
     /**
-     * Creates new RestExchangeFailedException
+     * Creates new HttpExchangeFailedException
      */
-    public RestExchangeFailedException(String detailMessage) {
+    public HttpExchangeFailedException(String detailMessage) {
         super(detailMessage);
     }
 
 
     /**
-     * Creates new RestExchangeFailedException
+     * Creates new HttpExchangeFailedException
      */
-    public RestExchangeFailedException(Throwable throwable) {
+    public HttpExchangeFailedException(Throwable throwable) {
         super(throwable);
     }
 

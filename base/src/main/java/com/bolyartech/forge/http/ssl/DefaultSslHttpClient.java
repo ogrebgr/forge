@@ -39,31 +39,15 @@ public class DefaultSslHttpClient implements ForgeCloseableHttpClient {
 
 
     //TODO make it to use inject parameter
-    public DefaultSslHttpClient(InputStream keyStore, String keyStorePassword) {
+    public DefaultSslHttpClient(KeyStore keyStore) {
         SSLContextBuilder sslContextBuilder = new SSLContextBuilder();
 
-        if (keyStore == null || keyStorePassword == null) {
+        if (keyStore == null) {
             throw new NullPointerException();
         }
 
-        KeyStore ks;
         try {
-            ks = KeyStore.getInstance(KeyStore.getDefaultType());
-            ks.load(keyStore, keyStorePassword.toCharArray());
-        } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
-            mLogger.error("Cannot create the keystore", e);
-            throw new IllegalStateException("Cannot create the keystore");
-        } finally {
-            try {
-                keyStore.close();
-            } catch (IOException e) {
-                mLogger.error("Cannot create the keystore", e);
-            }
-        }
-
-
-        try {
-            sslContextBuilder.loadTrustMaterial(ks);
+            sslContextBuilder.loadTrustMaterial(keyStore);
         } catch (NoSuchAlgorithmException | KeyStoreException e) {
             mLogger.error("Cannot load trust material", e);
         }

@@ -17,16 +17,14 @@ import java.util.concurrent.ExecutionException;
  */
 public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.Listener<T> {
     private final TaskExecutor mTaskExecutor;
-    private final HttpFunctionality mHttpFunc;
 
     private final List<Listener<T>> mListeners = new CopyOnWriteArrayList<>();
     private final Map<Long, ListenableFuture<T>> mTasks = new ConcurrentHashMap<>();
 
 
-    public ExchangeManagerImpl(TaskExecutor taskExecutor, HttpFunctionality httpFunc) {
+    public ExchangeManagerImpl(TaskExecutor taskExecutor) {
         mTaskExecutor = taskExecutor;
         mTaskExecutor.addListener(this);
-        mHttpFunc = httpFunc;
     }
 
 

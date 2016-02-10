@@ -28,9 +28,8 @@ public class ForgeExchangeBuilder extends HttpExchangeBuilder<ForgeExchangeResul
                                 HttpFunctionality httpFunctionality,
                                 String baseUrl,
                                 String endpoint,
-                                Class<ForgeExchangeResult> resultClass,
                                 ResultProducer<ForgeExchangeResult> resultProducer) {
 
-        super(httpFunctionality, baseUrl, endpoint, resultClass, resultProducer);
+        super(httpFunctionality, baseUrl, endpoint, resultProducer);
     }
 }

@@ -37,7 +37,6 @@ public class HttpExchange<T> implements Exchange<T> {
     private final HttpFunctionality mHttpFunctionality;
     private final HttpUriRequest mRequest;
     private final ResultProducer<T> mResultProducer;
-    private final Class<T> mResultClass;
     private final Object mTag;
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(HttpExchange.class
             .getSimpleName());
@@ -49,11 +48,10 @@ public class HttpExchange<T> implements Exchange<T> {
      * Creates new HttpExchange
      *
      * @param request     Request to be executed
-     * @param json        JsonFunctionality to be used to transform the returned JSON into object of type <code>T</code>
-     * @param resultClass Class of the result object
+     * @param resultProducer        JsonFunctionality to be used to transform the returned JSON into object of type <code>T</code>
      * @param tag         Tag object
      */
-    public HttpExchange(HttpFunctionality httpFunctionality, HttpUriRequest request, ResultProducer<T> json, Class<T> resultClass, Object tag) {
+    public HttpExchange(HttpFunctionality httpFunctionality, HttpUriRequest request, ResultProducer<T> resultProducer, Object tag) {
         super();
 
         if (httpFunctionality == null) {
@@ -64,18 +62,13 @@ public class HttpExchange<T> implements Exchange<T> {
             throw new NullPointerException("Parameter 'request' is null");
         }
 
-        if (json == null) {
+        if (resultProducer == null) {
             throw new NullPointerException("Parameter 'resultProducer' is null");
-        }
-
-        if (resultClass == null) {
-            throw new NullPointerException("Parameter 'resultClass' is null");
         }
 
         mHttpFunctionality = httpFunctionality;
         mRequest = request;
-        mResultProducer = json;
-        mResultClass = resultClass;
+        mResultProducer = resultProducer;
         mTag = tag;
     }
 
@@ -85,10 +78,10 @@ public class HttpExchange<T> implements Exchange<T> {
      *
      * @param request     Request to be executed
      * @param json        JsonFunctionality to be used to transform the returned JSON into object of type <code>T</code>
-     * @param resultClass Class of the result object
      */
-    public HttpExchange(HttpFunctionality httpFunctionality, HttpUriRequest request, ResultProducer<T> json, Class<T> resultClass) {
-        this(httpFunctionality, request, json, resultClass, null);
+    @SuppressWarnings("unused")
+    public HttpExchange(HttpFunctionality httpFunctionality, HttpUriRequest request, ResultProducer<T> json) {
+        this(httpFunctionality, request, json, null);
     }
 
 
@@ -166,7 +159,7 @@ public class HttpExchange<T> implements Exchange<T> {
      */
     protected T createResult(String source) throws ResultProducer.ResultProducerException {
         try {
-            return mResultProducer.produce(source, mResultClass);
+            return mResultProducer.produce(source);
         } catch (ResultProducer.ResultProducerException e) {
             mLogger.error("Json parse error: {}", e.getCause());
             mLogger.error(source.substring(0, source.length() < 1000 ? source.length() : 1000));

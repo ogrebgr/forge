@@ -74,10 +74,6 @@ public class HttpExchangeBuilder<T> {
      */
     private String mEndpoint;
     /**
-     * Class of the result of the exchange
-     */
-    private Class<T> mResultClass;
-    /**
      * JSON functionality that will be used to convert JSON string to result object of type <code>T</code>
      */
     private ResultProducer<T> mResultProducer;
@@ -104,14 +100,12 @@ public class HttpExchangeBuilder<T> {
      *
      * @param baseUrl        Base URL like <code>http://somehost.com'</code>
      * @param endpoint       Concrete endpoint like <code>somepage.php'</code>
-     * @param resultClass    Class of the result of the exchange
      * @param resultProducer JSON functionality that will be used to convert JSON string to result object of type <code>T</code>
      */
     public HttpExchangeBuilder(
                                 HttpFunctionality httpFunctionality,
                                String baseUrl,
                                String endpoint,
-                               Class<T> resultClass,
                                ResultProducer<T> resultProducer
     ) {
         super();
@@ -127,11 +121,7 @@ public class HttpExchangeBuilder<T> {
         if (endpoint == null) {
             throw new NullPointerException("Parameter 'endpoint' is null");
         }
-
-        if (resultClass == null) {
-            throw new NullPointerException("Parameter 'resultClass' is null");
-        }
-
+//
         if (resultProducer == null) {
             throw new NullPointerException("Parameter 'resultProducer' is null");
         }
@@ -139,7 +129,6 @@ public class HttpExchangeBuilder<T> {
 
         mHttpFunctionality = httpFunctionality;
         mBaseUrl = baseUrl;
-        mResultClass = resultClass;
         mEndpoint = endpoint;
         mResultProducer = resultProducer;
     }
@@ -165,18 +154,6 @@ public class HttpExchangeBuilder<T> {
      */
     public HttpExchangeBuilder<T> endpoint(String endpoint) {
         mEndpoint = endpoint;
-        return this;
-    }
-
-
-    /**
-     * Sets the result class for type <code>T</code>
-     *
-     * @param resultClass Result class for type <code>T</code>
-     * @return the builder itself
-     */
-    public HttpExchangeBuilder<T> resultClass(Class<T> resultClass) {
-        mResultClass = resultClass;
         return this;
     }
 
@@ -213,7 +190,7 @@ public class HttpExchangeBuilder<T> {
     public Exchange<T> build() {
         checkRequired();
 
-        return new HttpExchange<>(mHttpFunctionality, mRequestType.createRequest(this), mResultProducer, mResultClass, mTag);
+        return new HttpExchange<>(mHttpFunctionality, mRequestType.createRequest(this), mResultProducer, mTag);
     }
 
 
@@ -333,14 +310,10 @@ public class HttpExchangeBuilder<T> {
     private void checkRequired() {
         if (StringUtils.isEmpty(mBaseUrl)) {
             throw new IllegalStateException("base URL not set");
-        } else {
-            if (StringUtils.isEmpty(mEndpoint)) {
-                throw new IllegalStateException("endpoint not set");
-            } else {
-                if (mResultClass == null) {
-                    throw new IllegalStateException("result class not set");
-                }
-            }
+        }
+
+        if (StringUtils.isEmpty(mEndpoint)) {
+            throw new IllegalStateException("endpoint not set");
         }
     }
 

@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'maven-publish'
 
 //noinspection GroovyUnusedAssignment
 sourceCompatibility = 1.7
@@ -7,7 +8,26 @@ repositories {
     mavenCentral()
 }
 
-artifacts.add("default", file('libs/forge-httpclient-4.3.2.jar'))
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier "sources"
+}
+
+publishing {
+    repositories {
+        mavenLocal()
+    }
+    publications {
+        mavenJava(MavenPublication) {
+            groupId 'com.bolyartech.forge'
+            artifactId 'forge'
+            version '2.3-SNAPSHOT'
+            artifact sourceJar
+            from components.java
+        }
+    }
+}
+
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
@@ -17,4 +37,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile "org.mockito:mockito-core:1.+"
     testCompile 'ch.qos.logback:logback-classic:0.9.26'
+    compile 'javax.inject:javax.inject:1'
+    compile 'com.squareup.okhttp3:okhttp:3.1.2'
 }

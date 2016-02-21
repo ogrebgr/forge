@@ -21,15 +21,13 @@ publishing {
         mavenJava(MavenPublication) {
             groupId 'com.bolyartech.forge'
             artifactId 'forge'
-            version '1.0-SNAPSHOT'
+            version '2.3-SNAPSHOT'
             artifact sourceJar
             from components.java
         }
     }
 }
 
-
-artifacts.add("default", file('libs/forge-httpclient-4.3.2.jar'))
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
@@ -40,4 +38,5 @@ dependencies {
     testCompile "org.mockito:mockito-core:1.+"
     testCompile 'ch.qos.logback:logback-classic:0.9.26'
     compile 'javax.inject:javax.inject:1'
+    compile 'com.squareup.okhttp3:okhttp:3.1.2'
 }

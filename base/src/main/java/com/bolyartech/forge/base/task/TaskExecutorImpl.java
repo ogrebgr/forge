@@ -1,5 +1,7 @@
 package com.bolyartech.forge.base.task;
 
+import com.bolyartech.forge.base.misc.TimeProvider;
+import com.bolyartech.forge.base.misc.TimeProviderImpl;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -44,36 +46,61 @@ public class TaskExecutorImpl implements TaskExecutor {
     private final ListeningExecutorService mTaskExecutorService;
     private final int mTtlCheckInterval;
     private final int mTaskTtl;
+    private final TimeProvider mTimeProvider;
+
     private ScheduledFuture<?> mTtlChecker;
 
 
-    private final ScheduledExecutorService mScheduler = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
-        @SuppressWarnings("NullableProblems")
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread ret = new Thread(r);
-            ret.setName("TaskExecutorImpl Scheduler");
-            return ret;
-        }
-    });
+    private final ScheduledExecutorService mScheduler;
 
 
     @Inject
     public TaskExecutorImpl() {
         this(createDefaultExecutorService(),
                 TTL_CHECK_INTERVAL,
-                DEFAULT_TASK_TTL);
+                DEFAULT_TASK_TTL,
+                createDefaultScheduler(),
+                new TimeProviderImpl()
+        );
     }
 
 
-    public TaskExecutorImpl(ExecutorService taskExecutorService) {
-        this(taskExecutorService, TTL_CHECK_INTERVAL, DEFAULT_TASK_TTL);
+    private static ScheduledExecutorService createDefaultScheduler() {
+        return Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+            @SuppressWarnings("NullableProblems")
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread ret = new Thread(r);
+                ret.setName("TaskExecutorImpl Scheduler");
+                return ret;
+            }
+        });
     }
 
 
-    public TaskExecutorImpl(ExecutorService taskExecutorService, int ttlCheckInterval, int taskTtl) {
+    @SuppressWarnings("unused")
+    public TaskExecutorImpl(ExecutorService taskExecutorService, ScheduledExecutorService scheduler) {
+        this(taskExecutorService, TTL_CHECK_INTERVAL, DEFAULT_TASK_TTL, scheduler, new TimeProviderImpl());
+    }
+
+
+    public TaskExecutorImpl(ExecutorService taskExecutorService,
+                            int ttlCheckInterval,
+                            int taskTtl,
+                            ScheduledExecutorService scheduler,
+                            TimeProvider timeProvider) {
+
+
         if (taskExecutorService == null) {
-            throw new NullPointerException("Parameter 'exchangeExecutorService' is nul");
+            throw new NullPointerException("Parameter 'exchangeExecutorService' is null");
+        }
+
+        if (scheduler == null) {
+            throw new NullPointerException("Parameter 'scheduler' is null");
+        }
+
+        if (timeProvider == null) {
+            throw new NullPointerException("Parameter 'timeProvider' is null");
         }
 
         if (ttlCheckInterval <= 0) {
@@ -87,6 +114,8 @@ public class TaskExecutorImpl implements TaskExecutor {
         mTaskExecutorService = MoreExecutors.listeningDecorator(taskExecutorService);
         mTtlCheckInterval = ttlCheckInterval;
         mTaskTtl = taskTtl;
+        mScheduler = scheduler;
+        mTimeProvider = timeProvider;
     }
 
 
@@ -129,13 +158,13 @@ public class TaskExecutorImpl implements TaskExecutor {
 
     @Override
     public boolean isStarted() {
-        return false;
+        return mIsStarted;
     }
 
 
     @Override
     public boolean isShutdown() {
-        return false;
+        return mIsShutdown;
     }
 
 
@@ -156,7 +185,7 @@ public class TaskExecutorImpl implements TaskExecutor {
         if (mIsStarted) {
             if (!mIsShutdown) {
                 ListenableFuture<?> lf = mTaskExecutorService.submit(task);
-                mTasksInFlight.put(taskId, new InFlightTtlHelper<>(taskId, getTime(), ttl, lf));
+                mTasksInFlight.put(taskId, new InFlightTtlHelper<>(taskId, mTimeProvider.getTime(), ttl, lf));
 
                 //noinspection NullableProblems
                 Futures.addCallback(lf, new FutureCallback<Object>() {
@@ -164,6 +193,7 @@ public class TaskExecutorImpl implements TaskExecutor {
                     public void onSuccess(Object result) {
                         notifySuccess(taskId);
                     }
+
 
                     @Override
                     public void onFailure(Throwable t) {
@@ -232,7 +262,7 @@ public class TaskExecutorImpl implements TaskExecutor {
 
     private void checkAndRemoveTtled() {
         for (InFlightTtlHelper<?> hlp : mTasksInFlight.values()) {
-            if (hlp.mStartedAt + hlp.mTtl < getTime()) {
+            if (hlp.mStartedAt + hlp.mTtl < mTimeProvider.getTime()) {
                 mLogger.debug("Task {} TTLed", hlp.mTaskId);
                 hlp.mFuture.cancel(true);
                 notifyFailure(hlp.mTaskId);
@@ -260,8 +290,4 @@ public class TaskExecutorImpl implements TaskExecutor {
         }
     }
 
-
-    private long getTime() {
-        return System.nanoTime() / 1000000;
-    }
 }

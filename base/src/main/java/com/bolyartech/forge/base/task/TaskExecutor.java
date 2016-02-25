@@ -8,20 +8,20 @@ import java.util.concurrent.Callable;
 /**
  * Created by ogre on 2016-01-12 10:37
  */
-public interface TaskExecutor {
+public interface TaskExecutor<T> {
     void start();
     void shutdown();
     boolean isStarted();
     boolean isShutdown();
 
-    ListenableFuture<?> executeTask(Callable<?> task);
-    ListenableFuture<?> executeTask(Callable<?> task, long taskId);
-    ListenableFuture<?> executeTask(Callable<?> task, long taskId, long ttl);
+    void executeTask(Callable<T> task);
+    void executeTask(Callable<T> task, long taskId);
+    void executeTask(Callable<T> task, long taskId, long ttl);
 
-    void cancelTask(long taskId);
+    void cancelTask(long taskId, boolean mayInterruptIfRunning);
 
-    void addListener(Listener<?> listener);
-    void removeListener(Listener<?> listener);
+    void addListener(Listener<T> listener);
+    void removeListener(Listener<T> listener);
 
     Long generateTaskId();
 
@@ -31,7 +31,7 @@ public interface TaskExecutor {
          *
          * @param taskId ID of the exchange
          */
-        void onTaskSuccess(long taskId);
+        void onTaskSuccess(long taskId, T result);
         void onTaskFailure(long taskId);
     }
 }

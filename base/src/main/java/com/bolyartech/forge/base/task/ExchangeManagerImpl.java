@@ -1,29 +1,33 @@
 package com.bolyartech.forge.base.task;
 
 import com.bolyartech.forge.base.exchange.Exchange;
-import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutionException;
 
 
-/**
- * Created by ogre on 2016-01-12 13:21
- */
 public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.Listener<T> {
-    private final TaskExecutor mTaskExecutor;
+    private final TaskExecutor<T> mTaskExecutor;
 
     private final List<Listener<T>> mListeners = new CopyOnWriteArrayList<>();
-    private final Map<Long, ListenableFuture<T>> mTasks = new ConcurrentHashMap<>();
 
 
-    public ExchangeManagerImpl(TaskExecutor taskExecutor) {
+    public ExchangeManagerImpl(TaskExecutor<T> taskExecutor) {
         mTaskExecutor = taskExecutor;
         mTaskExecutor.addListener(this);
+    }
+
+
+    @Override
+    public void start() {
+        mTaskExecutor.start();
+    }
+
+
+    @Override
+    public void shutdown() {
+        mTaskExecutor.shutdown();
     }
 
 
@@ -49,21 +53,20 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
 
     @Override
     public void executeExchange(Exchange<T> x, Long taskId) {
-        // Suppressed because we are calling with  Exchange<T>
-        @SuppressWarnings("unchecked")
-        ListenableFuture<T> f = (ListenableFuture<T>) mTaskExecutor.executeTask(createCallable(x), taskId);
-
-        mTasks.put(taskId, f);
+        Callable<T> c = createCallable(x);
+        mTaskExecutor.executeTask(c, taskId);
     }
 
 
     @Override
     public synchronized void executeExchange(Exchange<T> x, Long taskId, long ttl) {
-        // Suppressed because we are calling with  Exchange<T>
-        @SuppressWarnings("unchecked")
-        ListenableFuture<T> f = (ListenableFuture<T>) mTaskExecutor.executeTask(createCallable(x), taskId, ttl);
+        mTaskExecutor.executeTask(createCallable(x), taskId, ttl);
+    }
 
-        mTasks.put(taskId, f);
+
+    @Override
+    public void cancelExchange(Long xId) {
+        mTaskExecutor.cancelTask(xId, true);
     }
 
 
@@ -74,19 +77,10 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
 
 
     @Override
-    public synchronized void onTaskSuccess(long taskId) {
-        ListenableFuture<T> f = mTasks.get(taskId);
-
+    public synchronized void onTaskSuccess(long taskId, T result) {
         for(Listener<T> l : mListeners) {
-            try {
-                l.onExchangeOutcome(taskId, true, f.get());
-            } catch (InterruptedException | ExecutionException e) {
-                // cannot happen because id success there is no ExecutionException possible
-                // and task is completed so no InterruptedException is possible
-                throw new RuntimeException(e);
-            }
+            l.onExchangeOutcome(taskId, true, result);
         }
-        mTasks.remove(taskId);
     }
 
 
@@ -95,7 +89,6 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
         for(Listener<T> l : mListeners) {
             l.onExchangeOutcome(taskId, false, null);
         }
-        mTasks.remove(taskId);
     }
 
 

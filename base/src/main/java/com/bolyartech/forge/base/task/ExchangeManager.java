@@ -7,6 +7,9 @@ import com.bolyartech.forge.base.exchange.Exchange;
  * Created by ogre on 2016-01-12 13:36
  */
 public interface ExchangeManager<T> {
+    void start();
+    void shutdown();
+
     void addListener(Listener<T> listener);
 
     void removeListener(Listener<T> listener);
@@ -16,6 +19,8 @@ public interface ExchangeManager<T> {
     void executeExchange(Exchange<T> x, Long xId);
 
     void executeExchange(Exchange<T> x, Long xId, long ttl);
+
+    void cancelExchange(Long xId);
 
     Long generateTaskId();
 

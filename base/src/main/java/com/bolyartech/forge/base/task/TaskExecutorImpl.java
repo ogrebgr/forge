@@ -30,7 +30,7 @@ import javax.inject.Inject;
 /**
  * Created by ogre on 2016-01-12 12:38
  */
-public class TaskExecutorImpl implements TaskExecutor {
+public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     private static final int TTL_CHECK_INTERVAL = 1000;
     private static final int DEFAULT_TASK_TTL = 5000;
     private static final int DEFAULT_EXECUTOR_SERVICE_THREADS = 2;
@@ -38,7 +38,7 @@ public class TaskExecutorImpl implements TaskExecutor {
 
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
     private final AtomicLong mSequenceGenerator = new AtomicLong(0);
-    private final List<Listener<?>> mListeners = new CopyOnWriteArrayList<>();
+    private final List<Listener<T>> mListeners = new CopyOnWriteArrayList<>();
     private final Map<Long, InFlightTtlHelper<?>> mTasksInFlight = new ConcurrentHashMap<>();
     private volatile boolean mIsStarted = false;
     private volatile boolean mIsShutdown = false;
@@ -169,29 +169,29 @@ public class TaskExecutorImpl implements TaskExecutor {
 
 
     @Override
-    public ListenableFuture<?> executeTask(Callable<?> task) {
-        return executeTask(task, generateTaskId(), mTaskTtl);
+    public void executeTask(Callable<T> task) {
+        executeTask(task, generateTaskId(), mTaskTtl);
     }
 
 
     @Override
-    public ListenableFuture<?> executeTask(Callable<?> task, long taskId) {
-        return executeTask(task, taskId, mTaskTtl);
+    public void executeTask(Callable<T> task, long taskId) {
+        executeTask(task, taskId, mTaskTtl);
     }
 
 
     @Override
-    public ListenableFuture<?> executeTask(Callable<?> task, final long taskId, long ttl) {
+    public void executeTask(Callable<T> task, final long taskId, long ttl) {
         if (mIsStarted) {
             if (!mIsShutdown) {
-                ListenableFuture<?> lf = mTaskExecutorService.submit(task);
+                ListenableFuture<T> lf = mTaskExecutorService.submit(task);
                 mTasksInFlight.put(taskId, new InFlightTtlHelper<>(taskId, mTimeProvider.getTime(), ttl, lf));
 
                 //noinspection NullableProblems
-                Futures.addCallback(lf, new FutureCallback<Object>() {
+                Futures.addCallback(lf, new FutureCallback<T>() {
                     @Override
-                    public void onSuccess(Object result) {
-                        notifySuccess(taskId);
+                    public void onSuccess(T result) {
+                        notifySuccess(taskId, result);
                     }
 
 
@@ -200,7 +200,6 @@ public class TaskExecutorImpl implements TaskExecutor {
                         notifyFailure(taskId);
                     }
                 });
-                return lf;
             } else {
                 throw new RejectedExecutionException("Already shutdown");
             }
@@ -210,9 +209,9 @@ public class TaskExecutorImpl implements TaskExecutor {
     }
 
 
-    private void notifySuccess(long taskId) {
-        for (Listener<?> l : mListeners) {
-            l.onTaskSuccess(taskId);
+    private void notifySuccess(long taskId, T result) {
+        for (Listener<T> l : mListeners) {
+            l.onTaskSuccess(taskId, result);
         }
         mTasksInFlight.remove(taskId);
     }
@@ -227,13 +226,16 @@ public class TaskExecutorImpl implements TaskExecutor {
 
 
     @Override
-    public void cancelTask(long taskId) {
-
+    public void cancelTask(long taskId, boolean mayInterruptIfRunning) {
+        InFlightTtlHelper<?> f = mTasksInFlight.remove(taskId);
+        if (f != null) {
+            f.mFuture.cancel(mayInterruptIfRunning);
+        }
     }
 
 
     @Override
-    public void addListener(Listener<?> listener) {
+    public void addListener(Listener<T> listener) {
         if (!mListeners.contains(listener)) {
             mListeners.add(listener);
         }
@@ -241,7 +243,7 @@ public class TaskExecutorImpl implements TaskExecutor {
 
 
     @Override
-    public void removeListener(Listener<?> listener) {
+    public void removeListener(Listener<T> listener) {
         mListeners.remove(listener);
     }
 

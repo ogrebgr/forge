@@ -21,7 +21,7 @@ publishing {
         mavenJava(MavenPublication) {
             groupId 'com.bolyartech.forge'
             artifactId 'forge'
-            version '2.3-SNAPSHOT'
+            version '2.7-SNAPSHOT'
             artifact sourceJar
             from components.java
         }

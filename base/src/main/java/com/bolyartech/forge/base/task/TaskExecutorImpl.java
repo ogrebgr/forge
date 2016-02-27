@@ -273,11 +273,7 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
 
 
     static boolean isTtled(InFlightTtlHelper<?> hlp, TimeProvider timeProvider) {
-        if (hlp.mStartedAt + hlp.mTtl < timeProvider.getTime()) {
-            return true;
-        } else {
-            return false;
-        }
+        return hlp.mStartedAt + hlp.mTtl < timeProvider.getTime();
     }
 
 

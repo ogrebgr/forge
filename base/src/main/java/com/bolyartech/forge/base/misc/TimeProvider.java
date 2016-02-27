@@ -7,7 +7,7 @@ package com.bolyartech.forge.base.misc;
 public interface TimeProvider {
     /**
      * Returns wall clock independent time in milliseconds.
-     * @return
+     * @return Time in millis
      */
     long getTime();
 }

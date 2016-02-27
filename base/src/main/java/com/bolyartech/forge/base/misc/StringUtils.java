@@ -91,6 +91,7 @@ public class StringUtils {
      * @return true if string is empty
      * @see #isNotEmpty(String)
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isEmpty(String str) {
         if (str == null) {
             return true;

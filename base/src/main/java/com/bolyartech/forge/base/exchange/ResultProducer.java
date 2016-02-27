@@ -29,6 +29,7 @@ public interface ResultProducer<T> {
      * @return The newly created object of type T
      * @throws ResultProducerException If the string cannot be processed to produce result of type T
      */
+    @SuppressWarnings("RedundantThrows")
     T produce(Response resp) throws ResultProducerException;
 
 

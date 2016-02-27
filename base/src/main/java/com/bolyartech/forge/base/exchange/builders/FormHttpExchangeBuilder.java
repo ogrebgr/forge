@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FormHttpExchangeBuilder<T> extends GetHttpExchangeBuilder<T> {
-    private Map<String, String> mPostParams = new HashMap<>();
+    private final Map<String, String> mPostParams = new HashMap<>();
 
 
     public FormHttpExchangeBuilder(HttpFunctionality httpFunctionality, ResultProducer<T> resultProducer, String url) {
@@ -44,7 +44,7 @@ public class FormHttpExchangeBuilder<T> extends GetHttpExchangeBuilder<T> {
         b.post(fb);
         b.url(url);
 
-        return new HttpExchange<T>(getHttpFunctionality(),
+        return new HttpExchange<>(getHttpFunctionality(),
                 b.build(),
                 getResultProducer());
     }

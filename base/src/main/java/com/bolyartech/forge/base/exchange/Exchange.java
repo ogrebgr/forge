@@ -16,8 +16,6 @@
 package com.bolyartech.forge.base.exchange;
 
 
-import com.bolyartech.forge.base.http.HttpFunctionality;
-
 import java.io.IOException;
 
 /**
@@ -53,7 +51,7 @@ public interface Exchange<T> {
     boolean isExecuted();
 
     /**
-     * If exchange is cancelled before it is executed {@link #execute(HttpFunctionality) will return <code>null</code>}.
+     * If exchange is cancelled before it is executed will return <code>null</code>}.
      * If it is cancelled while waiting for HTTP request to complete it will return <code>null</code> no
      * matter if it was successful or not.
      */

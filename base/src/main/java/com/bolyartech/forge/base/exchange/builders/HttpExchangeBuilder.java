@@ -13,7 +13,7 @@ abstract public class HttpExchangeBuilder<T> {
     private final ResultProducer<T> mResultProducer;
     private final String mUrl;
 
-    private Map<String, String> mGetParams = new HashMap<>();
+    private final Map<String, String> mGetParams = new HashMap<>();
 
 
     abstract public HttpExchange<T> build();

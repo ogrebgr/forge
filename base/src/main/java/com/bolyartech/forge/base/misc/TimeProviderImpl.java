@@ -5,7 +5,7 @@ public class TimeProviderImpl implements TimeProvider {
     /**
      * Returns wall clock independent time in milliseconds.
      * Based on System.nanoTime().
-     * @return
+     * @return Time in millis
      */
     @Override
     public long getTime() {

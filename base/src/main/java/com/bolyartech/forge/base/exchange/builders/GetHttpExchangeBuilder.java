@@ -24,7 +24,7 @@ public class GetHttpExchangeBuilder<T> extends HttpExchangeBuilder<T> {
         b.get();
         b.url(url);
 
-        return new HttpExchange<T>(getHttpFunctionality(),
+        return new HttpExchange<>(getHttpFunctionality(),
                 b.build(),
                 getResultProducer());
     }
@@ -32,7 +32,7 @@ public class GetHttpExchangeBuilder<T> extends HttpExchangeBuilder<T> {
 
     protected HttpUrl createFullUrl() {
         HttpUrl.Builder urlBuilder = HttpUrl.parse(getUrl()).newBuilder();
-        @SuppressWarnings("unchecked") Map<String, String> map = (Map<String, String>) getGetParameters();
+        @SuppressWarnings("unchecked") Map<String, String> map = getGetParameters();
         for (String key : map.keySet()) {
             urlBuilder.addQueryParameter(key, map.get(key));
         }

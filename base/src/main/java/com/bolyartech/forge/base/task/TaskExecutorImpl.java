@@ -10,18 +10,10 @@ import com.google.common.util.concurrent.MoreExecutors;
 
 import org.slf4j.LoggerFactory;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.inject.Inject;
@@ -182,6 +174,10 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
 
     @Override
     public void executeTask(Callable<T> task, final long taskId, long ttl) {
+        if (ttl < 0) {
+            throw new IllegalArgumentException(MessageFormat.format("ttl is negative {0} < 0", ttl));
+        }
+
         if (mIsStarted) {
             if (!mIsShutdown) {
                 ListenableFuture<T> lf = mTaskExecutorService.submit(task);
@@ -197,7 +193,10 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
 
                     @Override
                     public void onFailure(Throwable t) {
-                        notifyFailure(taskId);
+                        if (!(t instanceof CancellationException)) {
+                            // if cancelled we don't notify because the user himself cancelled the task
+                            notifyFailure(taskId);
+                        }
                     }
                 });
             } else {
@@ -262,9 +261,9 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     }
 
 
-    private void checkAndRemoveTtled() {
+    void checkAndRemoveTtled() {
         for (InFlightTtlHelper<?> hlp : mTasksInFlight.values()) {
-            if (hlp.mStartedAt + hlp.mTtl < mTimeProvider.getTime()) {
+            if (isTtled(hlp, mTimeProvider)) {
                 mLogger.debug("Task {} TTLed", hlp.mTaskId);
                 hlp.mFuture.cancel(true);
                 notifyFailure(hlp.mTaskId);
@@ -273,7 +272,16 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     }
 
 
-    private static class InFlightTtlHelper<T> {
+    static boolean isTtled(InFlightTtlHelper<?> hlp, TimeProvider timeProvider) {
+        if (hlp.mStartedAt + hlp.mTtl < timeProvider.getTime()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    static class InFlightTtlHelper<T> {
         final long mTaskId;
         final long mStartedAt;
         final long mTtl;

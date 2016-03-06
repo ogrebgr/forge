@@ -19,9 +19,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.inject.Inject;
 
 
-/**
- * Created by ogre on 2016-01-12 12:38
- */
 public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     private static final int TTL_CHECK_INTERVAL = 1000;
     private static final int DEFAULT_TASK_TTL = 5000;
@@ -208,24 +205,34 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     }
 
 
-    private void notifySuccess(long taskId, T result) {
+    private synchronized void notifySuccess(long taskId, T result) {
         for (Listener<T> l : mListeners) {
             l.onTaskSuccess(taskId, result);
         }
-        mTasksInFlight.remove(taskId);
+
+        removeTask(taskId);
     }
 
 
-    private void notifyFailure(long taskId) {
+    private synchronized void notifyFailure(long taskId) {
         for (Listener l : mListeners) {
             l.onTaskFailure(taskId);
         }
+
+        removeTask(taskId);
+    }
+
+
+    private void removeTask(long taskId) {
         mTasksInFlight.remove(taskId);
+        if (mTasksInFlight.size() == 0) {
+            onIdle();
+        }
     }
 
 
     @Override
-    public void cancelTask(long taskId, boolean mayInterruptIfRunning) {
+    public synchronized void cancelTask(long taskId, boolean mayInterruptIfRunning) {
         InFlightTtlHelper<?> f = mTasksInFlight.remove(taskId);
         if (f != null) {
             f.mFuture.cancel(mayInterruptIfRunning);
@@ -296,4 +303,13 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
         }
     }
 
+
+    protected void onIdle() {
+        // empty
+    }
+
+
+    protected int getTasksInFlightCount() {
+        return mTasksInFlight.size();
+    }
 }

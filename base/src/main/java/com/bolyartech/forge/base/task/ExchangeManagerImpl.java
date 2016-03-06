@@ -65,7 +65,7 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
 
 
     @Override
-    public void cancelExchange(Long xId) {
+    public synchronized void cancelExchange(Long xId) {
         mTaskExecutor.cancelTask(xId, true);
     }
 

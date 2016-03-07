@@ -14,11 +14,11 @@ import okio.Source;
 public class ProgressResponseBody extends ResponseBody {
 
     private final ResponseBody responseBody;
-    private final ProgressListener progressListener;
+    private final Listener progressListener;
     private BufferedSource bufferedSource;
 
 
-    public ProgressResponseBody(ResponseBody responseBody, ProgressListener progressListener) {
+    public ProgressResponseBody(ResponseBody responseBody, Listener progressListener) {
         this.responseBody = responseBody;
         this.progressListener = progressListener;
     }
@@ -63,7 +63,7 @@ public class ProgressResponseBody extends ResponseBody {
     }
 
 
-    public interface ProgressListener {
+    public interface Listener {
         void update(long bytesRead, long contentLength, boolean done);
     }
 }

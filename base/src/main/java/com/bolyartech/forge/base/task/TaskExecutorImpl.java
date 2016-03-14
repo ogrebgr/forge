@@ -158,19 +158,19 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
 
 
     @Override
-    public void executeTask(Callable<T> task) {
+    public synchronized void executeTask(Callable<T> task) {
         executeTask(task, generateTaskId(), mTaskTtl);
     }
 
 
     @Override
-    public void executeTask(Callable<T> task, long taskId) {
+    public synchronized void executeTask(Callable<T> task, long taskId) {
         executeTask(task, taskId, mTaskTtl);
     }
 
 
     @Override
-    public void executeTask(Callable<T> task, final long taskId, long ttl) {
+    public synchronized void executeTask(Callable<T> task, final long taskId, long ttl) {
         if (ttl < 0) {
             throw new IllegalArgumentException(MessageFormat.format("ttl is negative {0} < 0", ttl));
         }

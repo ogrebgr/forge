@@ -59,13 +59,13 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
 
 
     @Override
-    public synchronized void executeExchange(Exchange<T> x, Long taskId, long ttl) {
+    public void executeExchange(Exchange<T> x, Long taskId, long ttl) {
         mTaskExecutor.executeTask(createCallable(x), taskId, ttl);
     }
 
 
     @Override
-    public synchronized void cancelExchange(Long xId) {
+    public void cancelExchange(Long xId) {
         mTaskExecutor.cancelTask(xId, true);
     }
 
@@ -77,7 +77,7 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
 
 
     @Override
-    public synchronized void onTaskSuccess(long taskId, T result) {
+    public void onTaskSuccess(long taskId, T result) {
         for(Listener<T> l : mListeners) {
             l.onExchangeOutcome(taskId, true, result);
         }
@@ -85,7 +85,7 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
 
 
     @Override
-    public synchronized void onTaskFailure(long taskId) {
+    public void onTaskFailure(long taskId) {
         for(Listener<T> l : mListeners) {
             l.onExchangeOutcome(taskId, false, null);
         }

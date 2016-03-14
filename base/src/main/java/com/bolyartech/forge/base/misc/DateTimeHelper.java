@@ -20,7 +20,7 @@ import hirondelle.date4j.DateTime;
 
 
 /**
- * Provides convenience helper methods for manipulating DataTime objects
+ * Provides convenience helper methods for manipulating DateTime objects
  */
 public class DateTimeHelper {
     /**

@@ -49,8 +49,6 @@ public class HttpExchange<T> implements Exchange<T> {
      * @param tag         Tag object
      */
     public HttpExchange(HttpFunctionality httpFunctionality, Request request, ResultProducer<T> resultProducer, Object tag) {
-        super();
-
         if (httpFunctionality == null) {
             throw new NullPointerException("Parameter 'httpFunctionality' is null");
         }

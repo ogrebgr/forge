@@ -4,7 +4,7 @@ import com.bolyartech.forge.base.exchange.Exchange;
 
 
 /**
- * Faciliates execution of {Exchange}s
+ * Facilitates execution of {Exchange}s
  * @param <T>
  */
 public interface ExchangeManager<T> {

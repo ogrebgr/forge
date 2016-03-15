@@ -158,13 +158,13 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
 
 
     @Override
-    public synchronized void executeTask(Callable<T> task) {
+    public void executeTask(Callable<T> task) {
         executeTask(task, generateTaskId(), mTaskTtl);
     }
 
 
     @Override
-    public synchronized void executeTask(Callable<T> task, long taskId) {
+    public void executeTask(Callable<T> task, long taskId) {
         executeTask(task, taskId, mTaskTtl);
     }
 
@@ -205,7 +205,7 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     }
 
 
-    private synchronized void notifySuccess(long taskId, T result) {
+    private void notifySuccess(long taskId, T result) {
         for (Listener<T> l : mListeners) {
             l.onTaskSuccess(taskId, result);
         }
@@ -214,7 +214,7 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     }
 
 
-    private synchronized void notifyFailure(long taskId) {
+    private void notifyFailure(long taskId) {
         for (Listener l : mListeners) {
             l.onTaskFailure(taskId);
         }
@@ -223,7 +223,7 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     }
 
 
-    private void removeTask(long taskId) {
+    private synchronized void removeTask(long taskId) {
         mTasksInFlight.remove(taskId);
         if (mTasksInFlight.size() == 0) {
             onIdle();

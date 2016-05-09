@@ -107,7 +107,7 @@ public class HttpExchange<T> implements Exchange<T> {
                         throw e;
                     }
                 } else {
-                    mLogger.debug("mRequest.url().toString() failed with code: {}", resp.code());
+                    mLogger.warn(mRequest.url().toString() + " failed with code: {}", resp.code());
                 }
 
                 return ret;

@@ -206,11 +206,14 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
 
 
     private void notifySuccess(long taskId, T result) {
-        for (Listener<T> l : mListeners) {
-            l.onTaskSuccess(taskId, result);
+        if (result != null) {
+            for (Listener<T> l : mListeners) {
+                l.onTaskSuccess(taskId, result);
+            }
+            removeTask(taskId);
+        } else {
+            notifyFailure(taskId);
         }
-
-        removeTask(taskId);
     }
 
 

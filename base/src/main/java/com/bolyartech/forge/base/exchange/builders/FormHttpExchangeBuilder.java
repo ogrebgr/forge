@@ -3,6 +3,8 @@ package com.bolyartech.forge.base.exchange.builders;
 import com.bolyartech.forge.base.exchange.ResultProducer;
 import com.bolyartech.forge.base.exchange.HttpExchange;
 import com.bolyartech.forge.base.http.HttpFunctionality;
+
+import okhttp3.CacheControl;
 import okhttp3.FormBody;
 import okhttp3.HttpUrl;
 import okhttp3.Request;
@@ -43,6 +45,7 @@ public class FormHttpExchangeBuilder<T> extends GetHttpExchangeBuilder<T> {
         Request.Builder b = new Request.Builder();
         b.post(fb);
         b.url(url);
+        b.cacheControl(CacheControl.FORCE_NETWORK);
 
         return new HttpExchange<>(getHttpFunctionality(),
                 b.build(),

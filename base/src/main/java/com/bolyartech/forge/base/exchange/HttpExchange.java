@@ -23,6 +23,7 @@ import okhttp3.Response;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.ProtocolException;
 
 
 /**
@@ -107,7 +108,8 @@ public class HttpExchange<T> implements Exchange<T> {
                         throw e;
                     }
                 } else {
-                    mLogger.debug("mRequest.url().toString() failed with code: {}", resp.code());
+                    mLogger.debug(mRequest.url().toString() + " failed with code: " + resp.code());
+                    throw new ProtocolException(mRequest.url().toString() + " failed with code: " + resp.code());
                 }
 
                 return ret;

@@ -23,11 +23,16 @@ public class FormHttpExchangeBuilder<T> extends GetHttpExchangeBuilder<T> {
 
 
     public void addPostParameter(String name, String value) {
-        if (!mPostParams.containsKey(name)) {
-            mPostParams.put(name, value);
-        } else {
+        if (value == null) {
+            throw new NullPointerException("value == null");
+        }
+
+
+        if (mPostParams.containsKey(name)) {
             throw new IllegalStateException(MessageFormat.format("POST parameter '{0}' already added.", name));
         }
+
+        mPostParams.put(name, value);
     }
 
 

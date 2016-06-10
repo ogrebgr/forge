@@ -27,11 +27,15 @@ abstract public class HttpExchangeBuilder<T> {
 
 
     public void addGetParameter(String name, String value) {
-        if (!mGetParams.containsKey(name)) {
-            mGetParams.put(name, value);
-        } else {
+        if (value == null) {
+            throw new NullPointerException("value == null");
+        }
+
+        if (mGetParams.containsKey(name)) {
             throw new IllegalStateException(MessageFormat.format("GET Parameter '{0}' already added.", name));
         }
+
+        mGetParams.put(name, value);
     }
 
 

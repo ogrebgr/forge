@@ -283,7 +283,8 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
 
 
     static boolean isTtled(InFlightTtlHelper<?> hlp, TimeProvider timeProvider) {
-        return hlp.mStartedAt + hlp.mTtl < timeProvider.getTime();
+        // - 1 is used in order unit tests with 0 TTL to be able to work consistently
+        return hlp.mStartedAt + hlp.mTtl - 1 < timeProvider.getTime();
     }
 
 

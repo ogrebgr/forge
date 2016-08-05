@@ -12,7 +12,7 @@ import static org.mockito.Mockito.mock;
 public class ExchangeOutcomeTest {
     @Test
     public void test() {
-        Exchange<ForgeExchangeResult> x = mock(Exchange.class);
+        @SuppressWarnings("unchecked") Exchange<ForgeExchangeResult> x = mock(Exchange.class);
         ForgeExchangeResult rez = new ForgeExchangeResult(1, "");
         ExchangeOutcome<ForgeExchangeResult> out = new ExchangeOutcome<>(x, rez, false);
 

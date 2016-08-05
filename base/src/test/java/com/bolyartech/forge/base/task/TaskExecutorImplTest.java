@@ -3,7 +3,7 @@ package com.bolyartech.forge.base.task;
 import com.bolyartech.forge.base.misc.TimeProvider;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import junit.framework.Assert;
+
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertTrue;

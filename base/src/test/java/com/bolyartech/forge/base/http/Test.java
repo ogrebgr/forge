@@ -34,12 +34,10 @@ public class Test {
 
         TaskExecutor te = new TaskExecutorImpl();
         te.start();
-        ExchangeManager<String> em = new ExchangeManagerImpl<String>(te);
+        @SuppressWarnings("unchecked") ExchangeManager<String> em = new ExchangeManagerImpl<String>(te);
         em.addListener(new ExchangeManager.Listener<String>() {
             @Override
             public void onExchangeOutcome(long exchangeId, boolean isSuccess, String result) {
-                int i = 0;
-                i++;
             }
         });
         em.executeExchange(b.build());

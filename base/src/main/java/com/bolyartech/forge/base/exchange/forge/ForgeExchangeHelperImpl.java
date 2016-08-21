@@ -1,5 +1,6 @@
-package com.bolyartech.forge.base.exchange;
+package com.bolyartech.forge.base.exchange.forge;
 
+import com.bolyartech.forge.base.exchange.*;
 import com.bolyartech.forge.base.exchange.builders.ForgeGetHttpExchangeBuilder;
 import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
 import com.bolyartech.forge.base.http.HttpFunctionality;

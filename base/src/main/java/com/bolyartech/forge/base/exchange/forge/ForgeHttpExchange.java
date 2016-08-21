@@ -1,5 +1,7 @@
-package com.bolyartech.forge.base.exchange;
+package com.bolyartech.forge.base.exchange.forge;
 
+import com.bolyartech.forge.base.exchange.HttpExchange;
+import com.bolyartech.forge.base.exchange.ResultProducer;
 import com.bolyartech.forge.base.http.HttpFunctionality;
 import okhttp3.Request;
 

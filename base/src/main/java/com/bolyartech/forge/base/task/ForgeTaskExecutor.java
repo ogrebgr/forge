@@ -1,6 +1,6 @@
 package com.bolyartech.forge.base.task;
 
-import com.bolyartech.forge.base.exchange.ForgeExchangeResult;
+import com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult;
 import com.bolyartech.forge.base.misc.TimeProvider;
 
 import javax.inject.Inject;

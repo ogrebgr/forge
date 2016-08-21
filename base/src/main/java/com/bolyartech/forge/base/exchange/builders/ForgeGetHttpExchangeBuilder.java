@@ -1,6 +1,6 @@
 package com.bolyartech.forge.base.exchange.builders;
 
-import com.bolyartech.forge.base.exchange.ForgeExchangeResult;
+import com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult;
 import com.bolyartech.forge.base.exchange.ResultProducer;
 import com.bolyartech.forge.base.http.HttpFunctionality;
 

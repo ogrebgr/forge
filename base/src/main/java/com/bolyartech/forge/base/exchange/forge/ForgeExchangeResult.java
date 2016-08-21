@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-package com.bolyartech.forge.base.exchange;
+package com.bolyartech.forge.base.exchange.forge;
+
+
+import com.bolyartech.forge.base.exchange.Exchange;
 
 
 /**

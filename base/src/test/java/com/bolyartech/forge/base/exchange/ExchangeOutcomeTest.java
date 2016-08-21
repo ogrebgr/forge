@@ -12,9 +12,9 @@ import static org.mockito.Mockito.mock;
 public class ExchangeOutcomeTest {
     @Test
     public void test() {
-        @SuppressWarnings("unchecked") Exchange<ForgeExchangeResult> x = mock(Exchange.class);
-        ForgeExchangeResult rez = new ForgeExchangeResult(1, "");
-        ExchangeOutcome<ForgeExchangeResult> out = new ExchangeOutcome<>(x, rez, false);
+        @SuppressWarnings("unchecked") Exchange<com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult> x = mock(Exchange.class);
+        com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult rez = new com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult(1, "");
+        ExchangeOutcome<com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult> out = new ExchangeOutcome<>(x, rez, false);
 
         assertTrue(out.getExchange() == x);
         assertTrue(out.getResult() == rez);

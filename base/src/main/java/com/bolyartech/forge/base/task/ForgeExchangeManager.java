@@ -1,6 +1,6 @@
 package com.bolyartech.forge.base.task;
 
-import com.bolyartech.forge.base.exchange.ForgeExchangeResult;
+import com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult;
 
 
 /**

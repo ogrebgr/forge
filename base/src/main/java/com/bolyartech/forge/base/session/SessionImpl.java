@@ -1,5 +1,7 @@
 package com.bolyartech.forge.base.session;
 
+import com.bolyartech.forge.base.misc.TimeProvider;
+
 import javax.inject.Inject;
 
 
@@ -9,12 +11,11 @@ public class SessionImpl implements Session {
 
     private int mSessionTtl;
     private long mLastSessionProlong; //in seconds
-    private Info mInfo;
-
+    private TimeProvider mTimeProvider;
 
     @Inject
-    public SessionImpl() {
-        super();
+    public SessionImpl(TimeProvider timeProvider) {
+        mTimeProvider = timeProvider;
     }
 
 
@@ -26,22 +27,15 @@ public class SessionImpl implements Session {
 
 
     @Override
-    public void startSession(int ttl, Info info) {
+    public void startSession(int ttl) {
         mSessionTtl = ttl;
-        mInfo = info;
         setIsLoggedIn(true);
         prolong();
     }
 
 
-    @Override
-    public Info getInfo() {
-        return mInfo;
-    }
-
-
     private void checkSessionExpired() {
-        if (mLastSessionProlong + mSessionTtl < (System.nanoTime() / 1_000_000_000)) {
+        if (mLastSessionProlong + mSessionTtl < (mTimeProvider.getTime() / 1_000)) {
             mIsLoggedIn = false;
         }
     }
@@ -55,7 +49,7 @@ public class SessionImpl implements Session {
     @Override
     public void prolong() {
         if (mIsLoggedIn) {
-            mLastSessionProlong = System.nanoTime() / 1_000_000_000;
+            mLastSessionProlong = (mTimeProvider.getTime() / 1_000);
         }
     }
 

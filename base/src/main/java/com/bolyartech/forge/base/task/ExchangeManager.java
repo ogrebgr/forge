@@ -11,7 +11,7 @@ public interface ExchangeManager<T> {
     /**
      * Starts the exchange manager
      */
-    void start();
+    void start(TaskExecutor<T> taskExecutor);
 
     /**
      * Stops the exchange manager
@@ -77,4 +77,10 @@ public interface ExchangeManager<T> {
          */
         void onExchangeOutcome(long exchangeId, boolean isSuccess, T result);
     }
+
+
+    /**
+     * @return true if started, false otherwise
+     */
+    boolean isStarted();
 }

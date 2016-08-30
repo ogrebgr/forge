@@ -8,26 +8,33 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.Listener<T> {
-    private final TaskExecutor<T> mTaskExecutor;
+    private TaskExecutor<T> mTaskExecutor;
 
     private final List<Listener<T>> mListeners = new CopyOnWriteArrayList<>();
 
+    private volatile boolean mStarted = false;
 
-    public ExchangeManagerImpl(TaskExecutor<T> taskExecutor) {
-        mTaskExecutor = taskExecutor;
-        mTaskExecutor.addListener(this);
+    public ExchangeManagerImpl() {
     }
 
 
     @Override
-    public void start() {
+    public synchronized void start(TaskExecutor<T> taskExecutor) {
+        mStarted = true;
+        mTaskExecutor = taskExecutor;
+        mTaskExecutor.addListener(this);
+
         mTaskExecutor.start();
     }
 
 
     @Override
-    public void shutdown() {
-        mTaskExecutor.shutdown();
+    public synchronized void shutdown() {
+        if (mStarted) {
+            mStarted = false;
+            mTaskExecutor.shutdown();
+            mTaskExecutor.removeListener(this);
+        }
     }
 
 
@@ -99,5 +106,11 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
                 return x.execute();
             }
         };
+    }
+
+
+    @Override
+    public boolean isStarted() {
+        return mStarted;
     }
 }

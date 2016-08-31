@@ -11,7 +11,7 @@ public class SessionImpl implements Session {
 
     private int mSessionTtl;
     private long mLastSessionProlong; //in seconds
-    private TimeProvider mTimeProvider;
+    private final TimeProvider mTimeProvider;
 
     @Inject
     public SessionImpl(TimeProvider timeProvider) {

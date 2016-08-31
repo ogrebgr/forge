@@ -27,7 +27,7 @@ public class StringUtilsTest {
     @Test
     public void test_md5Long() {
         assertTrue("md5(long) not working correctly",
-                StringUtils.md5(5l).equals("e4da3b7fbbce2345d7772b0674a318d5"));
+                StringUtils.md5(5L).equals("e4da3b7fbbce2345d7772b0674a318d5"));
     }
 
 

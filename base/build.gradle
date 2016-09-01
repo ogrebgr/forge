@@ -21,6 +21,7 @@ publishing {
         mavenJava(MavenPublication) {
             groupId 'com.bolyartech.forge'
             artifactId 'forge'
+            //noinspection GroovyAssignabilityCheck
             version '2.7-SNAPSHOT'
             artifact sourceJar
             from components.java
@@ -35,7 +36,7 @@ dependencies {
     compile 'com.darwinsys:hirondelle-date4j:1.5.1'
     compile 'com.google.guava:guava:18.0'
     testCompile 'junit:junit:4.12'
-    testCompile "org.mockito:mockito-core:1.+"
+    testCompile "org.mockito:mockito-core:1.10.19"
 
     /*
     testCompile 'ch.qos.logback:logback-classic:0.9.26'

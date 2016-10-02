@@ -13,6 +13,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("WeakerAccess")
 public class FormHttpExchangeBuilder<T> extends GetHttpExchangeBuilder<T> {
     private final Map<String, String> mPostParams = new HashMap<>();
 
@@ -22,6 +23,7 @@ public class FormHttpExchangeBuilder<T> extends GetHttpExchangeBuilder<T> {
     }
 
 
+    @SuppressWarnings("unused")
     public void addPostParameter(String name, String value) {
         if (value == null) {
             throw new NullPointerException("value == null");
@@ -36,6 +38,7 @@ public class FormHttpExchangeBuilder<T> extends GetHttpExchangeBuilder<T> {
     }
 
 
+    @SuppressWarnings("unused")
     public boolean isPostParameterPresent(String name) {
         return mPostParams.containsKey(name);
     }

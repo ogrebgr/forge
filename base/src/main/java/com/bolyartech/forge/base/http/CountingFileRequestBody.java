@@ -20,6 +20,7 @@ public class CountingFileRequestBody extends RequestBody {
     private final MediaType mMediaType;
 
 
+    @SuppressWarnings("unused")
     public CountingFileRequestBody(File file, MediaType mediaType, ProgressListener listener) {
         mFile = file;
         mMediaType = mediaType;
@@ -59,6 +60,7 @@ public class CountingFileRequestBody extends RequestBody {
     }
 
 
+    @SuppressWarnings("unused")
     public interface ProgressListener {
         void transferredSoFar(long num);
     }

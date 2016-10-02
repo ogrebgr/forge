@@ -8,16 +8,19 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
 public class ForgeTaskExecutor extends TaskExecutorImpl<ForgeExchangeResult> {
+    @SuppressWarnings("unused")
     @Inject
     public ForgeTaskExecutor() {
     }
 
 
+    @SuppressWarnings("unused")
     public ForgeTaskExecutor(ExecutorService taskExecutorService, ScheduledExecutorService scheduler) {
         super(taskExecutorService, scheduler);
     }
 
 
+    @SuppressWarnings("unused")
     public ForgeTaskExecutor(ExecutorService taskExecutorService, int ttlCheckInterval, int taskTtl, ScheduledExecutorService scheduler, TimeProvider timeProvider) {
         super(taskExecutorService, ttlCheckInterval, taskTtl, scheduler, timeProvider);
     }

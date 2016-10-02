@@ -1,5 +1,7 @@
 # Forge framework
-Framework for business applications
+
+
+*Forge framework* is a collection of libraries and 'skeleton' projects that allow the developers to easily create client-server solutions. On the client side there are [forge-base](https://github.com/ogrebgr/forge), [forge-android](https://github.com/ogrebgr/forge-android) and [forge-android-skeleton-basic](https://github.com/ogrebgr/forge-android-skeleton-basic) and on the server side there are [forge-server](https://github.com/ogrebgr/forge-server) and [forge-server-skeleton](https://github.com/ogrebgr/forge-serverskeleton).
 
 Components:
 

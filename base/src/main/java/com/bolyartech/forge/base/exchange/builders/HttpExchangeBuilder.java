@@ -16,6 +16,7 @@ abstract public class HttpExchangeBuilder<T> {
     private final Map<String, String> mGetParams = new HashMap<>();
 
 
+    @SuppressWarnings("unused")
     abstract public HttpExchange<T> build();
 
 
@@ -26,6 +27,7 @@ abstract public class HttpExchangeBuilder<T> {
     }
 
 
+    @SuppressWarnings("unused")
     public void addGetParameter(String name, String value) {
         if (value == null) {
             throw new NullPointerException("value == null");
@@ -39,6 +41,7 @@ abstract public class HttpExchangeBuilder<T> {
     }
 
 
+    @SuppressWarnings("unused")
     public boolean isGetParameterPresent(String name) {
         return mGetParams.containsKey(name);
     }

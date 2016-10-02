@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.inject.Inject;
 
 
+@SuppressWarnings("WeakerAccess")
 public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     private static final int TTL_CHECK_INTERVAL = 1000;
     private static final int DEFAULT_TASK_TTL = 5000;
@@ -43,6 +44,7 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     private final ScheduledExecutorService mScheduler;
 
 
+    @SuppressWarnings("unused")
     @Inject
     public TaskExecutorImpl() {
         this(createDefaultExecutorService(),
@@ -178,7 +180,7 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
         if (mIsStarted) {
             if (!mIsShutdown) {
                 ListenableFuture<T> lf = mTaskExecutorService.submit(task);
-                mTasksInFlight.put(taskId, new InFlightTtlHelper<>(taskId, mTimeProvider.getTime(), ttl, lf));
+                mTasksInFlight.put(taskId, new InFlightTtlHelper<>(taskId, mTimeProvider.getVmTime(), ttl, lf));
 
                 //noinspection NullableProblems
                 Futures.addCallback(lf, new FutureCallback<T>() {
@@ -284,7 +286,7 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
 
     static boolean isTtled(InFlightTtlHelper<?> hlp, TimeProvider timeProvider) {
         // - 1 is used in order unit tests with 0 TTL to be able to work consistently
-        return hlp.mStartedAt + hlp.mTtl - 1 < timeProvider.getTime();
+        return hlp.mStartedAt + hlp.mTtl - 1 < timeProvider.getVmTime();
     }
 
 
@@ -313,6 +315,7 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     }
 
 
+    @SuppressWarnings("unused")
     protected int getTasksInFlightCount() {
         return mTasksInFlight.size();
     }

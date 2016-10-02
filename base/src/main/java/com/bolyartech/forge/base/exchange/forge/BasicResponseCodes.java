@@ -6,13 +6,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+@SuppressWarnings("unused")
 public class BasicResponseCodes {
     public enum Oks implements ResponseCode {
-        OK(1); // used as general code that indicates success
+        @SuppressWarnings("unused")OK(1); // used as general code that indicates success
 
         private final int code;
 
 
+        @SuppressWarnings("unused")
         Oks(int code) {
             if (code > 0) {
                 this.code = code;
@@ -49,6 +51,7 @@ public class BasicResponseCodes {
         private final int mCode;
 
 
+        @SuppressWarnings("unused")
         Errors(int code) {
             if (code < 0) {
                 this.mCode = code;
@@ -62,6 +65,7 @@ public class BasicResponseCodes {
             return mCode;
         }
 
+        @SuppressWarnings("unused")
         public static Errors fromInt(int code) {
             Errors ret = mTypesByValue.get(code);
             if (ret != null) {

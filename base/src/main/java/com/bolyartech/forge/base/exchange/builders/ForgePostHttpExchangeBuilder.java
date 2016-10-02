@@ -5,6 +5,7 @@ import com.bolyartech.forge.base.exchange.ResultProducer;
 import com.bolyartech.forge.base.http.HttpFunctionality;
 
 public class ForgePostHttpExchangeBuilder extends FormHttpExchangeBuilder<ForgeExchangeResult> {
+    @SuppressWarnings("unused")
     public ForgePostHttpExchangeBuilder(HttpFunctionality httpFunctionality,
                                         ResultProducer<ForgeExchangeResult> resultProducer,
                                         String url) {

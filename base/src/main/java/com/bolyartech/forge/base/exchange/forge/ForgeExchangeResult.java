@@ -52,6 +52,7 @@ public class ForgeExchangeResult {
     /**
      * @return code of the result
      */
+    @SuppressWarnings("unused")
     public int getCode() {
         return code;
     }
@@ -60,6 +61,7 @@ public class ForgeExchangeResult {
     /**
      * @return payload of the result
      */
+    @SuppressWarnings("unused")
     public String getPayload() {
         return payload;
     }

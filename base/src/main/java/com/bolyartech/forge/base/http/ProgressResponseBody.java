@@ -18,6 +18,7 @@ public class ProgressResponseBody extends ResponseBody {
     private BufferedSource bufferedSource;
 
 
+    @SuppressWarnings("unused")
     public ProgressResponseBody(ResponseBody responseBody, Listener progressListener) {
         this.responseBody = responseBody;
         this.progressListener = progressListener;
@@ -63,6 +64,7 @@ public class ProgressResponseBody extends ResponseBody {
     }
 
 
+    @SuppressWarnings("unused")
     public interface Listener {
         void update(long bytesRead, long contentLength, boolean done);
     }

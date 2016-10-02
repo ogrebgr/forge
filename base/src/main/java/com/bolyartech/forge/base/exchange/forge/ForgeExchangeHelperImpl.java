@@ -20,6 +20,7 @@ public class ForgeExchangeHelperImpl implements ForgeExchangeHelper {
     private final String mBaseUrl;
 
 
+    @SuppressWarnings("unused")
     @Inject
     public ForgeExchangeHelperImpl(ForgeExchangeManager exchangeManager,
                                    HttpFunctionality httpFunctionality,

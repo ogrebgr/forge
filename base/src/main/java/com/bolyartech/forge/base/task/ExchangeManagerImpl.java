@@ -7,6 +7,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
+@SuppressWarnings("WeakerAccess")
 public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.Listener<T> {
     private TaskExecutor<T> mTaskExecutor;
 

@@ -6,7 +6,10 @@ import com.bolyartech.forge.base.task.ForgeExchangeManager;
 
 
 public interface ForgeExchangeHelper {
+    @SuppressWarnings("unused")
     ForgePostHttpExchangeBuilder createForgePostHttpExchangeBuilder(String endpoint);
+    @SuppressWarnings("unused")
     ForgeGetHttpExchangeBuilder createForgeGetHttpExchangeBuilder(String endpoint);
+    @SuppressWarnings("unused")
     ForgeExchangeManager getExchangeManager();
 }

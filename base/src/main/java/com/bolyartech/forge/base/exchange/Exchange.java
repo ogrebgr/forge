@@ -38,16 +38,19 @@ public interface Exchange<T> {
      * @throws IOException
      * @throws com.bolyartech.forge.base.exchange.ResultProducer.ResultProducerException
      */
+    @SuppressWarnings("unused")
     T execute() throws IOException, ResultProducer.ResultProducerException;
 
     /**
      * @return tag object
      */
+    @SuppressWarnings("unused")
     Object getTag();
 
     /**
      * @return if already executed <code>true</code>, <code>false</code> otherwise
      */
+    @SuppressWarnings("unused")
     boolean isExecuted();
 
     /**
@@ -55,10 +58,12 @@ public interface Exchange<T> {
      * If it is cancelled while waiting for HTTP request to complete it will return <code>null</code> no
      * matter if it was successful or not.
      */
+    @SuppressWarnings("unused")
     void cancel();
 
     /**
      * @return <code>true</code> if cancelled, <code>false</code> otherwise
      */
+    @SuppressWarnings("unused")
     boolean isCancelled();
 }

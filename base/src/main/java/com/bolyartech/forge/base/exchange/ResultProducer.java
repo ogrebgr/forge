@@ -36,11 +36,13 @@ public interface ResultProducer<T> {
     @SuppressWarnings("serial")
     class ResultProducerException extends Exception {
 
+        @SuppressWarnings("unused")
         public ResultProducerException() {
             super();
         }
 
 
+        @SuppressWarnings("SameParameterValue")
         public ResultProducerException(String message, Throwable cause) {
             super(message, cause);
         }
@@ -51,6 +53,7 @@ public interface ResultProducer<T> {
         }
 
 
+        @SuppressWarnings("unused")
         public ResultProducerException(Throwable cause) {
             super(cause);
         }

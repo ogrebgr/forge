@@ -25,6 +25,7 @@ public class HttpExchangeFailedException extends Exception {
     /**
      * Creates new HttpExchangeFailedException
      */
+    @SuppressWarnings("unused")
     public HttpExchangeFailedException() {
         super();
     }
@@ -33,6 +34,7 @@ public class HttpExchangeFailedException extends Exception {
     /**
      * Creates new HttpExchangeFailedException
      */
+    @SuppressWarnings("unused")
     public HttpExchangeFailedException(String detailMessage, Throwable throwable) {
         super(detailMessage, throwable);
     }
@@ -41,6 +43,7 @@ public class HttpExchangeFailedException extends Exception {
     /**
      * Creates new HttpExchangeFailedException
      */
+    @SuppressWarnings("unused")
     public HttpExchangeFailedException(String detailMessage) {
         super(detailMessage);
     }
@@ -49,6 +52,7 @@ public class HttpExchangeFailedException extends Exception {
     /**
      * Creates new HttpExchangeFailedException
      */
+    @SuppressWarnings("unused")
     public HttpExchangeFailedException(Throwable throwable) {
         super(throwable);
     }

@@ -30,6 +30,7 @@ public class HttpFunctionalityImpl implements HttpFunctionality {
     private final OkHttpClient mOkHttpClient;
 
 
+    @SuppressWarnings("unused")
     public HttpFunctionalityImpl(OkHttpClient okHttpClient) {
         mOkHttpClient = okHttpClient;
     }

@@ -7,8 +7,18 @@ package com.bolyartech.forge.base.misc;
  */
 public interface TimeProvider {
     /**
-     * Returns wall clock independent time in milliseconds.
-     * @return Time in millis
+     * Returns VM's time, i.e. wall clock independent time in milliseconds.
+     * Use it to measure elapsed time for timeouts, benchmarks, etc.
+     * @return VM's time in millis
      */
-    long getTime();
+    @SuppressWarnings("unused")
+    long getVmTime();
+
+    /**
+     * Returns wall clock time
+     * Use it to get time that will be shown to the user (optionally after timezone adjustment)
+     * @return wall clock time
+     */
+    @SuppressWarnings("unused")
+    long getWallClockTime();
 }

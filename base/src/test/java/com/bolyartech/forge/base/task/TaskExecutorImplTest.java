@@ -135,7 +135,7 @@ public class TaskExecutorImplTest {
         ListenableFuture<String> f = mock(ListenableFuture.class);
         TaskExecutorImpl.InFlightTtlHelper<String> hlp = new TaskExecutorImpl.InFlightTtlHelper(1, 1, 1, f);
         TimeProvider tp = mock(TimeProvider.class);
-        when(tp.getTime()).thenReturn(100L);
+        when(tp.getVmTime()).thenReturn(100L);
         assertTrue("Not TTLed", TaskExecutorImpl.isTtled(hlp, tp));
     }
 
@@ -145,7 +145,7 @@ public class TaskExecutorImplTest {
         ListenableFuture<String> f = mock(ListenableFuture.class);
         TaskExecutorImpl.InFlightTtlHelper<String> hlp = new TaskExecutorImpl.InFlightTtlHelper(1, 1, 1000, f);
         TimeProvider tp = mock(TimeProvider.class);
-        when(tp.getTime()).thenReturn(100L);
+        when(tp.getVmTime()).thenReturn(100L);
         assertFalse("TTLed when it should not", TaskExecutorImpl.isTtled(hlp, tp));
     }
 

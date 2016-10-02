@@ -8,8 +8,9 @@ import java.util.concurrent.Callable;
  */
 public interface TaskExecutor<T> {
     /**
-     * Strarts the task executor
+     * Starts the task executor
      */
+    @SuppressWarnings("unused")
     void start();
 
     /**
@@ -21,18 +22,21 @@ public interface TaskExecutor<T> {
      * Checks if the task executor is started
      * @return True if executor is started
      */
+    @SuppressWarnings("unused")
     boolean isStarted();
 
     /**
      * Checks if the task executor is shut down
      * @return True if executor is shut down
      */
+    @SuppressWarnings("unused")
     boolean isShutdown();
 
     /**
      * Executes a task with internally generated task ID and with the default TTL
      * @param task Task to be executed
      */
+    @SuppressWarnings("unused")
     void executeTask(Callable<T> task);
 
     /**
@@ -48,20 +52,23 @@ public interface TaskExecutor<T> {
      * @param taskId ID of the task
      * @param ttl TTL
      */
+    @SuppressWarnings("unused")
     void executeTask(Callable<T> task, long taskId, long ttl);
 
     /**
      * Cancels the execution of the task if is still waiting for execution or currently executing
-     * Neighter {onTaskSuccess()} or {onTaskFailure()} will be called for this task
+     * Neither {onTaskSuccess()} or {onTaskFailure()} will be called for this task
      * @param taskId ID of the task
      * @param mayInterruptIfRunning If true will try to interrupt the task if it is already running
      */
+    @SuppressWarnings("unused")
     void cancelTask(long taskId, boolean mayInterruptIfRunning);
 
     /**
      * Adds listener
      * @param listener Listener to be added
      */
+    @SuppressWarnings("unused")
     void addListener(Listener<T> listener);
 
     /**

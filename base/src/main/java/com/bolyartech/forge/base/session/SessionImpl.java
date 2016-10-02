@@ -5,6 +5,7 @@ import com.bolyartech.forge.base.misc.TimeProvider;
 import javax.inject.Inject;
 
 
+@SuppressWarnings("WeakerAccess")
 public class SessionImpl implements Session {
     boolean mIsLoggedIn;
 
@@ -13,6 +14,7 @@ public class SessionImpl implements Session {
     private long mLastSessionProlong; //in seconds
     private final TimeProvider mTimeProvider;
 
+    @SuppressWarnings("unused")
     @Inject
     public SessionImpl(TimeProvider timeProvider) {
         mTimeProvider = timeProvider;
@@ -35,7 +37,7 @@ public class SessionImpl implements Session {
 
 
     private void checkSessionExpired() {
-        if (mLastSessionProlong + mSessionTtl < (mTimeProvider.getTime() / 1_000)) {
+        if (mLastSessionProlong + mSessionTtl < (mTimeProvider.getVmTime() / 1_000)) {
             mIsLoggedIn = false;
         }
     }
@@ -49,7 +51,7 @@ public class SessionImpl implements Session {
     @Override
     public void prolong() {
         if (mIsLoggedIn) {
-            mLastSessionProlong = (mTimeProvider.getTime() / 1_000);
+            mLastSessionProlong = (mTimeProvider.getVmTime() / 1_000);
         }
     }
 

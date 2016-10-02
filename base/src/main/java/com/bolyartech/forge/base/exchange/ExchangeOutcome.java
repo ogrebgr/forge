@@ -36,6 +36,7 @@ public class ExchangeOutcome<T> {
      * @param result   Result of the exchange of type <code>T</code> if exchange execution was successful
      * @param error    indicates if there was an error during exchange execution. If <code>true</code> may be <code>null</code>
      */
+    @SuppressWarnings("unused")
     public ExchangeOutcome(Exchange<T> exchange, T result, boolean error) {
         super();
         mExchange = exchange;
@@ -47,6 +48,7 @@ public class ExchangeOutcome<T> {
     /**
      * @return <code>true</code> if there was error in exchange execution, <code>false</code> otherwise
      */
+    @SuppressWarnings("unused")
     public boolean isError() {
         return mError;
     }
@@ -55,6 +57,7 @@ public class ExchangeOutcome<T> {
     /**
      * @return executed exchange
      */
+    @SuppressWarnings("unused")
     public Exchange<T> getExchange() {
         return mExchange;
     }
@@ -63,6 +66,7 @@ public class ExchangeOutcome<T> {
     /**
      * @return Result ot the exchange of type <code>T</code>
      */
+    @SuppressWarnings("unused")
     public T getResult() {
         return mResult;
     }

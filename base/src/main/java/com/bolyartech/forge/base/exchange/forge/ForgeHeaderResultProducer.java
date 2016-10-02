@@ -13,6 +13,7 @@ public class ForgeHeaderResultProducer implements ResultProducer<ForgeExchangeRe
     private static final String FORGE_RESULT_CODE_HEADER = "X-Forge-Result-Code";
 
 
+    @SuppressWarnings("unused")
     @Inject
     public ForgeHeaderResultProducer() {
     }

@@ -27,5 +27,6 @@ import java.io.IOException;
  * Defines interface for executing HTTP requests
  */
 public interface HttpFunctionality {
+    @SuppressWarnings("unused")
     Response execute(Request request) throws IOException;
 }

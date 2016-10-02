@@ -31,6 +31,7 @@ import java.net.ProtocolException;
  *
  * @param <T> Type of the produced object/result
  */
+@SuppressWarnings("WeakerAccess")
 public class HttpExchange<T> implements Exchange<T> {
     private final HttpFunctionality mHttpFunctionality;
     private final Request mRequest;

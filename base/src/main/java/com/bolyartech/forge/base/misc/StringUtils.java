@@ -64,6 +64,7 @@ public class StringUtils {
      * @param lng Value for which md5 will be calculated
      * @return md5 hash
      */
+    @SuppressWarnings("unused")
     public static String md5(long lng) {
         return md5(Long.toString(lng));
     }
@@ -77,6 +78,7 @@ public class StringUtils {
      * @param i Value for which md5 will be calculated
      * @return md5 hash
      */
+    @SuppressWarnings("unused")
     public static String md5(int i) {
         return md5(Integer.toString(i));
     }
@@ -109,6 +111,7 @@ public class StringUtils {
      * @return true if the string is not empty
      * @see #isEmpty(String)
      */
+    @SuppressWarnings("unused")
     public static boolean isNotEmpty(String str) {
         return !isEmpty(str);
     }

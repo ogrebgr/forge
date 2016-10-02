@@ -11,6 +11,7 @@ import okhttp3.Request;
 import java.util.Map;
 
 
+@SuppressWarnings("WeakerAccess")
 public class GetHttpExchangeBuilder<T> extends HttpExchangeBuilder<T> {
     public GetHttpExchangeBuilder(HttpFunctionality httpFunctionality, ResultProducer<T> resultProducer, String url) {
         super(httpFunctionality, resultProducer, url);

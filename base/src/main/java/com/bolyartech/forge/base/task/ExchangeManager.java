@@ -11,29 +11,34 @@ public interface ExchangeManager<T> {
     /**
      * Starts the exchange manager
      */
+    @SuppressWarnings("unused")
     void start(TaskExecutor<T> taskExecutor);
 
     /**
      * Stops the exchange manager
      */
+    @SuppressWarnings("unused")
     void shutdown();
 
     /**
      * Adds a listener
      * @param listener Listener to be added
      */
+    @SuppressWarnings("unused")
     void addListener(Listener<T> listener);
 
     /**
      * Removes a listener
      * @param listener Listener to be removed
      */
+    @SuppressWarnings("unused")
     void removeListener(Listener<T> listener);
 
     /**
      * Executes the exchange with internally generated exchange ID and the default TTL
      * @param x Exchange to be executed
      */
+    @SuppressWarnings("unused")
     void executeExchange(Exchange<T> x);
 
     /**
@@ -41,6 +46,7 @@ public interface ExchangeManager<T> {
      * @param x Exchange to be executed
      * @param xId ID of the exchange
      */
+    @SuppressWarnings("unused")
     void executeExchange(Exchange<T> x, Long xId);
 
     /**
@@ -49,18 +55,21 @@ public interface ExchangeManager<T> {
      * @param xId ID of the exchange
      * @param ttl TTL
      */
+    @SuppressWarnings("unused")
     void executeExchange(Exchange<T> x, Long xId, long ttl);
 
     /**
      * Cancel an exchange. You will not receive notification for the outcome of the cancelled exchanges
      * @param xId ID of the exchange
      */
+    @SuppressWarnings("unused")
     void cancelExchange(Long xId);
 
     /**
      * Generates unique ID to be used as exchange ID
      * @return Generated ID
      */
+    @SuppressWarnings("unused")
     Long generateTaskId();
 
     /**
@@ -82,5 +91,6 @@ public interface ExchangeManager<T> {
     /**
      * @return true if started, false otherwise
      */
+    @SuppressWarnings("unused")
     boolean isStarted();
 }

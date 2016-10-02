@@ -31,6 +31,12 @@ public class DateTimeHelper {
     }
 
 
+    /**
+     * Adds minutes to a DateTime
+     * @param src Source DateTime
+     * @param minutesToAdd Minutes to add
+     * @return resulting DateTime with minutes added
+     */
     @SuppressWarnings("unused")
     public static DateTime plusMinutes(DateTime src, int minutesToAdd) {
         return src.plus(0,

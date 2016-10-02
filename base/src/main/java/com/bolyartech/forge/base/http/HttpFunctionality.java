@@ -27,6 +27,12 @@ import java.io.IOException;
  * Defines interface for executing HTTP requests
  */
 public interface HttpFunctionality {
+    /**
+     * Executes request
+     * @param request Request to be send
+     * @return Response
+     * @throws IOException if there is a problem sending the request or receiving the response
+     */
     @SuppressWarnings("unused")
     Response execute(Request request) throws IOException;
 }

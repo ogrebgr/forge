@@ -8,6 +8,11 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+
+/**
+ * HTTP exchange builder
+ * @param <T> Type of the result producer
+ */
 abstract public class HttpExchangeBuilder<T> {
     private final HttpFunctionality mHttpFunctionality;
     private final ResultProducer<T> mResultProducer;
@@ -16,10 +21,20 @@ abstract public class HttpExchangeBuilder<T> {
     private final Map<String, String> mGetParams = new HashMap<>();
 
 
+    /**
+     * Builds the exchange
+     * @return Exchange ready to be executed
+     */
     @SuppressWarnings("unused")
     abstract public HttpExchange<T> build();
 
 
+    /**
+     * Creates new HttpExchangeBuilder
+     * @param httpFunctionality HTTP functionality to be used
+     * @param resultProducer Result producer
+     * @param url URL of the endpoint
+     */
     public HttpExchangeBuilder(HttpFunctionality httpFunctionality, ResultProducer<T> resultProducer, String url) {
         mHttpFunctionality = httpFunctionality;
         mResultProducer = resultProducer;
@@ -27,6 +42,11 @@ abstract public class HttpExchangeBuilder<T> {
     }
 
 
+    /**
+     * Adds GET parameter
+     * @param name Name of the parameter
+     * @param value Value of the parameter
+     */
     @SuppressWarnings("unused")
     public void addGetParameter(String name, String value) {
         if (value == null) {
@@ -41,6 +61,11 @@ abstract public class HttpExchangeBuilder<T> {
     }
 
 
+    /**
+     * Checks if GET parameter is present
+     * @param name Name of the parameter
+     * @return true if parameter is already added, false otherwise
+     */
     @SuppressWarnings("unused")
     public boolean isGetParameterPresent(String name) {
         return mGetParams.containsKey(name);

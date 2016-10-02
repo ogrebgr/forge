@@ -10,10 +10,15 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 
+/**
+ * Logging interceptor to be used for debugging
+ */
 @SuppressWarnings("unused")
 public class LoggingInterceptor implements Interceptor {
+    @SuppressWarnings("unused")
     private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
+    @SuppressWarnings("unused")
     @Override public Response intercept(Interceptor.Chain chain) throws IOException {
         Request request = chain.request();
 
@@ -33,6 +38,5 @@ public class LoggingInterceptor implements Interceptor {
             mLogger.error("Problem executing HTTP request {}", e);
             throw new RuntimeException("Problem executing HTTP request");
         }
-
     }
 }

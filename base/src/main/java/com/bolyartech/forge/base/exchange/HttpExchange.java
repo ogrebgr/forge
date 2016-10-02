@@ -45,12 +45,16 @@ public class HttpExchange<T> implements Exchange<T> {
 
     /**
      * Creates new HttpExchange
-     *
-     * @param request     Request to be executed
-     * @param resultProducer        JsonFunctionality to be used to transform the returned JSON into object of type <code>T</code>
-     * @param tag         Tag object
+     * @param httpFunctionality Request to be executed
+     * @param request Request to be send
+     * @param resultProducer Result producer to used
+     * @param tag Tag to be used. This is some object that you use to distinguish/identify different exchanges
      */
-    public HttpExchange(HttpFunctionality httpFunctionality, Request request, ResultProducer<T> resultProducer, Object tag) {
+    public HttpExchange(HttpFunctionality httpFunctionality,
+                        Request request,
+                        ResultProducer<T> resultProducer,
+                        Object tag) {
+
         if (httpFunctionality == null) {
             throw new NullPointerException("Parameter 'httpFunctionality' is null");
         }
@@ -72,11 +76,10 @@ public class HttpExchange<T> implements Exchange<T> {
 
     /**
      * Creates new HttpExchange
-     *
-     * @param request     Request to be executed
-     * @param resultProducer        JsonFunctionality to be used to transform the returned JSON into object of type <code>T</code>
+     * @param httpFunctionality Request to be executed
+     * @param request Request to be send
+     * @param resultProducer Result producer to used
      */
-    @SuppressWarnings("unused")
     public HttpExchange(HttpFunctionality httpFunctionality, Request request, ResultProducer<T> resultProducer) {
         this(httpFunctionality, request, resultProducer, null);
     }

@@ -10,6 +10,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 
+/**
+ * Helper class for creating Forge exchange builders
+ */
 public class ForgeExchangeHelperImpl implements ForgeExchangeHelper {
     private final ForgeExchangeManager mExchangeManager;
 
@@ -20,6 +23,13 @@ public class ForgeExchangeHelperImpl implements ForgeExchangeHelper {
     private final String mBaseUrl;
 
 
+    /**
+     * Creates new ForgeExchangeHelperImpl
+     * @param exchangeManager Exchange manager to be used
+     * @param httpFunctionality HTTP functionality
+     * @param resultProducer Result producer
+     * @param baseUrl Base url which will be used as a prefix to endpoint
+     */
     @SuppressWarnings("unused")
     @Inject
     public ForgeExchangeHelperImpl(ForgeExchangeManager exchangeManager,

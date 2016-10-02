@@ -35,8 +35,9 @@ public interface Exchange<T> {
      * Executes the exchange using the provided HttpFunctionality
      *
      * @return Object of type <code>T</code>
-     * @throws IOException
-     * @throws com.bolyartech.forge.base.exchange.ResultProducer.ResultProducerException
+     * @throws IOException if there is an error during execution of the request
+     * @throws com.bolyartech.forge.base.exchange.ResultProducer.ResultProducerException if there is an error producing
+     * the result
      */
     @SuppressWarnings("unused")
     T execute() throws IOException, ResultProducer.ResultProducerException;

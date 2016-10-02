@@ -9,7 +9,8 @@ import com.bolyartech.forge.base.exchange.Exchange;
  */
 public interface ExchangeManager<T> {
     /**
-     * Starts the exchange manager
+     *
+     * @param taskExecutor task executor to be used
      */
     @SuppressWarnings("unused")
     void start(TaskExecutor<T> taskExecutor);

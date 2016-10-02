@@ -5,6 +5,9 @@ import com.bolyartech.forge.base.misc.TimeProvider;
 import javax.inject.Inject;
 
 
+/**
+ * User session
+ */
 @SuppressWarnings("WeakerAccess")
 public class SessionImpl implements Session {
     boolean mIsLoggedIn;
@@ -14,6 +17,11 @@ public class SessionImpl implements Session {
     private long mLastSessionProlong; //in seconds
     private final TimeProvider mTimeProvider;
 
+
+    /**
+     * Creates new SessionImpl
+     * @param timeProvider Time provider
+     */
     @SuppressWarnings("unused")
     @Inject
     public SessionImpl(TimeProvider timeProvider) {

@@ -18,8 +18,11 @@ package com.bolyartech.forge.base.exchange;
 
 import okhttp3.Response;
 
+
 /**
- * Created by ogre on 2015-11-03 13:03
+ * Result producer convert HTTP response into a result object of type <code>T</code>
+ *
+ * @param <T> Type of the result
  */
 public interface ResultProducer<T> {
     /**
@@ -36,24 +39,28 @@ public interface ResultProducer<T> {
     @SuppressWarnings("serial")
     class ResultProducerException extends Exception {
 
+        /**
+         * Creates new ResultProducerException
+         */
         @SuppressWarnings("unused")
         public ResultProducerException() {
             super();
         }
 
 
-        @SuppressWarnings("SameParameterValue")
+        @SuppressWarnings({"JavaDoc"})
         public ResultProducerException(String message, Throwable cause) {
             super(message, cause);
         }
 
 
+        @SuppressWarnings("JavaDoc")
         public ResultProducerException(String message) {
             super(message);
         }
 
 
-        @SuppressWarnings("unused")
+        @SuppressWarnings({"unused", "JavaDoc"})
         public ResultProducerException(Throwable cause) {
             super(cause);
         }

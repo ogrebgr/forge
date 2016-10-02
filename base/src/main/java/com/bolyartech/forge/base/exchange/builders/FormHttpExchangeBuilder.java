@@ -13,16 +13,32 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+
+/**
+ * Base class for POST/PUT exchange builders
+ * @param <T>
+ */
 @SuppressWarnings("WeakerAccess")
 public class FormHttpExchangeBuilder<T> extends GetHttpExchangeBuilder<T> {
     private final Map<String, String> mPostParams = new HashMap<>();
 
 
+    /**
+     * Creates new FormHttpExchangeBuilder
+     * @param httpFunctionality HTTP functionality
+     * @param resultProducer Result producer
+     * @param url URL of the endpoint
+     */
     public FormHttpExchangeBuilder(HttpFunctionality httpFunctionality, ResultProducer<T> resultProducer, String url) {
         super(httpFunctionality, resultProducer, url);
     }
 
 
+    /**
+     * Adds new POST parameter
+     * @param name Name of the parameter
+     * @param value Value of the parameter
+     */
     @SuppressWarnings("unused")
     public void addPostParameter(String name, String value) {
         if (value == null) {
@@ -38,6 +54,11 @@ public class FormHttpExchangeBuilder<T> extends GetHttpExchangeBuilder<T> {
     }
 
 
+    /**
+     * Checks if POST parameter is present
+     * @param name Name of the parameter
+     * @return true if parameter is already added, false otherwise
+     */
     @SuppressWarnings("unused")
     public boolean isPostParameterPresent(String name) {
         return mPostParams.containsKey(name);

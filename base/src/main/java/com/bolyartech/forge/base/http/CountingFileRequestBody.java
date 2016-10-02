@@ -11,6 +11,9 @@ import okio.Okio;
 import okio.Source;
 
 
+/**
+ * Used for file downloads
+ */
 public class CountingFileRequestBody extends RequestBody {
 
     private static final int SEGMENT_SIZE = 2048;
@@ -20,6 +23,12 @@ public class CountingFileRequestBody extends RequestBody {
     private final MediaType mMediaType;
 
 
+    /**
+     * Creates new CountingFileRequestBody
+     * @param file File where downloaded content will be saved
+     * @param mediaType Media type
+     * @param listener Listener
+     */
     @SuppressWarnings("unused")
     public CountingFileRequestBody(File file, MediaType mediaType, ProgressListener listener) {
         mFile = file;
@@ -62,6 +71,11 @@ public class CountingFileRequestBody extends RequestBody {
 
     @SuppressWarnings("unused")
     public interface ProgressListener {
+        /**
+         * Will be called with the current progress of the download
+         * @param num Number of bytes transferred so far
+         */
+        @SuppressWarnings("unused")
         void transferredSoFar(long num);
     }
 }

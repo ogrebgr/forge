@@ -9,10 +9,16 @@ import javax.inject.Inject;
 import okhttp3.Response;
 
 
+/**
+ * Produces ForgeExchangeResult from a HTTP response that contains 'X-Forge-Result-Code' header
+ */
 public class ForgeHeaderResultProducer implements ResultProducer<ForgeExchangeResult> {
     private static final String FORGE_RESULT_CODE_HEADER = "X-Forge-Result-Code";
 
 
+    /**
+     * Creates new ForgeHeaderResultProducer
+     */
     @SuppressWarnings("unused")
     @Inject
     public ForgeHeaderResultProducer() {

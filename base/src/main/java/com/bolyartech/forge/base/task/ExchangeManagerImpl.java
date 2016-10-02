@@ -7,6 +7,10 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
+/**
+ * Implementation of ExchangeManager
+ * @param <T> Type of the result of the exchanges
+ */
 @SuppressWarnings("WeakerAccess")
 public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.Listener<T> {
     private TaskExecutor<T> mTaskExecutor;
@@ -15,6 +19,10 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
 
     private volatile boolean mStarted = false;
 
+
+    /**
+     * Creates new ExchangeManagerImpl
+     */
     public ExchangeManagerImpl() {
     }
 

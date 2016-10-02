@@ -11,8 +11,18 @@ import okhttp3.Request;
 import java.util.Map;
 
 
+/**
+ * Builder for GET exchanges
+ * @param <T>
+ */
 @SuppressWarnings("WeakerAccess")
 public class GetHttpExchangeBuilder<T> extends HttpExchangeBuilder<T> {
+    /**
+     * Creates new GetHttpExchangeBuilder
+     * @param httpFunctionality HTTP functionality to be used
+     * @param resultProducer Result producer
+     * @param url URL of the endpoint
+     */
     public GetHttpExchangeBuilder(HttpFunctionality httpFunctionality, ResultProducer<T> resultProducer, String url) {
         super(httpFunctionality, resultProducer, url);
     }
@@ -36,7 +46,7 @@ public class GetHttpExchangeBuilder<T> extends HttpExchangeBuilder<T> {
 
     protected HttpUrl createFullUrl() {
         HttpUrl.Builder urlBuilder = HttpUrl.parse(getUrl()).newBuilder();
-        @SuppressWarnings("unchecked") Map<String, String> map = getGetParameters();
+        Map<String, String> map = getGetParameters();
         for (String key : map.keySet()) {
             urlBuilder.addQueryParameter(key, map.get(key));
         }

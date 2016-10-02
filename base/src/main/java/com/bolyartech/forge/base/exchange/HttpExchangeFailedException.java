@@ -33,6 +33,8 @@ public class HttpExchangeFailedException extends Exception {
 
     /**
      * Creates new HttpExchangeFailedException
+     * @param detailMessage Detailed message
+     * @param throwable original exception
      */
     @SuppressWarnings("unused")
     public HttpExchangeFailedException(String detailMessage, Throwable throwable) {
@@ -42,6 +44,7 @@ public class HttpExchangeFailedException extends Exception {
 
     /**
      * Creates new HttpExchangeFailedException
+     * @param detailMessage Detailed message
      */
     @SuppressWarnings("unused")
     public HttpExchangeFailedException(String detailMessage) {
@@ -51,6 +54,7 @@ public class HttpExchangeFailedException extends Exception {
 
     /**
      * Creates new HttpExchangeFailedException
+     * @param throwable original exception
      */
     @SuppressWarnings("unused")
     public HttpExchangeFailedException(Throwable throwable) {

@@ -11,6 +11,9 @@ import okio.Okio;
 import okio.Source;
 
 
+/**
+ * Response body used to hold progress of a download
+ */
 public class ProgressResponseBody extends ResponseBody {
 
     private final ResponseBody responseBody;
@@ -18,6 +21,11 @@ public class ProgressResponseBody extends ResponseBody {
     private BufferedSource bufferedSource;
 
 
+    /**
+     * Creates new ProgressResponseBody
+     * @param responseBody Normal response body
+     * @param progressListener Progress listener
+     */
     @SuppressWarnings("unused")
     public ProgressResponseBody(ResponseBody responseBody, Listener progressListener) {
         this.responseBody = responseBody;
@@ -66,6 +74,13 @@ public class ProgressResponseBody extends ResponseBody {
 
     @SuppressWarnings("unused")
     public interface Listener {
+        /**
+         * Updates the interested party with the progress of the download
+         * @param bytesRead Bytes downloaded so far
+         * @param contentLength Whole content length, i.e. size of the downloaded file
+         * @param done true if download is completed, false otherwise
+         */
+        @SuppressWarnings("unused")
         void update(long bytesRead, long contentLength, boolean done);
     }
 }

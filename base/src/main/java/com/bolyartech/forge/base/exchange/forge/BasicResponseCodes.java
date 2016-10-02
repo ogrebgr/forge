@@ -1,78 +1,66 @@
 package com.bolyartech.forge.base.exchange.forge;
 
-import com.bolyartech.forge.base.exchange.ResponseCode;
 
-import java.util.HashMap;
-import java.util.Map;
-
-
+/**
+ * Utility class for basic response codes
+ *
+ * For non-basic, i.e. your response codes please use values greater than 100 for OKs and smaller than -100 for errors
+ */
 @SuppressWarnings("unused")
 public class BasicResponseCodes {
-    public enum Oks implements ResponseCode {
-        @SuppressWarnings("unused")OK(1); // used as general code that indicates success
-
-        private final int code;
-
-
-        @SuppressWarnings("unused")
-        Oks(int code) {
-            if (code > 0) {
-                this.code = code;
-            } else {
-                throw new IllegalArgumentException("Code must be positive");
-            }
-        }
-
-
-        public int getCode() {
-            return code;
-        }
+    /**
+     * Disabling instantiation
+     */
+    private BasicResponseCodes() {
+        throw new AssertionError("Non-instantiable utility class");
     }
 
 
-    public enum Errors implements ResponseCode {
-        ERROR(-1), // used as general error when we cant/don't want to specify more details
-        MISSING_PARAMETERS(-2), // missing required parameters
-        REQUIRES_HTTPS(-3), // HTTPS protocol must be used
-        INVALID_PARAMETER_VALUE(-4), // parameter value is invalid. For example: string is passed where int is expected
-        INTERNAL_SERVER_ERROR(-5), // some serious problem occurred on the server
-        UPGRADE_NEEDED(-6); // client version is too old and unsupported
+    /**
+     * Response code for operations that completed successfully
+     */
+    @SuppressWarnings("unused")
+    public static final int OK = 1;
 
 
-        private static final Map<Integer, Errors> mTypesByValue = new HashMap<>();
-
-        static {
-            for (Errors type : Errors.values()) {
-                mTypesByValue.put(type.getCode(), type);
-            }
+    /**
+     * Contains error codes
+     */
+    public static class Errors {
+        private Errors() {
+            throw new AssertionError("Non-instantiable utility class");
         }
 
 
-        private final int mCode;
-
-
+        /**
+         * used as general error when we cant/don't want to specify more details
+         */
         @SuppressWarnings("unused")
-        Errors(int code) {
-            if (code < 0) {
-                this.mCode = code;
-            } else {
-                throw new IllegalArgumentException("Code must be negative");
-            }
-        }
-
-
-        public int getCode() {
-            return mCode;
-        }
-
+        public static final int UNSPECIFIED_ERROR = -1;
+        /**
+         * missing required parameters
+         */
         @SuppressWarnings("unused")
-        public static Errors fromInt(int code) {
-            Errors ret = mTypesByValue.get(code);
-            if (ret != null) {
-                return ret;
-            } else {
-                return null;
-            }
-        }
+        public static final int MISSING_PARAMETERS = -2;
+        /**
+         * HTTPS protocol must be used
+         */
+        @SuppressWarnings("unused")
+        public static final int REQUIRES_HTTPS = -3;
+        /**
+         * parameter value is invalid. For example: string is passed where int is expected
+         */
+        @SuppressWarnings("unused")
+        public static final int INVALID_PARAMETER_VALUE = -4;
+        /**
+         * some serious problem occurred on the server
+         */
+        @SuppressWarnings("unused")
+        public static final int INTERNAL_SERVER_ERROR = -5;
+        /**
+         * client version is too old and unsupported
+         */
+        @SuppressWarnings("unused")
+        public static final int UPGRADE_NEEDED = -6;
     }
 }

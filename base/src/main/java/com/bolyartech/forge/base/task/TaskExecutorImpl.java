@@ -13,12 +13,29 @@ import org.slf4j.LoggerFactory;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.inject.Inject;
 
 
+/**
+ * Executes tasks that produce result of type <code>T</code>
+ * <p>
+ * Task execution is time limited, when the task does not finish in the time budget it is seen as failed
+ *
+ * @param <T> Type of the produced result
+ */
 @SuppressWarnings("WeakerAccess")
 public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     private static final int TTL_CHECK_INTERVAL = 1000;
@@ -30,20 +47,19 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     private final AtomicLong mSequenceGenerator = new AtomicLong(0);
     private final List<Listener<T>> mListeners = new CopyOnWriteArrayList<>();
     private final Map<Long, InFlightTtlHelper<?>> mTasksInFlight = new ConcurrentHashMap<>();
-    private volatile boolean mIsStarted = false;
-    private volatile boolean mIsShutdown = false;
-
     private final ListeningExecutorService mTaskExecutorService;
     private final int mTtlCheckInterval;
     private final int mTaskTtl;
     private final TimeProvider mTimeProvider;
-
+    private final ScheduledExecutorService mScheduler;
+    private volatile boolean mIsStarted = false;
+    private volatile boolean mIsShutdown = false;
     private ScheduledFuture<?> mTtlChecker;
 
 
-    private final ScheduledExecutorService mScheduler;
-
-
+    /**
+     * Creates new TaskExecutorImpl with default settings
+     */
     @SuppressWarnings("unused")
     @Inject
     public TaskExecutorImpl() {
@@ -56,25 +72,25 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     }
 
 
-    private static ScheduledExecutorService createDefaultScheduler() {
-        return Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
-            @SuppressWarnings("NullableProblems")
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread ret = new Thread(r);
-                ret.setName("TaskExecutorImpl Scheduler");
-                return ret;
-            }
-        });
-    }
-
-
+    /**
+     * Creates new TaskExecutorImpl with default TTL
+     * @param taskExecutorService Task executor service to be used
+     * @param scheduler Scheduled executor to be used
+     */
     @SuppressWarnings("unused")
     public TaskExecutorImpl(ExecutorService taskExecutorService, ScheduledExecutorService scheduler) {
         this(taskExecutorService, TTL_CHECK_INTERVAL, DEFAULT_TASK_TTL, scheduler, new TimeProviderImpl());
     }
 
 
+    /**
+     * Creates new TaskExecutorImpl with default TTL
+     * @param taskExecutorService Task executor service to be used
+     * @param ttlCheckInterval Interval to check for TTLed tasks
+     * @param taskTtl TTL - how long to wait for the tasks by default before they are seen as failed and cancelled
+     * @param scheduler Scheduled executor to be used
+     * @param timeProvider Time provider
+     */
     public TaskExecutorImpl(ExecutorService taskExecutorService,
                             int ttlCheckInterval,
                             int taskTtl,
@@ -110,6 +126,30 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     }
 
 
+    private static ExecutorService createDefaultExecutorService() {
+        return Executors.newFixedThreadPool(DEFAULT_EXECUTOR_SERVICE_THREADS);
+    }
+
+
+    static boolean isTtled(InFlightTtlHelper<?> hlp, TimeProvider timeProvider) {
+        // - 1 is used in order unit tests with 0 TTL to be able to work consistently
+        return hlp.mStartedAt + hlp.mTtl - 1 < timeProvider.getVmTime();
+    }
+
+
+    private static ScheduledExecutorService createDefaultScheduler() {
+        return Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+            @SuppressWarnings("NullableProblems")
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread ret = new Thread(r);
+                ret.setName("TaskExecutorImpl Scheduler");
+                return ret;
+            }
+        });
+    }
+
+
     @Override
     public void start() {
         mLogger.trace("ExchangeFunctionalityImpl {} started", this);
@@ -133,17 +173,6 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
 
         mTaskExecutorService.shutdown();
         mIsShutdown = true;
-    }
-
-
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-
-        if (!mIsShutdown) {
-            mLogger.warn("Seems you forgot to shutdown TaskExecutorImpl " + this);
-            shutdown();
-        }
     }
 
 
@@ -207,35 +236,6 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     }
 
 
-    private void notifySuccess(long taskId, T result) {
-        if (result != null) {
-            for (Listener<T> l : mListeners) {
-                l.onTaskSuccess(taskId, result);
-            }
-            removeTask(taskId);
-        } else {
-            notifyFailure(taskId);
-        }
-    }
-
-
-    private void notifyFailure(long taskId) {
-        for (Listener l : mListeners) {
-            l.onTaskFailure(taskId);
-        }
-
-        removeTask(taskId);
-    }
-
-
-    private synchronized void removeTask(long taskId) {
-        mTasksInFlight.remove(taskId);
-        if (mTasksInFlight.size() == 0) {
-            onIdle();
-        }
-    }
-
-
     @Override
     public synchronized void cancelTask(long taskId, boolean mayInterruptIfRunning) {
         InFlightTtlHelper<?> f = mTasksInFlight.remove(taskId);
@@ -268,8 +268,25 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     }
 
 
-    private static ExecutorService createDefaultExecutorService() {
-        return Executors.newFixedThreadPool(DEFAULT_EXECUTOR_SERVICE_THREADS);
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+
+        if (!mIsShutdown) {
+            mLogger.warn("Seems you forgot to shutdown TaskExecutorImpl " + this);
+            shutdown();
+        }
+    }
+
+
+    protected void onIdle() {
+        // empty
+    }
+
+
+    @SuppressWarnings("unused")
+    protected int getTasksInFlightCount() {
+        return mTasksInFlight.size();
     }
 
 
@@ -284,9 +301,32 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     }
 
 
-    static boolean isTtled(InFlightTtlHelper<?> hlp, TimeProvider timeProvider) {
-        // - 1 is used in order unit tests with 0 TTL to be able to work consistently
-        return hlp.mStartedAt + hlp.mTtl - 1 < timeProvider.getVmTime();
+    private void notifySuccess(long taskId, T result) {
+        if (result != null) {
+            for (Listener<T> l : mListeners) {
+                l.onTaskSuccess(taskId, result);
+            }
+            removeTask(taskId);
+        } else {
+            notifyFailure(taskId);
+        }
+    }
+
+
+    private void notifyFailure(long taskId) {
+        for (Listener l : mListeners) {
+            l.onTaskFailure(taskId);
+        }
+
+        removeTask(taskId);
+    }
+
+
+    private synchronized void removeTask(long taskId) {
+        mTasksInFlight.remove(taskId);
+        if (mTasksInFlight.size() == 0) {
+            onIdle();
+        }
     }
 
 
@@ -307,16 +347,5 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
             mTtl = ttl;
             mFuture = future;
         }
-    }
-
-
-    protected void onIdle() {
-        // empty
-    }
-
-
-    @SuppressWarnings("unused")
-    protected int getTasksInFlightCount() {
-        return mTasksInFlight.size();
     }
 }

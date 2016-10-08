@@ -16,7 +16,7 @@ import okhttp3.Response;
 @SuppressWarnings("unused")
 public class LoggingInterceptor implements Interceptor {
     @SuppressWarnings("unused")
-    private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
+    private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass());
 
     @SuppressWarnings("unused")
     @Override public Response intercept(Interceptor.Chain chain) throws IOException {

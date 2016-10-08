@@ -43,7 +43,7 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     private static final int DEFAULT_EXECUTOR_SERVICE_THREADS = 2;
 
 
-    private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass().getSimpleName());
+    private final org.slf4j.Logger mLogger = LoggerFactory.getLogger(this.getClass());
     private final AtomicLong mSequenceGenerator = new AtomicLong(0);
     private final List<Listener<T>> mListeners = new CopyOnWriteArrayList<>();
     private final Map<Long, InFlightTtlHelper<?>> mTasksInFlight = new ConcurrentHashMap<>();

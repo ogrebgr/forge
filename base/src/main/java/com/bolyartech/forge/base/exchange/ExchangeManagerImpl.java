@@ -1,6 +1,6 @@
-package com.bolyartech.forge.base.task;
+package com.bolyartech.forge.base.exchange;
 
-import com.bolyartech.forge.base.exchange.Exchange;
+import com.bolyartech.forge.base.task.TaskExecutor;
 
 import java.util.List;
 import java.util.concurrent.Callable;

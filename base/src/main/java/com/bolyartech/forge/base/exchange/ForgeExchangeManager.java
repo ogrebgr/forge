@@ -1,4 +1,4 @@
-package com.bolyartech.forge.base.task;
+package com.bolyartech.forge.base.exchange;
 
 import com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult;
 

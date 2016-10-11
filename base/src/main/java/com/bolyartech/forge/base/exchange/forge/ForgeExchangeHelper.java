@@ -2,7 +2,7 @@ package com.bolyartech.forge.base.exchange.forge;
 
 import com.bolyartech.forge.base.exchange.builders.ForgeGetHttpExchangeBuilder;
 import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
-import com.bolyartech.forge.base.task.ForgeExchangeManager;
+import com.bolyartech.forge.base.exchange.ForgeExchangeManager;
 
 
 /**

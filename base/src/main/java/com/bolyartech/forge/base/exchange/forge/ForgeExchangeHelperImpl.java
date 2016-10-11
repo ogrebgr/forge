@@ -4,7 +4,7 @@ import com.bolyartech.forge.base.exchange.*;
 import com.bolyartech.forge.base.exchange.builders.ForgeGetHttpExchangeBuilder;
 import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
 import com.bolyartech.forge.base.http.HttpFunctionality;
-import com.bolyartech.forge.base.task.ForgeExchangeManager;
+import com.bolyartech.forge.base.exchange.ForgeExchangeManager;
 
 import javax.inject.Inject;
 import javax.inject.Named;

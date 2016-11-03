@@ -1,5 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
 
 //noinspection GroovyUnusedAssignment
 sourceCompatibility = 1.7
@@ -13,20 +14,57 @@ task sourceJar(type: Jar) {
     classifier "sources"
 }
 
+group = 'com.bolyartech.forge'
+version = '3.0.3'
+
+// custom tasks for creating source/javadoc jars
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+//task javadocJar(type: Jar, dependsOn: javadoc) {
+//    classifier = 'javadoc'
+//    from javadoc.destinationDir
+//}
+
+// add javadoc/source jar tasks as artifacts
+artifacts {
+    archives sourcesJar//, javadocJar
+}
+
+//apply from: 'bintray-config.gradle'
+
 publishing {
-    repositories {
-        mavenLocal()
-    }
     publications {
-        mavenJava(MavenPublication) {
-            groupId 'com.bolyartech.forge'
-            artifactId 'forge'
-            //noinspection GroovyAssignabilityCheck
-            version '2.7-SNAPSHOT'
-            artifact sourceJar
+        MyPublication(MavenPublication) {
             from components.java
+            groupId 'com.bolyartech.forge'
+            artifactId 'base'
+            version '3.0.3'
+            artifact sourcesJar
         }
     }
+}
+
+
+bintray {
+    configurations = ['archives']
+    pkg {
+        repo = 'maven'
+        name = 'forge-base'
+        userOrg = 'ogibankov'
+        licenses = ['Apache-2.0']
+        websiteUrl = 'https://github.com/ogrebgr/forge'
+        issueTrackerUrl = 'https://github.com/ogrebgr/forge/issues'
+        vcsUrl = 'https://github.com/ogrebgr/forge.git'
+        version {
+            name = '3.0.3'
+            desc = 'Forge base'
+            vcsTag = '3.0.3'
+        }
+    }
+    publications = ['MyPublication']
 }
 
 
@@ -45,3 +83,4 @@ dependencies {
     compile 'javax.inject:javax.inject:1'
     compile 'com.squareup.okhttp3:okhttp:3.1.2'
 }
+

@@ -1,14 +1,21 @@
 group 'com.bolyartech.forge'
 
 apply plugin: 'java'
-apply plugin: 'maven-publish'
-
 
 //noinspection GroovyUnusedAssignment
 sourceCompatibility = 1.7
 
 repositories {
     mavenCentral()
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7'
+    }
 }
 
 dependencies {

@@ -11,10 +11,6 @@ repositories {
     mavenCentral()
 }
 
-task sourceJar(type: Jar) {
-    from sourceSets.main.allJava
-    classifier "sources"
-}
 
 group = 'com.bolyartech.forge'
 version = '3.0.3'
@@ -35,7 +31,7 @@ artifacts {
     archives sourcesJar//, javadocJar
 }
 
-//apply from: 'bintray-config.gradle'
+apply from: 'bintray-config.gradle'
 
 publishing {
     publications {

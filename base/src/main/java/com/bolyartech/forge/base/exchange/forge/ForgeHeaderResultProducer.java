@@ -32,6 +32,7 @@ public class ForgeHeaderResultProducer implements ResultProducer<ForgeExchangeRe
         if (codeStr != null) {
             try {
                 String body = resp.body().string();
+                resp.body().close();
                 return new ForgeExchangeResult(Integer.valueOf(codeStr), body);
             } catch (NumberFormatException e) {
                 throw new ResultProducerException("Non integer result code in header " +

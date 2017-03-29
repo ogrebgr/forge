@@ -38,8 +38,8 @@ import javax.inject.Inject;
  */
 @SuppressWarnings("WeakerAccess")
 public class TaskExecutorImpl<T> implements TaskExecutor<T> {
-    private static final int TTL_CHECK_INTERVAL = 1000;
-    private static final int DEFAULT_TASK_TTL = 5000;
+    public static final int DEFAULT_TTL_CHECK_INTERVAL = 1000;
+    public static final int DEFAULT_TASK_TTL = 5000;
     private static final int DEFAULT_EXECUTOR_SERVICE_THREADS = 2;
 
 
@@ -64,7 +64,7 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     @Inject
     public TaskExecutorImpl() {
         this(createDefaultExecutorService(),
-                TTL_CHECK_INTERVAL,
+                DEFAULT_TTL_CHECK_INTERVAL,
                 DEFAULT_TASK_TTL,
                 createDefaultScheduler(),
                 new TimeProviderImpl()
@@ -79,7 +79,7 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
      */
     @SuppressWarnings("unused")
     public TaskExecutorImpl(ExecutorService taskExecutorService, ScheduledExecutorService scheduler) {
-        this(taskExecutorService, TTL_CHECK_INTERVAL, DEFAULT_TASK_TTL, scheduler, new TimeProviderImpl());
+        this(taskExecutorService, DEFAULT_TTL_CHECK_INTERVAL, DEFAULT_TASK_TTL, scheduler, new TimeProviderImpl());
     }
 
 
@@ -126,7 +126,7 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     }
 
 
-    private static ExecutorService createDefaultExecutorService() {
+    public static ExecutorService createDefaultExecutorService() {
         return Executors.newFixedThreadPool(DEFAULT_EXECUTOR_SERVICE_THREADS);
     }
 
@@ -137,7 +137,7 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     }
 
 
-    private static ScheduledExecutorService createDefaultScheduler() {
+    public static ScheduledExecutorService createDefaultScheduler() {
         return Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
             @SuppressWarnings("NullableProblems")
             @Override

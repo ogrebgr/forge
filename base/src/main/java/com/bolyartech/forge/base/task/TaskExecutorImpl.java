@@ -241,6 +241,7 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
         InFlightTtlHelper<?> f = mTasksInFlight.remove(taskId);
         if (f != null) {
             f.mFuture.cancel(mayInterruptIfRunning);
+            removeTask(taskId);
         }
     }
 
@@ -290,39 +291,49 @@ public class TaskExecutorImpl<T> implements TaskExecutor<T> {
     }
 
 
-    void checkAndRemoveTtled() {
+    synchronized void checkAndRemoveTtled() {
         for (InFlightTtlHelper<?> hlp : mTasksInFlight.values()) {
-            if (isTtled(hlp, mTimeProvider)) {
-                mLogger.debug("Task {} TTLed", hlp.mTaskId);
-                hlp.mFuture.cancel(true);
-                notifyFailure(hlp.mTaskId);
+            if (!hlp.mFuture.isDone() && !hlp.mFuture.isCancelled()) {
+                if (isTtled(hlp, mTimeProvider)) {
+                    mLogger.debug("Task {} TTLed", hlp.mTaskId);
+                    hlp.mFuture.cancel(true);
+                    notifyFailure(hlp.mTaskId);
+                }
             }
         }
     }
 
 
-    private void notifySuccess(long taskId, T result) {
-        if (result != null) {
-            for (Listener<T> l : mListeners) {
-                l.onTaskSuccess(taskId, result);
+    private synchronized void notifySuccess(long taskId, T result) {
+        InFlightTtlHelper<?> hlp = mTasksInFlight.get(taskId);
+
+        if (hlp != null) {
+            if (result != null) {
+                for (Listener<T> l : mListeners) {
+                    l.onTaskSuccess(taskId, result);
+                }
+                removeTask(taskId);
+            } else {
+                notifyFailure(taskId);
             }
+        }
+    }
+
+
+    private synchronized void notifyFailure(long taskId) {
+        InFlightTtlHelper<?> hlp = mTasksInFlight.get(taskId);
+
+        if (hlp != null) {
+            for (Listener l : mListeners) {
+                l.onTaskFailure(taskId);
+            }
+
             removeTask(taskId);
-        } else {
-            notifyFailure(taskId);
         }
     }
 
 
-    private void notifyFailure(long taskId) {
-        for (Listener l : mListeners) {
-            l.onTaskFailure(taskId);
-        }
-
-        removeTask(taskId);
-    }
-
-
-    private synchronized void removeTask(long taskId) {
+    private void removeTask(long taskId) {
         mTasksInFlight.remove(taskId);
         if (mTasksInFlight.size() == 0) {
             onIdle();

@@ -2,7 +2,8 @@ package com.bolyartech.forge.base.exchange.forge;
 
 import com.bolyartech.forge.base.exchange.HttpExchange;
 import com.bolyartech.forge.base.exchange.ResultProducer;
-import com.bolyartech.forge.base.http.HttpFunctionality;
+
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
 
@@ -14,31 +15,31 @@ import okhttp3.Request;
 public class ForgeHttpExchange extends HttpExchange<ForgeExchangeResult> {
     /**
      * Creates new ForgeHttpExchange
-     * @param httpFunctionality HTTP functionality to be used
+     * @param okHttpClient OkHttpClient to be used
      * @param request Request to be send
      * @param resultProducer Result producer
      * @param tag Tag to be used. This is some object that you use to distinguish/identify different exchanges
      */
     @SuppressWarnings("unused")
-    public ForgeHttpExchange(HttpFunctionality httpFunctionality,
+    public ForgeHttpExchange(OkHttpClient okHttpClient,
                              Request request,
                              ResultProducer<ForgeExchangeResult> resultProducer,
                              Object tag) {
-        super(httpFunctionality, request, resultProducer, tag);
+        super(okHttpClient, request, resultProducer, tag);
     }
 
 
     /**
      * Creates new ForgeHttpExchange
-     * @param httpFunctionality HTTP functionality to be used
+     * @param okHttpClient OkHttpClient to be used
      * @param request Request to be send
      * @param resultProducer Result producer
      */
     @SuppressWarnings("unused")
-    public ForgeHttpExchange(HttpFunctionality httpFunctionality,
+    public ForgeHttpExchange(OkHttpClient okHttpClient,
                              Request request,
                              ResultProducer<ForgeExchangeResult>
                                      resultProducer) {
-        this(httpFunctionality, request, resultProducer,null);
+        this(okHttpClient, request, resultProducer, null);
     }
 }

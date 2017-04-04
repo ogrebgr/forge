@@ -17,13 +17,15 @@
 package com.bolyartech.forge.base.exchange;
 
 
-import com.bolyartech.forge.base.http.HttpFunctionality;
-import okhttp3.Request;
-import okhttp3.Response;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.ProtocolException;
+
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 
 /**
@@ -33,7 +35,7 @@ import java.net.ProtocolException;
  */
 @SuppressWarnings("WeakerAccess")
 public class HttpExchange<T> implements Exchange<T> {
-    private final HttpFunctionality mHttpFunctionality;
+    private final OkHttpClient mOkHttpClient;
     private final Request mRequest;
     private final ResultProducer<T> mResultProducer;
     private final Object mTag;
@@ -42,20 +44,22 @@ public class HttpExchange<T> implements Exchange<T> {
     private volatile boolean mIsExecuted = false;
     private volatile boolean mIsCancelled = false;
 
+    private Call mCall;
+
 
     /**
      * Creates new HttpExchange
-     * @param httpFunctionality Request to be executed
+     * @param okHttpClient OkHttp client
      * @param request Request to be send
      * @param resultProducer Result producer to used
      * @param tag Tag to be used. This is some object that you use to distinguish/identify different exchanges
      */
-    public HttpExchange(HttpFunctionality httpFunctionality,
+    public HttpExchange(OkHttpClient okHttpClient,
                         Request request,
                         ResultProducer<T> resultProducer,
                         Object tag) {
 
-        if (httpFunctionality == null) {
+        if (okHttpClient == null) {
             throw new NullPointerException("Parameter 'httpFunctionality' is null");
         }
 
@@ -67,7 +71,7 @@ public class HttpExchange<T> implements Exchange<T> {
             throw new NullPointerException("Parameter 'resultProducer' is null");
         }
 
-        mHttpFunctionality = httpFunctionality;
+        mOkHttpClient = okHttpClient;
         mRequest = request;
         mResultProducer = resultProducer;
         mTag = tag;
@@ -76,12 +80,12 @@ public class HttpExchange<T> implements Exchange<T> {
 
     /**
      * Creates new HttpExchange
-     * @param httpFunctionality Request to be executed
+     * @param okHttpClient OkHttp client
      * @param request Request to be send
      * @param resultProducer Result producer to used
      */
-    public HttpExchange(HttpFunctionality httpFunctionality, Request request, ResultProducer<T> resultProducer) {
-        this(httpFunctionality, request, resultProducer, null);
+    public HttpExchange(OkHttpClient okHttpClient, Request request, ResultProducer<T> resultProducer) {
+        this(okHttpClient, request, resultProducer, null);
     }
 
 
@@ -99,7 +103,8 @@ public class HttpExchange<T> implements Exchange<T> {
             if (!mIsExecuted) {
                 mLogger.debug("Executing: " + mRequest.url().toString());
 
-                Response resp = mHttpFunctionality.execute(mRequest);
+                mCall = mOkHttpClient.newCall(mRequest);
+                Response resp = mCall.execute();
                 T ret = null;
                 if (resp.isSuccessful()) {
                     try {
@@ -132,22 +137,25 @@ public class HttpExchange<T> implements Exchange<T> {
 
 
     @Override
-    public boolean isExecuted() {
+    public synchronized boolean isExecuted() {
         return mIsExecuted;
     }
 
 
     @Override
-    public void cancel() {
+    public synchronized void cancel() {
         if (!mIsExecuted) {
             mIsCancelled = true;
             mLogger.debug("cancel {}", this);
+            if (mCall != null) {
+                mCall.cancel();
+            }
         }
     }
 
 
     @Override
-    public boolean isCancelled() {
+    public synchronized boolean isCancelled() {
         return mIsCancelled;
     }
 }

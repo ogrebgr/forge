@@ -35,7 +35,7 @@ public class LoggingInterceptor implements Interceptor {
             return response;
 
         } catch (Exception e) {
-            mLogger.error("Problem executing HTTP request {}", e);
+            mLogger.trace("Problem executing HTTP request {}", e);
             throw new RuntimeException("Problem executing HTTP request");
         }
     }

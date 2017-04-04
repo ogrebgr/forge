@@ -1,17 +1,17 @@
 package com.bolyartech.forge.base.exchange.builders;
 
-import com.bolyartech.forge.base.exchange.ResultProducer;
 import com.bolyartech.forge.base.exchange.HttpExchange;
-import com.bolyartech.forge.base.http.HttpFunctionality;
-
-import okhttp3.CacheControl;
-import okhttp3.FormBody;
-import okhttp3.HttpUrl;
-import okhttp3.Request;
+import com.bolyartech.forge.base.exchange.ResultProducer;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
+
+import okhttp3.CacheControl;
+import okhttp3.FormBody;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 
 /**
@@ -25,12 +25,12 @@ public class FormHttpExchangeBuilder<T> extends GetHttpExchangeBuilder<T> {
 
     /**
      * Creates new FormHttpExchangeBuilder
-     * @param httpFunctionality HTTP functionality
+     * @param okHttpClient OkHttpClient to be used
      * @param resultProducer Result producer
      * @param url URL of the endpoint
      */
-    public FormHttpExchangeBuilder(HttpFunctionality httpFunctionality, ResultProducer<T> resultProducer, String url) {
-        super(httpFunctionality, resultProducer, url);
+    public FormHttpExchangeBuilder(OkHttpClient okHttpClient, ResultProducer<T> resultProducer, String url) {
+        super(okHttpClient, resultProducer, url);
     }
 
 
@@ -76,7 +76,7 @@ public class FormHttpExchangeBuilder<T> extends GetHttpExchangeBuilder<T> {
         b.url(url);
         b.cacheControl(CacheControl.FORCE_NETWORK);
 
-        return new HttpExchange<>(getHttpFunctionality(),
+        return new HttpExchange<>(getHttpClient(),
                 b.build(),
                 getResultProducer());
     }

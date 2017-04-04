@@ -1,8 +1,9 @@
 package com.bolyartech.forge.base.exchange.builders;
 
-import com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult;
 import com.bolyartech.forge.base.exchange.ResultProducer;
-import com.bolyartech.forge.base.http.HttpFunctionality;
+import com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult;
+
+import okhttp3.OkHttpClient;
 
 
 /**
@@ -11,14 +12,14 @@ import com.bolyartech.forge.base.http.HttpFunctionality;
 public class ForgePostHttpExchangeBuilder extends FormHttpExchangeBuilder<ForgeExchangeResult> {
     /**
      * Creates new ForgePostHttpExchangeBuilder
-     * @param httpFunctionality HTTP functionality to be used
+     * @param okHttpClient OkHttpClient to be used
      * @param resultProducer Result producer
      * @param url Url of the endpoint
      */
     @SuppressWarnings("unused")
-    public ForgePostHttpExchangeBuilder(HttpFunctionality httpFunctionality,
+    public ForgePostHttpExchangeBuilder(OkHttpClient okHttpClient,
                                         ResultProducer<ForgeExchangeResult> resultProducer,
                                         String url) {
-        super(httpFunctionality, resultProducer, url);
+        super(okHttpClient, resultProducer, url);
     }
 }

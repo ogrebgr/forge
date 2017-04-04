@@ -1,14 +1,14 @@
 package com.bolyartech.forge.base.exchange.builders;
 
-import com.bolyartech.forge.base.exchange.ResultProducer;
 import com.bolyartech.forge.base.exchange.HttpExchange;
-import com.bolyartech.forge.base.http.HttpFunctionality;
+import com.bolyartech.forge.base.exchange.ResultProducer;
+
+import java.util.Map;
 
 import okhttp3.CacheControl;
 import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
-
-import java.util.Map;
 
 
 /**
@@ -19,12 +19,12 @@ import java.util.Map;
 public class GetHttpExchangeBuilder<T> extends HttpExchangeBuilder<T> {
     /**
      * Creates new GetHttpExchangeBuilder
-     * @param httpFunctionality HTTP functionality to be used
+     * @param okHttpClient OkHttpClient to be used
      * @param resultProducer Result producer
      * @param url URL of the endpoint
      */
-    public GetHttpExchangeBuilder(HttpFunctionality httpFunctionality, ResultProducer<T> resultProducer, String url) {
-        super(httpFunctionality, resultProducer, url);
+    public GetHttpExchangeBuilder(OkHttpClient okHttpClient, ResultProducer<T> resultProducer, String url) {
+        super(okHttpClient, resultProducer, url);
     }
 
 
@@ -38,7 +38,7 @@ public class GetHttpExchangeBuilder<T> extends HttpExchangeBuilder<T> {
         b.url(url);
         b.cacheControl(CacheControl.FORCE_NETWORK);
 
-        return new HttpExchange<>(getHttpFunctionality(),
+        return new HttpExchange<>(getHttpClient(),
                 b.build(),
                 getResultProducer());
     }

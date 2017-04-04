@@ -1,12 +1,14 @@
 package com.bolyartech.forge.base.exchange.forge;
 
-import com.bolyartech.forge.base.exchange.*;
+import com.bolyartech.forge.base.exchange.ForgeExchangeManager;
+import com.bolyartech.forge.base.exchange.ResultProducer;
 import com.bolyartech.forge.base.exchange.builders.ForgeGetHttpExchangeBuilder;
 import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
-import com.bolyartech.forge.base.http.HttpFunctionality;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import okhttp3.OkHttpClient;
 
 
 /**
@@ -15,7 +17,7 @@ import javax.inject.Named;
 public class ForgeExchangeHelperImpl implements ForgeExchangeHelper {
     private final ForgeExchangeManager mExchangeManager;
 
-    private final HttpFunctionality mHttpFunctionality;
+    private final OkHttpClient mOkHttpClient;
 
     private final ResultProducer<ForgeExchangeResult> mResultProducer;
 
@@ -25,19 +27,19 @@ public class ForgeExchangeHelperImpl implements ForgeExchangeHelper {
     /**
      * Creates new ForgeExchangeHelperImpl
      * @param exchangeManager Exchange manager to be used
-     * @param httpFunctionality HTTP functionality
+     * @param okHttpClient OkHttpClient to be used
      * @param resultProducer Result producer
      * @param baseUrl Base url which will be used as a prefix to endpoint
      */
     @SuppressWarnings("unused")
     @Inject
     public ForgeExchangeHelperImpl(ForgeExchangeManager exchangeManager,
-                                   HttpFunctionality httpFunctionality,
+                                   OkHttpClient okHttpClient,
                                    @Named("forge result producer") ResultProducer<ForgeExchangeResult> resultProducer,
                                    @Named("base url") String baseUrl) {
 
         mExchangeManager = exchangeManager;
-        mHttpFunctionality = httpFunctionality;
+        mOkHttpClient = okHttpClient;
         mResultProducer = resultProducer;
         mBaseUrl = baseUrl;
     }
@@ -45,13 +47,13 @@ public class ForgeExchangeHelperImpl implements ForgeExchangeHelper {
 
     @Override
     public ForgePostHttpExchangeBuilder createForgePostHttpExchangeBuilder(String endpoint) {
-        return new ForgePostHttpExchangeBuilder(mHttpFunctionality, mResultProducer, mBaseUrl + endpoint);
+        return new ForgePostHttpExchangeBuilder(mOkHttpClient, mResultProducer, mBaseUrl + endpoint);
     }
 
 
     @Override
     public ForgeGetHttpExchangeBuilder createForgeGetHttpExchangeBuilder(String endpoint) {
-        return new ForgeGetHttpExchangeBuilder(mHttpFunctionality, mResultProducer, mBaseUrl + endpoint);
+        return new ForgeGetHttpExchangeBuilder(mOkHttpClient, mResultProducer, mBaseUrl + endpoint);
     }
 
 

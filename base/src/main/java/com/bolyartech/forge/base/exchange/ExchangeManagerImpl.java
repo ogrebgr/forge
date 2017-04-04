@@ -3,7 +3,9 @@ package com.bolyartech.forge.base.exchange;
 import com.bolyartech.forge.base.task.TaskExecutor;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
@@ -13,11 +15,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @SuppressWarnings("WeakerAccess")
 public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.Listener<T> {
-    private TaskExecutor<T> mTaskExecutor;
-
     private final List<Listener<T>> mListeners = new CopyOnWriteArrayList<>();
-
+    private TaskExecutor<T> mTaskExecutor;
     private volatile boolean mStarted = false;
+
+    private Map<Long, Exchange<?>> mInFlight = new ConcurrentHashMap<>();
 
 
     /**
@@ -69,6 +71,7 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
 
     @Override
     public void executeExchange(Exchange<T> x, Long taskId) {
+        mInFlight.put(taskId, x);
         Callable<T> c = createCallable(x);
         mTaskExecutor.executeTask(c, taskId);
     }
@@ -82,6 +85,11 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
 
     @Override
     public void cancelExchange(Long xId) {
+        Exchange<?> x = mInFlight.get(xId);
+        if (x != null) {
+            x.cancel();
+            mInFlight.remove(xId);
+        }
         mTaskExecutor.cancelTask(xId, true);
     }
 
@@ -94,6 +102,7 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
 
     @Override
     public void onTaskSuccess(long taskId, T result) {
+//        mInFlight.remove(taskId);
         for(Listener<T> l : mListeners) {
             l.onExchangeOutcome(taskId, true, result);
         }
@@ -102,9 +111,16 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
 
     @Override
     public void onTaskFailure(long taskId) {
+//        mInFlight.remove(taskId);
         for(Listener<T> l : mListeners) {
             l.onExchangeOutcome(taskId, false, null);
         }
+    }
+
+
+    @Override
+    public boolean isStarted() {
+        return mStarted;
     }
 
 
@@ -115,11 +131,5 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
                 return x.execute();
             }
         };
-    }
-
-
-    @Override
-    public boolean isStarted() {
-        return mStarted;
     }
 }

@@ -1,12 +1,13 @@
 package com.bolyartech.forge.base.exchange.builders;
 
-import com.bolyartech.forge.base.exchange.ResultProducer;
 import com.bolyartech.forge.base.exchange.HttpExchange;
-import com.bolyartech.forge.base.http.HttpFunctionality;
+import com.bolyartech.forge.base.exchange.ResultProducer;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
+
+import okhttp3.OkHttpClient;
 
 
 /**
@@ -14,11 +15,24 @@ import java.util.Map;
  * @param <T> Type of the result producer
  */
 abstract public class HttpExchangeBuilder<T> {
-    private final HttpFunctionality mHttpFunctionality;
+    private final OkHttpClient mHttpClient;
     private final ResultProducer<T> mResultProducer;
     private final String mUrl;
 
     private final Map<String, String> mGetParams = new HashMap<>();
+
+
+    /**
+     * Creates new HttpExchangeBuilder
+     * @param okHttpClient OkHttpClient to be used
+     * @param resultProducer Result producer
+     * @param url URL of the endpoint
+     */
+    public HttpExchangeBuilder(OkHttpClient okHttpClient, ResultProducer<T> resultProducer, String url) {
+        mHttpClient = okHttpClient;
+        mResultProducer = resultProducer;
+        mUrl = url;
+    }
 
 
     /**
@@ -27,19 +41,6 @@ abstract public class HttpExchangeBuilder<T> {
      */
     @SuppressWarnings("unused")
     abstract public HttpExchange<T> build();
-
-
-    /**
-     * Creates new HttpExchangeBuilder
-     * @param httpFunctionality HTTP functionality to be used
-     * @param resultProducer Result producer
-     * @param url URL of the endpoint
-     */
-    public HttpExchangeBuilder(HttpFunctionality httpFunctionality, ResultProducer<T> resultProducer, String url) {
-        mHttpFunctionality = httpFunctionality;
-        mResultProducer = resultProducer;
-        mUrl = url;
-    }
 
 
     /**
@@ -77,8 +78,8 @@ abstract public class HttpExchangeBuilder<T> {
     }
 
 
-    protected HttpFunctionality getHttpFunctionality() {
-        return mHttpFunctionality;
+    protected OkHttpClient getHttpClient() {
+        return mHttpClient;
     }
 
 

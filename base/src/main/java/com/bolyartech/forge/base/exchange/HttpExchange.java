@@ -44,7 +44,7 @@ public class HttpExchange<T> implements Exchange<T> {
     private volatile boolean mIsExecuted = false;
     private volatile boolean mIsCancelled = false;
 
-    private Call mCall;
+    private volatile Call mCall;
 
 
     /**
@@ -137,13 +137,13 @@ public class HttpExchange<T> implements Exchange<T> {
 
 
     @Override
-    public synchronized boolean isExecuted() {
+    public boolean isExecuted() {
         return mIsExecuted;
     }
 
 
     @Override
-    public synchronized void cancel() {
+    public void cancel() {
         if (!mIsExecuted) {
             mIsCancelled = true;
             mLogger.debug("cancel {}", this);
@@ -155,7 +155,7 @@ public class HttpExchange<T> implements Exchange<T> {
 
 
     @Override
-    public synchronized boolean isCancelled() {
+    public boolean isCancelled() {
         return mIsCancelled;
     }
 }

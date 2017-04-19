@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 /**
  * User session
+ * This class is threadsafe
  */
 @SuppressWarnings("WeakerAccess")
 public class SessionImpl implements Session {
@@ -30,14 +31,14 @@ public class SessionImpl implements Session {
 
 
     @Override
-    public boolean isLoggedIn() {
+    public synchronized boolean isLoggedIn() {
         checkSessionExpired();
         return mIsLoggedIn;
     }
 
 
     @Override
-    public void startSession(int ttl) {
+    public synchronized void startSession(int ttl) {
         mSessionTtl = ttl;
         setIsLoggedIn(true);
         prolong();
@@ -57,7 +58,7 @@ public class SessionImpl implements Session {
 
 
     @Override
-    public void prolong() {
+    public synchronized void prolong() {
         if (mIsLoggedIn) {
             mLastSessionProlong = (mTimeProvider.getVmTime() / 1_000);
         }
@@ -65,7 +66,7 @@ public class SessionImpl implements Session {
 
 
     @Override
-    public void logout() {
+    public synchronized void logout() {
         setIsLoggedIn(false);
     }
 }

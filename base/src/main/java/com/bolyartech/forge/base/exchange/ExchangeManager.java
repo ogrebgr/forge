@@ -1,6 +1,7 @@
 package com.bolyartech.forge.base.exchange;
 
 import com.bolyartech.forge.base.exchange.Exchange;
+import com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult;
 import com.bolyartech.forge.base.task.TaskExecutor;
 
 
@@ -41,24 +42,29 @@ public interface ExchangeManager<T> {
      * @param x Exchange to be executed
      */
     @SuppressWarnings("unused")
-    void executeExchange(Exchange<T> x);
+    long executeExchange(Exchange<T> x);
+
 
     /**
-     * Executes the exchange with the default TTL
+     * Executes the exchange with internally generated exchange ID and the default TTL
+     * On outcome <b>ONLY</b> the ExchangeOutcomeHandler will be called but not the listeners
      * @param x Exchange to be executed
-     * @param xId ID of the exchange
+     * @param handler Handler to be called on outcome
+     * @return generated exchange ID
      */
-    @SuppressWarnings("unused")
-    void executeExchange(Exchange<T> x, Long xId);
+    long executeExchange(Exchange<T> x, ExchangeOutcomeHandler<T> handler);
+
 
     /**
-     * Executes the exchange
+     * Executes the exchange with internally generated exchange ID
+     * On outcome <b>ONLY</b> the ExchangeOutcomeHandler will be called but not the listeners
      * @param x Exchange to be executed
-     * @param xId ID of the exchange
+     * @param handler Handler to be called on outcome
      * @param ttl TTL
+     * @return generated exchange ID
      */
-    @SuppressWarnings("unused")
-    void executeExchange(Exchange<T> x, Long xId, long ttl);
+    long executeExchange(Exchange<T> x, ExchangeOutcomeHandler<T> handler, long ttl);
+
 
     /**
      * Cancel an exchange. You will not receive notification for the outcome of the cancelled exchanges
@@ -67,12 +73,6 @@ public interface ExchangeManager<T> {
     @SuppressWarnings("unused")
     void cancelExchange(Long xId);
 
-    /**
-     * Generates unique ID to be used as exchange ID
-     * @return Generated ID
-     */
-    @SuppressWarnings("unused")
-    Long generateTaskId();
 
     /**
      * Listener for ExchangeManager
@@ -95,4 +95,12 @@ public interface ExchangeManager<T> {
      */
     @SuppressWarnings("unused")
     boolean isStarted();
+
+
+    /**
+     * Interface
+     */
+    interface ExchangeOutcomeHandler<T> {
+        void handle(boolean isSuccess, T result);
+    }
 }

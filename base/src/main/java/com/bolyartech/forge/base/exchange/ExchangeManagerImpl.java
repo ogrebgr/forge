@@ -11,6 +11,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Implementation of ExchangeManager
+ *
  * @param <T> Type of the result of the exchanges
  */
 @SuppressWarnings("WeakerAccess")
@@ -20,6 +21,7 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
     private volatile boolean mStarted = false;
 
     private Map<Long, Exchange<?>> mInFlight = new ConcurrentHashMap<>();
+    private Map<Long, ExchangeOutcomeHandler<T>> mExchangeOutcomeHandlers = new ConcurrentHashMap<>();
 
 
     /**
@@ -64,21 +66,39 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
 
 
     @Override
-    public void executeExchange(Exchange<T> x) {
-        executeExchange(x, generateTaskId());
+    public long executeExchange(Exchange<T> x) {
+        long ret = generateTaskId();
+        executeExchange(x, ret);
+        return ret;
     }
 
 
     @Override
-    public void executeExchange(Exchange<T> x, Long taskId) {
+    public long executeExchange(Exchange<T> x, ExchangeOutcomeHandler<T> handler) {
+        long ret = generateTaskId();
+        mExchangeOutcomeHandlers.put(ret, handler);
+        executeExchange(x, ret);
+        return ret;
+    }
+
+
+    @Override
+    public long executeExchange(Exchange<T> x, ExchangeOutcomeHandler<T> handler, long ttl) {
+        long ret = generateTaskId();
+        mExchangeOutcomeHandlers.put(ret, handler);
+        executeExchange(x, ret, ttl);
+        return ret;
+    }
+
+
+    private void executeExchange(Exchange<T> x, Long taskId) {
         mInFlight.put(taskId, x);
         Callable<T> c = createCallable(x);
         mTaskExecutor.executeTask(c, taskId);
     }
 
 
-    @Override
-    public void executeExchange(Exchange<T> x, Long taskId, long ttl) {
+    private void executeExchange(Exchange<T> x, Long taskId, long ttl) {
         mTaskExecutor.executeTask(createCallable(x), taskId, ttl);
     }
 
@@ -91,19 +111,25 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
             mInFlight.remove(xId);
         }
         mTaskExecutor.cancelTask(xId, true);
+        mExchangeOutcomeHandlers.remove(xId);
     }
 
 
-    @Override
-    public Long generateTaskId() {
+    private Long generateTaskId() {
         return mTaskExecutor.generateTaskId();
     }
 
 
     @Override
     public void onTaskSuccess(long taskId, T result) {
-//        mInFlight.remove(taskId);
-        for(Listener<T> l : mListeners) {
+        mInFlight.remove(taskId);
+
+        ExchangeOutcomeHandler<T> handler = mExchangeOutcomeHandlers.remove(taskId);
+        if (handler != null) {
+            handler.handle(true, result);
+        }
+
+        for (Listener<T> l : mListeners) {
             l.onExchangeOutcome(taskId, true, result);
         }
     }
@@ -111,8 +137,14 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
 
     @Override
     public void onTaskFailure(long taskId) {
-//        mInFlight.remove(taskId);
-        for(Listener<T> l : mListeners) {
+        mInFlight.remove(taskId);
+
+        ExchangeOutcomeHandler<T> handler = mExchangeOutcomeHandlers.remove(taskId);
+        if (handler != null) {
+            handler.handle(false, null);
+        }
+
+        for (Listener<T> l : mListeners) {
             l.onExchangeOutcome(taskId, false, null);
         }
     }
@@ -132,4 +164,6 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
             }
         };
     }
+
+
 }

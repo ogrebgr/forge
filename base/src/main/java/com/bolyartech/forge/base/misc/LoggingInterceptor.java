@@ -1,5 +1,7 @@
 package com.bolyartech.forge.base.misc;
 
+import com.google.common.base.Throwables;
+
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -35,7 +37,8 @@ public class LoggingInterceptor implements Interceptor {
             return response;
 
         } catch (Exception e) {
-            mLogger.debug("Problem executing HTTP request {}", e);
+            //noinspection ThrowableResultOfMethodCallIgnored
+            mLogger.warn("Problem executing HTTP request: {}", Throwables.getRootCause(e).getMessage());
             throw new RuntimeException("Problem executing HTTP request");
         }
     }

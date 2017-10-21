@@ -33,11 +33,15 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
 
     @Override
     public synchronized void start(TaskExecutor<T> taskExecutor) {
-        mStarted = true;
-        mTaskExecutor = taskExecutor;
-        mTaskExecutor.addListener(this);
+        if (!mStarted) {
+            mStarted = true;
+            mTaskExecutor = taskExecutor;
+            mTaskExecutor.addListener(this);
 
-        mTaskExecutor.start();
+            mTaskExecutor.start();
+        } else {
+            throw new IllegalStateException("Already started");
+        }
     }
 
 
@@ -91,18 +95,6 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
     }
 
 
-    private void executeExchange(Exchange<T> x, Long taskId) {
-        mInFlight.put(taskId, x);
-        Callable<T> c = createCallable(x);
-        mTaskExecutor.executeTask(c, taskId);
-    }
-
-
-    private void executeExchange(Exchange<T> x, Long taskId, long ttl) {
-        mTaskExecutor.executeTask(createCallable(x), taskId, ttl);
-    }
-
-
     @Override
     public void cancelExchange(Long xId) {
         Exchange<?> x = mInFlight.get(xId);
@@ -112,11 +104,6 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
         }
         mTaskExecutor.cancelTask(xId, true);
         mExchangeOutcomeHandlers.remove(xId);
-    }
-
-
-    private Long generateTaskId() {
-        return mTaskExecutor.generateTaskId();
     }
 
 
@@ -153,6 +140,23 @@ public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.
     @Override
     public boolean isStarted() {
         return mStarted;
+    }
+
+
+    private void executeExchange(Exchange<T> x, Long taskId) {
+        mInFlight.put(taskId, x);
+        Callable<T> c = createCallable(x);
+        mTaskExecutor.executeTask(c, taskId);
+    }
+
+
+    private void executeExchange(Exchange<T> x, Long taskId, long ttl) {
+        mTaskExecutor.executeTask(createCallable(x), taskId, ttl);
+    }
+
+
+    private Long generateTaskId() {
+        return mTaskExecutor.generateTaskId();
     }
 
 

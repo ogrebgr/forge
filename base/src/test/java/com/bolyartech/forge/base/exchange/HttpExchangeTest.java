@@ -31,6 +31,7 @@ public class HttpExchangeTest {
                 protocol(Protocol.HTTP_1_0).
                 code(200).
                 body(ResponseBody.create(MediaType.parse("text/plain"), respBody)).
+                message("gg").
                 build();
 
         Call call = mock(Call.class);

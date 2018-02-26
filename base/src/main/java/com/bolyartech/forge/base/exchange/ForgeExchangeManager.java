@@ -5,6 +5,7 @@ import com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult;
 
 /**
  * Exchange manager that produces ForgeExchangeResult result
+ * @deprecated
  */
 public class ForgeExchangeManager extends ExchangeManagerImpl<ForgeExchangeResult> {
     /**

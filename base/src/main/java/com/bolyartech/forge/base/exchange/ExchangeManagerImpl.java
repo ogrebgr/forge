@@ -13,6 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Implementation of ExchangeManager
  *
  * @param <T> Type of the result of the exchanges
+ * @deprecated           
  */
 @SuppressWarnings("WeakerAccess")
 public class ExchangeManagerImpl<T> implements ExchangeManager<T>, TaskExecutor.Listener<T> {

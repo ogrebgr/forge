@@ -1,13 +1,12 @@
 package com.bolyartech.forge.base.exchange;
 
-import com.bolyartech.forge.base.exchange.Exchange;
-import com.bolyartech.forge.base.exchange.forge.ForgeExchangeResult;
 import com.bolyartech.forge.base.task.TaskExecutor;
 
 
 /**
  * Facilitates execution of {Exchange}s
  * @param <T>
+ * @deprecated
  */
 public interface ExchangeManager<T> {
     /**
@@ -73,6 +72,12 @@ public interface ExchangeManager<T> {
     @SuppressWarnings("unused")
     void cancelExchange(Long xId);
 
+    /**
+     * @return true if started, false otherwise
+     */
+    @SuppressWarnings("unused")
+    boolean isStarted();
+
 
     /**
      * Listener for ExchangeManager
@@ -88,13 +93,6 @@ public interface ExchangeManager<T> {
          */
         void onExchangeOutcome(long exchangeId, boolean isSuccess, T result);
     }
-
-
-    /**
-     * @return true if started, false otherwise
-     */
-    @SuppressWarnings("unused")
-    boolean isStarted();
 
 
     /**

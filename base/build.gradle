@@ -12,7 +12,7 @@ repositories {
 }
 
 ext {
-    forge_base_version = '5.2.0'
+    forge_base_version = '6.0.0'
 }
 
 group = 'com.bolyartech.forge'

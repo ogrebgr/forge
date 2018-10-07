@@ -35,11 +35,10 @@ public class LoggingInterceptor implements Interceptor {
                     response.request().url(), (t2 - t1) / 1e6d, response.headers()));
 
             return response;
-
-        } catch (Exception e) {
+        } catch (IOException e) {
             //noinspection ThrowableResultOfMethodCallIgnored
             mLogger.warn("Problem executing HTTP request: {}", Throwables.getRootCause(e).getMessage());
-            throw new RuntimeException("Problem executing HTTP request");
+            throw e;
         }
     }
 }

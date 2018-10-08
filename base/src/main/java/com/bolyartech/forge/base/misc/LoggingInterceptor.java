@@ -1,7 +1,5 @@
 package com.bolyartech.forge.base.misc;
 
-import com.google.common.base.Throwables;
-
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -10,6 +8,8 @@ import java.util.Locale;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import static com.bolyartech.forge.base.misc.ExceptionTools.getRootCause;
 
 
 /**
@@ -37,7 +37,7 @@ public class LoggingInterceptor implements Interceptor {
             return response;
         } catch (IOException e) {
             //noinspection ThrowableResultOfMethodCallIgnored
-            mLogger.warn("Problem executing HTTP request: {}", Throwables.getRootCause(e).getMessage());
+            mLogger.warn("Problem executing HTTP request: {}", getRootCause(e).getMessage());
             throw e;
         }
     }

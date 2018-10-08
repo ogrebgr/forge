@@ -2,7 +2,6 @@ package com.bolyartech.forge.base.exchange.forge;
 
 import com.bolyartech.forge.base.exchange.builders.ForgeGetHttpExchangeBuilder;
 import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
-import com.bolyartech.forge.base.exchange.ForgeExchangeManager;
 
 
 /**
@@ -24,11 +23,4 @@ public interface ForgeExchangeHelper {
      */
     @SuppressWarnings("unused")
     ForgeGetHttpExchangeBuilder createForgeGetHttpExchangeBuilder(String endpoint);
-
-    /**
-     * Returns the exchange manager
-     * @return exchange manager
-     */
-    @SuppressWarnings("unused")
-    ForgeExchangeManager getExchangeManager();
 }

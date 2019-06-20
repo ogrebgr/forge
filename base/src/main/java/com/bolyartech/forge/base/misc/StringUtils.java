@@ -58,7 +58,7 @@ public class StringUtils {
 
     /**
      * Calculates md5 hash for a long
-     * <p/>
+     *
      * Internally long is converted to md5 and then md5 is calculated
      *
      * @param lng Value for which md5 will be calculated
@@ -72,7 +72,7 @@ public class StringUtils {
 
     /**
      * Calculates md5 hash for an int
-     * <p/>
+     *
      * Internally int is converted to md5 and then md5 is calculated
      *
      * @param i Value for which md5 will be calculated
@@ -86,7 +86,7 @@ public class StringUtils {
 
     /**
      * Checks if string is empty.
-     * <p/>
+     *
      * String is considered empty if one of the following is true: it is null or it contains just white spaces
      *
      * @param str String to be checked

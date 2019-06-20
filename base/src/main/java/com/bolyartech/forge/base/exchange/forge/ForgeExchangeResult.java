@@ -22,7 +22,7 @@ import com.bolyartech.forge.base.exchange.Exchange;
 
 /**
  * Result of a successful {@link Exchange}
- * <p/>
+ *
  * Thread safety: full (immutable object)
  */
 public class ForgeExchangeResult {

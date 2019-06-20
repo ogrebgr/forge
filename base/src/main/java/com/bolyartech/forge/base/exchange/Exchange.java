@@ -25,7 +25,7 @@ import java.io.IOException;
 
 /**
  * Rest exchange
- * <p/>
+ *
  * Only single execution is allowed.
  *
  * @param <T> Type of the returned object

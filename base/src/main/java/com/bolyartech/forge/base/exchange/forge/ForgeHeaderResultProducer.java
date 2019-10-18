@@ -7,6 +7,7 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 
 /**
@@ -31,9 +32,14 @@ public class ForgeHeaderResultProducer implements ResultProducer<ForgeExchangeRe
 
         if (codeStr != null) {
             try {
-                String body = resp.body().string();
-                resp.body().close();
-                return new ForgeExchangeResult(Integer.valueOf(codeStr), body);
+                ResponseBody b = resp.body();
+                if (b != null) {
+                    String body = b.string();
+                    b.close();
+                    return new ForgeExchangeResult(Integer.valueOf(codeStr), body);
+                } else {
+                    throw new ResultProducerException("Body is empty");
+                }
             } catch (NumberFormatException e) {
                 throw new ResultProducerException("Non integer result code in header " +
                         FORGE_RESULT_CODE_HEADER + ": " + codeStr);

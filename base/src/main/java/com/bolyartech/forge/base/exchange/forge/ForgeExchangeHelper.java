@@ -2,6 +2,7 @@ package com.bolyartech.forge.base.exchange.forge;
 
 import com.bolyartech.forge.base.exchange.builders.ForgeGetHttpExchangeBuilder;
 import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
+import com.bolyartech.forge.base.exchange.builders.ForgePostJsonBodyHttpExchangeBuilder;
 
 
 /**
@@ -23,4 +24,13 @@ public interface ForgeExchangeHelper {
      */
     @SuppressWarnings("unused")
     ForgeGetHttpExchangeBuilder createForgeGetHttpExchangeBuilder(String endpoint);
+
+
+    /**
+     * Creates forge POST HTTP exchange builder (Json body)
+     *
+     * @param endpoint Endpoint path, e.g. 'api/1.0/login'
+     * @return forge POST HTTP exchange builder
+     */
+    ForgePostJsonBodyHttpExchangeBuilder createForgePostJsonBodyHttpExchangeBuilder(String endpoint);
 }

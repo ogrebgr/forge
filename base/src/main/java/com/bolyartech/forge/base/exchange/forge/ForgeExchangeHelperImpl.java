@@ -3,6 +3,7 @@ package com.bolyartech.forge.base.exchange.forge;
 import com.bolyartech.forge.base.exchange.ResultProducer;
 import com.bolyartech.forge.base.exchange.builders.ForgeGetHttpExchangeBuilder;
 import com.bolyartech.forge.base.exchange.builders.ForgePostHttpExchangeBuilder;
+import com.bolyartech.forge.base.exchange.builders.ForgePostJsonBodyHttpExchangeBuilder;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -48,5 +49,11 @@ public class ForgeExchangeHelperImpl implements ForgeExchangeHelper {
     @Override
     public ForgeGetHttpExchangeBuilder createForgeGetHttpExchangeBuilder(String endpoint) {
         return new ForgeGetHttpExchangeBuilder(mOkHttpClient, mResultProducer, mBaseUrl + endpoint);
+    }
+
+
+    @Override
+    public ForgePostJsonBodyHttpExchangeBuilder createForgePostJsonBodyHttpExchangeBuilder(String endpoint) {
+        return new ForgePostJsonBodyHttpExchangeBuilder(mOkHttpClient, mResultProducer, mBaseUrl + endpoint);
     }
 }

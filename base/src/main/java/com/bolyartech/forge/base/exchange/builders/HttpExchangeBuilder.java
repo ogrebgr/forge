@@ -20,7 +20,7 @@ abstract public class HttpExchangeBuilder<T> {
     private final String mUrl;
 
     private final Map<String, String> mGetParams = new HashMap<>();
-
+    final Map<String, String> mHeaderParams = new HashMap<>();
 
     /**
      * Creates new HttpExchangeBuilder
@@ -72,6 +72,29 @@ abstract public class HttpExchangeBuilder<T> {
         return mGetParams.containsKey(name);
     }
 
+
+    /**
+     * Adds header parameter which will be added to the header of the request
+     *
+     * @param name  Name of the parameter
+     * @param value Value of the parameter
+     */
+    public void addHeaderParameter(String name, String value) {
+        if (name == null) {
+            throw new NullPointerException("name == null");
+        }
+
+        if (value == null) {
+            throw new NullPointerException("value == null");
+        }
+
+
+        if (mHeaderParams.containsKey(name)) {
+            throw new IllegalStateException(MessageFormat.format("Header parameter '{0}' already added.", name));
+        }
+
+        mHeaderParams.put(name, value);
+    }
 
     protected Map<String, String> getGetParameters() {
         return mGetParams;

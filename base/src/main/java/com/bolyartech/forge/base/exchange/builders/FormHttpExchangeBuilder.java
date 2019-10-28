@@ -75,7 +75,9 @@ public class FormHttpExchangeBuilder<T> extends GetHttpExchangeBuilder<T> {
         b.post(fb);
         b.url(url);
         b.cacheControl(CacheControl.FORCE_NETWORK);
-
+        for (String key : mHeaderParams.keySet()) {
+            b.addHeader(key, mHeaderParams.get(key));
+        }
         return new HttpExchange<>(getHttpClient(),
                 b.build(),
                 getResultProducer());

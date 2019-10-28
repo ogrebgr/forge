@@ -41,6 +41,9 @@ public class PostJsonBodyHttpExchangeBuilder<T> extends HttpExchangeBuilder<T> {
         Request.Builder b = new Request.Builder();
         b.post(RequestBody.create(body, MediaType.get("application/json")));
         b.url(getUrl());
+        for (String key : mHeaderParams.keySet()) {
+            b.addHeader(key, mHeaderParams.get(key));
+        }
         b.cacheControl(CacheControl.FORCE_NETWORK);
 
         return new HttpExchange<>(getHttpClient(),

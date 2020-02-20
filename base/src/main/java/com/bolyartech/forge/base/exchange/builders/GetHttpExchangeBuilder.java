@@ -50,7 +50,11 @@ public class GetHttpExchangeBuilder<T> extends HttpExchangeBuilder<T> {
 
 
     protected HttpUrl createFullUrl() {
-        HttpUrl.Builder urlBuilder = HttpUrl.parse(getUrl()).newBuilder();
+        HttpUrl urlParsed = HttpUrl.parse(getUrl());
+        if (urlParsed == null) {
+            throw new IllegalArgumentException("Invalid URL: " + getUrl());
+        }
+        HttpUrl.Builder urlBuilder = urlParsed.newBuilder();
         Map<String, String> map = getGetParameters();
         for (String key : map.keySet()) {
             urlBuilder.addQueryParameter(key, map.get(key));

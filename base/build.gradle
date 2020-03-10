@@ -3,16 +3,18 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.novoda:bintray-release:0.9.2'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
     }
 }
 
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.3.61'
 }
-apply plugin: 'java'
+apply plugin: 'java-library'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
 
-apply plugin: 'com.novoda.bintray-release'
+
 
 //noinspection GroovyUnusedAssignment
 targetCompatibility = '1.8'
@@ -24,8 +26,11 @@ repositories {
 }
 
 ext {
-    forge_base_version = '7.4.1'
+    forge_base_version = '7.4.2'
 }
+
+apply from: 'bintray-config.gradle'
+
 
 group = 'com.bolyartech.forge'
 version = forge_base_version
@@ -36,24 +41,33 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
 }
 
-//task javadocJar(type: Jar, dependsOn: javadoc) {
-//    classifier = 'javadoc'
-//    from javadoc.destinationDir
-//}
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
 
 // add javadoc/source jar tasks as artifacts
 artifacts {
-    archives sourcesJar//, javadocJar
+    archives sourcesJar, javadocJar
 }
 
 
-publish {
-    userOrg = 'ogibankov'
-    groupId = 'com.bolyartech.forge'
-    artifactId = 'base'
-    publishVersion = forge_base_version
-    desc = 'Forge framework base'
-    website = 'https://github.com/ogrebgr/forge'
+bintray {
+    configurations = ['archives']
+    pkg {
+        repo = 'maven'
+        name = 'base'
+        userOrg = 'ogibankov'
+        licenses = ['Apache-2.0']
+        websiteUrl = 'https://github.com/ogrebgr/forge'
+        issueTrackerUrl = 'https://github.com/ogrebgr/forge/issues'
+        vcsUrl = 'git@github.com:ogrebgr/forge.git'
+        version {
+            name = forge_base_version
+            desc = 'Forge framework base'
+            vcsTag = 'v' + forge_base_version
+        }
+    }
 }
 
 

@@ -2,6 +2,8 @@ package com.bolyartech.forge.base.exchange.forge;
 
 import com.bolyartech.forge.base.exchange.ResultProducer;
 
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 
 import javax.inject.Inject;
@@ -16,6 +18,7 @@ import okhttp3.ResponseBody;
 public class ForgeHeaderResultProducer implements ResultProducer<ForgeExchangeResult> {
     private static final String FORGE_RESULT_CODE_HEADER = "X-Forge-Result-Code";
 
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * Creates new ForgeHeaderResultProducer
@@ -31,6 +34,7 @@ public class ForgeHeaderResultProducer implements ResultProducer<ForgeExchangeRe
         String codeStr = resp.header(FORGE_RESULT_CODE_HEADER);
 
         if (codeStr != null) {
+            logger.debug("Forge code: {}", codeStr);
             try {
                 ResponseBody b = resp.body();
                 if (b != null) {

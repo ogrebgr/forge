@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5'
     }
 }
 
@@ -26,7 +26,7 @@ repositories {
 }
 
 ext {
-    forge_base_version = '7.5.0'
+    forge_base_version = '7.5.1'
 }
 
 apply from: 'bintray-config.gradle'
@@ -53,7 +53,7 @@ artifacts {
 
 
 bintray {
-    configurations = ['archives']
+//    configurations = ['archives']
     pkg {
         repo = 'maven'
         name = 'base'
@@ -68,6 +68,7 @@ bintray {
             vcsTag = 'v' + forge_base_version
         }
     }
+    publications = ['MyPublication']
 }
 
 
@@ -88,4 +89,39 @@ dependencies {
 
 tasks.withType(Javadoc).all {
     enabled = false
+}
+
+
+def pomConfig = {
+    licenses {
+        license {
+            name "The Apache Software License, Version 2.0"
+            url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        }
+    }
+
+    scm {
+        url "git@github.com:ogrebgr/forge.git"
+    }
+}
+
+// Create the publication with the pom configuration:
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            groupId 'com.bolyartech.forge'
+            artifactId 'base'
+            version forge_base_version
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'Forge framework base')
+                root.appendNode('name', 'Forge Base')
+                root.appendNode('url', 'https://github.com/ogrebgr/forge')
+                root.children().last() + pomConfig
+            }
+        }
+    }
 }
